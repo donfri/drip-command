@@ -443,6 +443,8 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
   .touch #toasts .toast:nth-last-child(n+3){display:none}
 }
 .touch button kbd{display:none}
+.setdia{color:#38e8c6;font-weight:700}
+.setnm{color:#38e8c6;font-size:11px;font-weight:700;letter-spacing:.04em;white-space:nowrap}
 /* Tap-to-open help (Closet "How it works"). */
 .drill summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:13px;color:var(--fg)}
 .drill summary::-webkit-details-marker{display:none}
@@ -2815,7 +2817,7 @@ function renderDetail(){const p=G.p,el=$('#clDetail');
   showItem={it,slot,trying:sel.from==='bag'};
   let html=itemCard(it);
   if(sel.from==='bag'){const cur=slot==='weapon'?p.weapon:p.gear[slot];const ns=statsWith(slot,it),os=p.s;
-    html+=`<dl class="cmp"><dt>Replaces</dt><dd>${cur?`<span style="color:${RAR[cur.rarity].c}">${esc(cur.name)}</span>`:'nothing'}</dd>`+
+    html+=`<dl class="cmp"><dt>Replaces</dt><dd>${cur?`${setOf(cur)?`<span class="setdia" title="${esc(setOf(cur).n)} set">◆</span> `:''}<span style="color:${RAR[cur.rarity].c}">${esc(cur.name)}</span>${setOf(cur)?` <span class="setnm">${esc(setOf(cur).n)} set</span>`:''}`:'nothing'}</dd>`+
       (slot==='weapon'?`<dt>Weapon DPS</dt><dd>${diff(weaponDps(p.weapon,os),weaponDps(it,ns),v=>Math.round(v))}</dd>`:`<dt>Drip</dt><dd>${diff(os.drip,ns.drip,v=>v)} ${dripDelta(ns.drip-os.drip)}</dd><dt>Fit</dt><dd>${fitChange(os,ns)}</dd>${sigChange(os,ns)}`)+
       `<dt>Damage</dt><dd>${diff(os.dmg,ns.dmg,v=>'×'+v.toFixed(2))}</dd><dt>Max HP</dt><dd>${diff(os.maxHp,ns.maxHp,v=>v)}</dd></dl>`;
     const xp=5+it.rarity*8+Math.round((it.drip||20)/4);
