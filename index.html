@@ -443,6 +443,15 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
   .touch #toasts .toast:nth-last-child(n+3){display:none}
 }
 .touch button kbd{display:none}
+/* Tap-to-open help (Closet "How it works"). */
+.drill summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:13px;color:var(--fg)}
+.drill summary::-webkit-details-marker{display:none}
+.drill summary b{color:var(--gold)}
+.drill .dmore{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);padding:3px 8px}
+.drill .dmore::after{content:" +";color:var(--gold)}
+.drill[open] .dmore::after{content:" −"}
+.drill summary:hover .dmore{border-color:var(--gold)}
+.drill>.note{margin-top:8px}
 /* Narrow screens: nothing in a menu may push the page wider than the screen. */
 .wrap>*,.closet>*,.closet>*>*{min-width:0}
 .closet>div{grid-template-columns:minmax(0,1fr)}
@@ -706,7 +715,7 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
 <div id="closet" class="sheet" hidden>
   <div class="wrap">
     <div class="secth"><div><p class="eyebrow">Fit check</p><h2 class="h2">The Closet</h2></div><button class="btn ghost" id="bCloseCloset" type="button">Back <kbd>C</kbd></button></div>
-    <p class="note"><b style="color:var(--gold)">Drip is your power.</b> Every point of Drip adds 1% damage and 0.2 max HP, and new floors drop pieces with more Drip. Wear 2–5 pieces of your class's style for a Fit bonus that multiplies your Drip (five different styles earns Maximalist). Other styles still add their Drip but don't count toward Fit. Drip from a style also powers that style's talents.</p>
+    <details class="drill"><summary><b>Drip is your power.</b><span class="dmore">How it works</span></summary><p class="note">Every point of Drip adds 1% damage and 0.2 max HP, and new floors drop pieces with more Drip. Wear 2–5 pieces of your class's style for a Fit bonus that multiplies your Drip (five different styles earns Maximalist). Other styles still add their Drip but don't count toward Fit. Drip from a style also powers that style's talents.</p></details>
     <div class="closet">
       <div style="display:grid;gap:12px;align-content:start">
         <div class="preview"><canvas id="clPrev" width="440" height="540"></canvas></div>
@@ -732,7 +741,6 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
   <div class="wrap" style="max-width:1280px">
     <div class="secth"><div><p class="eyebrow">Damage styles</p><h2 class="h2">Style Trees</h2></div>
       <div class="row"><span class="muted">Style Points</span><span class="pts" id="tPts">0</span><button class="btn ghost" id="bCloseTalents" type="button">Back <kbd>T</kbd></button></div></div>
-    <p class="note">Earn a Style Point each time your Clout levels up. Your first 3 points go into your class tree; after that, other styles' trees and the Heat open up. Tier 2 opens at 3 points in a tree, the Signature at 6. Wearing a style's pieces boosts that tree's numbers, shown as its Drip boost.</p>
     <div class="trees" id="trees"></div>
     <section class="heat" id="heatBox">
       <div><p class="eyebrow">Spare points?</p><h3 class="hh">Turn Up the Heat</h3>
@@ -2693,7 +2701,7 @@ function toMenu(){state='menu';G=null;$('#hud').hidden=true;showOnly('#menu');dr
 // ---------- auto-sell ----------
 function autoSellOk(it){if(settings.sell<0||!it||it.sp||it.rarity>settings.sell)return false;if(it.slot!=='weapon'&&!G.p.gear[it.slot])return false;return !isUpgrade(it);}
 function sellHint(){return settings.sell<0?'Every drop goes to your bag.':`${SELL_OPTS.find(o=>o[0]===settings.sell)[1]} drops turn into ${settings.sellTo==='clout'?'Clout (XP, like donating)':'Cash'} the moment you walk over them. Upgrades, Statement Pieces and anything for an empty slot are always kept, and new pieces still count for the Lookbook.`;}
-function renderSellSegs(){['#segSell','#segSell2'].forEach(id=>{const el=$(id);if(el)el.innerHTML=SELL_OPTS.map(([v,n])=>`<button type="button" data-v="${v}" aria-pressed="${v===settings.sell}">${n}</button>`).join('');});['#segSellTo','#segSellTo2'].forEach(id=>{const el=$(id);if(el){el.innerHTML=[['cash','Cash'],['clout','Clout']].map(([v,n])=>`<button type="button" data-v="${v}" aria-pressed="${v===settings.sellTo}">${n}</button>`).join('');el.closest('.sellto').hidden=settings.sell<0;}});{const el=$('#sellNote');if(el)el.textContent=sellHint();}{const el=$('#sellNote2');if(el){const o=SELL_OPTS.find(x=>x[0]===settings.sell);el.innerHTML='<b>Auto-sell: '+(o?o[1]:'Off')+(settings.sell>=0?' → '+(settings.sellTo==='clout'?'Clout':'Cash'):'')+'.</b> '+sellHint()+' Change it in Settings (Pause → Settings).';}}}
+function renderSellSegs(){['#segSell','#segSell2'].forEach(id=>{const el=$(id);if(el)el.innerHTML=SELL_OPTS.map(([v,n])=>`<button type="button" data-v="${v}" aria-pressed="${v===settings.sell}">${n}</button>`).join('');});['#segSellTo','#segSellTo2'].forEach(id=>{const el=$(id);if(el){el.innerHTML=[['cash','Cash'],['clout','Clout']].map(([v,n])=>`<button type="button" data-v="${v}" aria-pressed="${v===settings.sellTo}">${n}</button>`).join('');el.closest('.sellto').hidden=settings.sell<0;}});{const el=$('#sellNote');if(el)el.textContent=sellHint();}{const el=$('#sellNote2');if(el){const o=SELL_OPTS.find(x=>x[0]===settings.sell);el.innerHTML='Auto-sell: <b>'+(o?o[1]:'Off')+(settings.sell>=0?' → '+(settings.sellTo==='clout'?'Clout':'Cash'):'')+'</b>';}}}
 function setSell(v){settings.sell=clamp(+v,-1,2);store.set('dripcmd.autosell',settings.sell);renderSellSegs();}
 ['#segSellTo','#segSellTo2'].forEach(id=>$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;settings.sellTo=b.dataset.v==='clout'?'clout':'cash';store.set('dripcmd.autosellto',settings.sellTo);renderSellSegs();if(pad.on)setTimeout(()=>{const a=$(`${id} [data-v="${b.dataset.v}"]`);if(a)setPadFocus(a);},20);}));
 ['#segSell','#segSell2'].forEach(id=>$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;setSell(b.dataset.v);if(pad.on)setTimeout(()=>{const a=$(`${id} [data-v="${b.dataset.v}"]`);if(a)setPadFocus(a);},20);}));
