@@ -135,9 +135,21 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
 .cname{display:grid;gap:3px;width:100%}.cname span{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
 .cname input{box-sizing:border-box;background:#0c0911;border:1px solid var(--line);color:var(--fg);font:inherit;font-family:var(--display);font-size:18px;padding:6px 8px;width:100%;min-width:0}
 .cname input:focus{outline:2px solid var(--gold);outline-offset:1px}
-.copts{display:grid;gap:10px;align-content:start;min-width:0}
+.copts{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-content:start;min-width:0}
 .crow{display:grid;gap:5px}.crow>span{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
 .swrow{display:flex;flex-wrap:wrap;gap:6px}
+.crow.dd{gap:6px;border-bottom:1px solid var(--line);padding-bottom:6px;grid-template-columns:minmax(0,1fr);min-width:0}
+.ddhead{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:'l b' 'v b';align-items:center;column-gap:10px;row-gap:3px;min-width:0}
+.ddl{grid-area:l;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);line-height:1.2}
+.ddval{grid-area:v;display:flex;align-items:center;gap:7px;font-size:14px;font-weight:600;min-width:0;white-space:nowrap;overflow:hidden}
+.ddval i{width:16px;height:16px;border-radius:50%;background:var(--c);border:1px solid #ffffff40;flex:none}
+.ddbtn{grid-area:b;position:relative;width:24px;height:24px;padding:0;flex:none;border-radius:50%;background:transparent;border:1.5px solid color-mix(in srgb,var(--gold) 55%,transparent);transition:transform .18s ease,background .15s,border-color .15s}
+.ddbtn::before,.ddbtn::after{content:"";position:absolute;left:50%;top:50%;width:10px;height:2px;margin:-1px 0 0 -5px;border-radius:1px;background:var(--gold)}
+.ddbtn::after{transform:rotate(90deg)}
+.ddbtn:hover{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 14%,transparent)}
+.ddbtn[aria-expanded="true"]{transform:rotate(45deg);border-color:var(--gold);background:var(--gold)}
+.ddbtn[aria-expanded="true"]::before,.ddbtn[aria-expanded="true"]::after{background:#1a1004}
+.ddopts{padding:4px 0 2px}
 .swrow .sw{width:26px;height:26px;border-color:#ffffff26}.swrow .sw[aria-pressed="true"]{border-color:var(--gold)}
 .chips{display:flex;flex-wrap:wrap;gap:5px}
 .chips button{background:var(--panel2);border:1px solid var(--line);padding:5px 9px;font-size:12px;font-weight:600}
@@ -158,6 +170,15 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
 .sty .sn{font-weight:700;font-size:16px}
 .sty .sd{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--c)}
 .sty .sb{font-size:13px;color:var(--muted);line-height:1.35}
+.sty.emp,.sty.locked{grid-column:1/-1}
+.sty.emp{background:linear-gradient(90deg,color-mix(in srgb,var(--c) 12%,var(--panel2)),var(--panel2))}
+.sty.locked{opacity:.62;cursor:default;border-left-style:dashed}
+.sty .sn em{font-style:normal;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-left:8px;vertical-align:2px}
+.sets{display:grid;gap:6px;margin:4px 0 10px}
+.setrow{border-left:3px solid var(--c);background:var(--panel2);padding:6px 9px;display:grid;gap:2px;font-size:12px;opacity:.8}
+.setrow.on{opacity:1;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--c) 45%,transparent)}
+.setrow b{color:var(--c);font-size:13px}.setrow .sc{color:var(--gold);font-weight:700;margin-left:6px}
+.setrow .sd{color:var(--muted)}.setrow i{font-style:normal}.setrow i.got{color:var(--fg);font-weight:700}
 .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
 .opt{display:grid;gap:8px;align-content:start}
 .opt .ol{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
@@ -208,6 +229,16 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
 .controls{font-size:13px;color:var(--muted);line-height:1.9}
 .controls kbd{margin-right:2px}
 .best{font-size:13px;color:var(--muted)}
+.settag{display:inline-block;background:#38e8c6;color:#06201c;font-size:9px;font-weight:700;letter-spacing:.12em;padding:1px 5px;white-space:nowrap}
+.bi .settag{position:absolute;top:-9px;right:8px}
+.slot .settag{margin-top:3px;justify-self:start}
+.bi.set{box-shadow:inset 0 0 0 1px #38e8c680;background:linear-gradient(180deg,#38e8c614,transparent 70%),var(--panel2)}
+.slot.set{box-shadow:inset 3px 0 0 #38e8c6}
+.setline{margin-top:8px;padding:8px 10px;border-left:3px solid #38e8c6;background:#38e8c614;font-size:13px;line-height:1.45;display:grid;gap:2px}
+.setline b{color:#38e8c6}.setline .sn3{color:var(--muted);font-size:12px}
+.setline .sparts{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px;color:var(--muted)}.setline .sparts i{font-style:normal}.setline .sparts i.got{color:#38e8c6;font-weight:700}
+.setline>div:not(.sparts){color:var(--muted)}.setline>div.on{color:var(--fg)}
+.stn{font-weight:700}
 .spline{margin-top:8px;padding:8px 10px;border-left:3px solid var(--pink);background:#ff4fa314;font-size:13px;line-height:1.45}
 .spline b{color:var(--pink);font-weight:700;letter-spacing:.02em}
 .spstar{color:var(--pink);margin-right:4px}
@@ -295,7 +326,13 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
 .note{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch;margin:0}
 
 /* Talents */
-.trees{display:grid;grid-template-columns:repeat(6,minmax(170px,1fr));gap:10px;overflow-x:auto;padding-bottom:6px}
+.trees{display:grid;gap:12px}
+.otrees{display:grid;grid-template-columns:repeat(var(--nt,5),minmax(170px,1fr));gap:10px;overflow-x:auto;padding-bottom:6px}
+.tree.main{grid-template-columns:minmax(170px,.75fr) repeat(3,minmax(0,1fr));align-items:start;gap:14px;padding:14px}
+.tree.main h4{font-size:26px}
+@media (max-width:820px){.tree.main{grid-template-columns:minmax(0,1fr)}}
+.tgate{margin-top:8px;font-size:12px;font-weight:700;color:var(--gold)}
+.othr{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.othr .note{max-width:none}
 .tree{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--c);padding:10px;display:grid;gap:10px;align-content:start;min-width:0}
 .tree h4{margin:0;font-family:var(--display);font-weight:400;font-size:19px;color:var(--c)}
 .tree .tm{font-size:11px;color:var(--muted);line-height:1.4}
@@ -338,7 +375,7 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
   .drip b{font-size:26px}
   .hud-l{width:min(230px,52vw)}
   #toasts{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 130px);width:calc(100vw - 32px)}
-  .trees{grid-template-columns:repeat(6,minmax(200px,1fr))}
+  .otrees{grid-template-columns:repeat(var(--nt,5),minmax(200px,1fr))}
 }
 </style>
 
@@ -392,16 +429,16 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
             <label class="cname"><span>Name</span><input id="cName" maxlength="14" autocomplete="off" spellcheck="false"></label></div>
           <div class="copts">
             <div class="crow"><span>Build</span><div class="seg" id="segBuild"><button type="button" data-v="f">Slim</button><button type="button" data-v="m">Broad</button></div></div>
-            <div class="crow"><span>Skin</span><div class="swrow" id="skins"></div></div>
-            <div class="crow"><span>Hairstyle</span><div class="chips" id="hairStyles"></div></div>
-            <div class="crow"><span>Hair color</span><div class="swrow" id="hairCols"></div></div>
-            <div class="crow"><span>Eyes</span><div class="swrow" id="eyeCols"></div></div>
+            <div class="crow dd"><div class="ddhead"><span class="ddl">Skin</span><span class="ddval" id="ddv-skin"></span><button type="button" class="ddbtn" id="ddb-skin" data-dd="skin" aria-expanded="false" aria-label="Change skin"></button></div><div class="swrow ddopts" id="skins" hidden></div></div>
+            <div class="crow dd"><div class="ddhead"><span class="ddl">Hairstyle</span><span class="ddval" id="ddv-hs"></span><button type="button" class="ddbtn" id="ddb-hs" data-dd="hs" aria-expanded="false" aria-label="Change hairstyle"></button></div><div class="chips ddopts" id="hairStyles" hidden></div></div>
+            <div class="crow dd"><div class="ddhead"><span class="ddl">Hair color</span><span class="ddval" id="ddv-hc"></span><button type="button" class="ddbtn" id="ddb-hc" data-dd="hc" aria-expanded="false" aria-label="Change hair color"></button></div><div class="swrow ddopts" id="hairCols" hidden></div></div>
+            <div class="crow dd"><div class="ddhead"><span class="ddl">Eyes</span><span class="ddval" id="ddv-ec"></span><button type="button" class="ddbtn" id="ddb-ec" data-dd="ec" aria-expanded="false" aria-label="Change eyes"></button></div><div class="swrow ddopts" id="eyeCols" hidden></div></div>
             <div class="row"><button type="button" class="btn ghost sm" id="bRandom">Randomize</button><span class="muted" style="font-size:12px">Your look is saved for next time.</span></div>
           </div>
         </div>
       </div>
       <div class="card">
-        <div class="step"><b>2</b><span>Choose your first drip</span></div>
+        <div class="step"><b>2</b><span>Choose your class</span></div>
         <div class="styles" id="styleChips"></div>
       </div>
     </div>
@@ -512,7 +549,7 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
 <div id="closet" class="sheet" hidden>
   <div class="wrap">
     <div class="secth"><div><p class="eyebrow">Fit check</p><h2 class="h2">The Closet</h2></div><button class="btn ghost" id="bCloseCloset" type="button">Back <kbd>C</kbd></button></div>
-    <p class="note"><b style="color:var(--gold)">Drip is your power.</b> Every point of Drip adds 1% damage and 0.2 max HP, and new floors drop pieces with more Drip. Wear 2–5 pieces of one style for a Fit bonus that multiplies your Drip (five different styles earns Maximalist). Drip from a style also powers that style's talents.</p>
+    <p class="note"><b style="color:var(--gold)">Drip is your power.</b> Every point of Drip adds 1% damage and 0.2 max HP, and new floors drop pieces with more Drip. Wear 2–5 pieces of your class's style for a Fit bonus that multiplies your Drip (five different styles earns Maximalist). Other styles still add their Drip but don't count toward Fit. Drip from a style also powers that style's talents.</p>
     <div class="closet">
       <div style="display:grid;gap:12px;align-content:start">
         <div class="preview"><canvas id="clPrev" width="440" height="540"></canvas></div>
@@ -539,7 +576,7 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
   <div class="wrap" style="max-width:1280px">
     <div class="secth"><div><p class="eyebrow">Damage styles</p><h2 class="h2">Style Trees</h2></div>
       <div class="row"><span class="muted">Style Points</span><span class="pts" id="tPts">0</span><button class="btn ghost" id="bCloseTalents" type="button">Back <kbd>T</kbd></button></div></div>
-    <p class="note">Earn a Style Point each time your Clout levels up. Tier 2 opens at 3 points in a tree, the Signature at 6. Wearing a style's pieces boosts that tree's numbers, shown as its Drip boost.</p>
+    <p class="note">Earn a Style Point each time your Clout levels up. Your first 3 points go into your class tree; after that, other styles' trees and the Heat open up. Tier 2 opens at 3 points in a tree, the Signature at 6. Wearing a style's pieces boosts that tree's numbers, shown as its Drip boost.</p>
     <div class="trees" id="trees"></div>
     <section class="heat" id="heatBox">
       <div><p class="eyebrow">Spare points?</p><h3 class="hh">Turn Up the Heat</h3>
@@ -667,6 +704,10 @@ const STYLES={
   cottage:{name:'Cottagecore',dmg:'Bloom damage',c:'#8fd46b',pal:{top:'#f1e4cf',trim:'#e79ab2',bot:'#98b287',kick:'#6b4a2f'},blurb:'Poison blooms, regeneration, slowing vines.'},
 };
 const BASE_PAL={top:'#4b5a3a',trim:'#8c9a6a',bot:'#3c4830',kick:'#26241f'};
+// The Emperor: the hidden 7th style. It has no clothing of its own: in an Emperor run, every empty slot is "New Clothes".
+// It is kept out of SK on purpose, so loot, the Lookbook, rivals and collection rewards still only use the six clothing styles.
+const EMP='emperor';
+STYLES.emperor={name:'The Emperor',dmg:'Nerve damage',c:'#ffd76a',pal:{top:'#e9d9a8',trim:'#fff3c4',bot:'#cdbb88',kick:'#8a7440'},blurb:'Starts with nothing on. Every empty slot gives Drip that grows with your Runway rank, but you take more damage and get no HP from it.',hidden:true};
 const RAR=[{n:'Thrifted',c:'#b5aec0'},{n:'Fresh',c:'#6fe08a'},{n:'Clean',c:'#5cb8ff'},{n:'Hard',c:'#b77bff'},{n:'Iconic',c:'#ffc94a'},{n:'Grail',c:'#ff4fa3'}];
 const NAMES={
   goth:{head:['Lace Veil','Batwing Hood','Silver Circlet'],top:['Velvet Trench','Corset Vest','Cathedral Coat'],bottom:['Mesh Leggings','Chain Skirt','Buckle Pants'],kicks:['Platform Creepers','Coffin Boots'],acc:['Choker of Sorrow','Silver Cross Chain','Black Parasol']},
@@ -704,6 +745,10 @@ const WEAPONS={
   scatter:{name:'Scatter Cannon',dmg:7,rate:1.5,speed:520,spread:0.42,count:6,pierce:0,size:3.5,life:0.5},
   rail:{name:'Rail Pistol',dmg:34,rate:1.4,speed:980,spread:0,count:1,pierce:2,size:3},
   glitter:{name:'Glitter Launcher',dmg:20,rate:1.2,speed:420,spread:0.05,count:1,pierce:0,size:6,boom:58},
+  torch:{name:'Hairspray Torch',dmg:3,rate:13,speed:340,spread:0.2,count:1,pierce:2,size:5,life:0.34,flame:true,note:'short-range flame that burns through 2 enemies'},
+  tape:{name:'Measuring Tape',dmg:28,rate:2.2,speed:0,spread:0,count:1,pierce:0,size:4,tape:{r:130,arc:1.9,dur:0.16},note:'swings in a wide arc in front of you (about 130 px), hitting every enemy it sweeps through once'},
+  sewing:{name:'Sewing Machine Gun',dmg:4,rate:12,speed:640,spread:0.035,count:1,pierce:0,size:2.6,stitch:0.25,note:'stitches enemies, slowing them by 25%'},
+  heel:{name:'Heel Boomerang',dmg:16,rate:1.6,speed:520,spread:0,count:1,pierce:99,size:6,life:3,boomer:true,note:'flies out and comes back, hitting on both passes'},
 };
 const TREES={
   goth:[
@@ -749,6 +794,28 @@ const TREES={
     {id:'fairy',name:'Fairy Ring',max:1,tier:2,desc:'Signature: stronger poison, and poisoned enemies spread it when they die.',fx:(s)=>{s.poison+=0.15;s.poisonSpread=true}},
   ],
 };
+TREES.emperor=[
+    {id:'decree',name:'Royal Decree',max:3,tier:0,desc:'+2% damage per rank for every Runway rank above D (up to +12% per rank at SSS).',fx:(s,r,k)=>{s.dmg*=1+0.02*r*k*s.rankI}},
+    {id:'unbothered',name:'Unbothered',max:3,tier:0,desc:'Your Runway rank drains 15% slower per rank, and getting hit costs less rank.',fx:(s,r)=>{s.rankHold+=0.15*r}},
+    {id:'applause',name:'Applause',max:2,tier:1,desc:'Kills raise your Runway rank 40% more per rank.',fx:(s,r)=>{s.applause+=0.4*r}},
+    {id:'thick',name:'Thick Skin',max:2,tier:1,desc:'Cuts the extra damage you take from wearing nothing by a quarter per rank, and +20 max HP per rank.',fx:(s,r)=>{s.empArmor+=0.25*r;s.maxHp+=20*r}},
+    {id:'procession',name:'The Procession',max:1,tier:2,desc:'Signature: at rank S or higher, shots are 35% bigger and pierce 2 more enemies. Nobody Says a Word lasts 1 second longer.',fx:(s)=>{s.procession=true;if(s.rankI>=4){s.size*=1.35;s.pierce+=2;}}},
+];
+// Named sets: 3 specific pieces of one style. 2 worn gives a small bonus, all 3 the full one (any rarity or colourway).
+const SETS=[
+  {id:'funeral',st:'goth',n:'Funeral Chic',parts:[['head','Lace Veil'],['top','Mourning Cape'],['kicks','Coffin Boots']],d2:'+8% damage',d3:'+20% damage, and heal 2% of the damage you deal',fx:(s,n)=>{s.dmg*=n>=3?1.2:1.08;if(n>=3)s.lifesteal+=0.02;}},
+  {id:'clerk',st:'hipster',n:'Record Store Clerk',parts:[['head','Round Wire Frames'],['top','Obscure Band Tee'],['acc','Film Camera']],d2:'+5% crit chance',d3:'+10% crit chance and +40% crit damage',fx:(s,n)=>{s.crit+=n>=3?0.1:0.05;if(n>=3)s.critMult+=0.4;}},
+  {id:'campout',st:'hype',n:'Camp-Out Queue',parts:[['head','Box Logo Cap'],['top','Puffer Jacket'],['kicks','Grail Sneakers']],d2:'+6% fire rate',d3:'+15% fire rate and +10% move speed',fx:(s,n)=>{s.rate*=n>=3?1.15:1.06;if(n>=3)s.speed*=1.1;}},
+  {id:'mallrat',st:'y2k',n:'Mall Rat',parts:[['head','Butterfly Clips'],['top','Velour Track Top'],['acc','Flip Phone']],d2:'+20% shot speed',d3:'+20% shot speed, +1 lightning arc and lightly homing shots',fx:(s,n)=>{s.projSpeed*=1.2;if(n>=3){s.chain+=1;s.homing+=1.5;}}},
+  {id:'basement',st:'punk',n:'Basement Show',parts:[['head','Liberty Spikes'],['top','Studded Leather'],['kicks','Steel-Toe Boots']],d2:'Shots knock enemies back harder',d3:'Harder knockback, and hits explode for 25% splash damage',fx:(s,n)=>{s.knock+=60;if(n>=3){s.explodeR=Math.max(s.explodeR,42);s.explodeDmg+=0.25;}}},
+  {id:'picnic',st:'cottage',n:'Sunday Picnic',parts:[['head','Straw Sunhat'],['top','Prairie Blouse'],['acc','Wicker Basket']],d2:'+0.8 HP per second',d3:'+2 HP per second and +30 max HP',fx:(s,n)=>{s.regen+=n>=3?2:0.8;if(n>=3)s.maxHp+=30;}},
+];
+const SET_C='#38e8c6';
+const setTag=it=>{const S=setOf(it);if(!S)return '';const n=G&&G.p?setWorn(S,G.p.gear):0;return `<span class="settag" title="${esc(S.n)} set">◆ SET ${n}/3</span>`;};
+function setBox(it){const S=setOf(it);if(!S)return '';const gear=G&&G.p?G.p.gear:{},n=setWorn(S,gear);
+  return `<div class="setline"><b>◆ ${esc(S.n)} set</b> <span class="sn3">${n}/3 worn</span><div class="sparts">${S.parts.map(([sl,b])=>`<i class="${gear[sl]&&gear[sl].base===b?'got':''}">${gear[sl]&&gear[sl].base===b?'✓ ':''}${esc(b)}</i>`).join('')}</div><div class="${n>=2?'on':''}">2 pieces: ${esc(S.d2)}</div><div class="${n>=3?'on':''}">All 3: ${esc(S.d3)}</div></div>`;}
+const setOf=it=>it&&it.slot!=='weapon'?SETS.find(S=>S.parts.some(([sl,b])=>sl===it.slot&&b===it.base)):null;
+const setWorn=(S,gear)=>S.parts.filter(([sl,b])=>gear[sl]&&gear[sl].base===b).length;
 const ENEMIES={
   drone:{hp:30,spd:80,r:13,dmg:10,xp:6,ai:'chase'},
   swarm:{hp:12,spd:150,r:9,dmg:6,xp:3,ai:'chase'},
@@ -813,28 +880,37 @@ function makeLoot(f,bonus=0){return Math.random()<0.2?makeWeapon(f,bonus):makeGe
 
 // ---------- stats ----------
 function computeStats(p){
-  const s={dmg:1,rate:1,pierce:0,lifesteal:0,crit:0.05,critMult:1.6,ricochet:0,firstHit:0,hypePer:0,hypeMax:10,speed:1,chain:0,homing:0,shieldCd:0,knock:0,explodeR:0,explodeDmg:0,lowHp:0,dashDmg:0,dashCdMult:1,poison:0,regen:0,slow:0,maxHp:100+((p.level||1)-1)*8,projSpeed:1,size:1,nova:0,spread3:false,stunCrit:false,chainStun:false,poisonSpread:false,eternal:false,sp:new Set(),scale:{},sd:{},cnt:{},drip:0,fit:1,fitName:'Standard Issue',topStyle:null};
+  const s={dmg:1,rate:1,pierce:0,lifesteal:0,crit:0.05,critMult:1.6,ricochet:0,firstHit:0,hypePer:0,hypeMax:10,speed:1,chain:0,homing:0,shieldCd:0,knock:0,explodeR:0,explodeDmg:0,lowHp:0,dashDmg:0,dashCdMult:1,poison:0,regen:0,slow:0,maxHp:100+((p.level||1)-1)*8,projSpeed:1,size:1,nova:0,spread3:false,stunCrit:false,chainStun:false,poisonSpread:false,eternal:false,sp:new Set(),scale:{},sd:{},cnt:{},drip:0,fit:1,fitName:'Standard Issue',topStyle:null,rankI:0,rankHold:0,applause:0,empArmor:0,procession:false,dmgTaken:1,newClothes:0,sets:{}};
   const skill={};let total=0;
   SK.forEach(k=>{s.sd[k]=0;s.cnt[k]=0;});
   const apply=it=>{for(const a of it.aff){switch(a.k){case 'dmg':s.dmg*=1+a.v/100;break;case 'rate':s.rate*=1+a.v/100;break;case 'crit':s.crit+=a.v/100;break;case 'hp':s.maxHp+=a.v;break;case 'speed':s.speed*=1+a.v/100;break;case 'regen':s.regen+=a.v/10;break;case 'skill':skill[a.st]=(skill[a.st]||0)+1;break;}}};
-  for(const sl of SLOTS){const it=p.gear[sl];if(!it)continue;s.sd[it.style]+=it.drip;s.cnt[it.style]++;total+=it.drip;apply(it);if(it.sp)s.sp.add(it.sp);}
+  const emp=!!p.emperor;s.sd.emperor=0;s.cnt.emperor=0;s.rankI=rankIdx(p.rank||0);
+  const fl=p.floor||((typeof G!=='undefined'&&G&&G.p===p)?G.floor:1);
+  if(emp)s.newClothes=Math.round((10+s.rankI*6)*Math.pow(BAL.dripGrow,fl-1));
+  for(const sl of SLOTS){const it=p.gear[sl];if(emp&&(!it||it.sp==='thread')){s.cnt.emperor++;s.sd.emperor+=s.newClothes;total+=s.newClothes;}if(!it)continue;const dr=it.sp==='thread'?Math.round(it.drip*1.5):it.drip;s.sd[it.style]+=dr;s.cnt[it.style]++;total+=dr;apply(it);if(it.sp)s.sp.add(it.sp);}
+  for(const S of SETS){const n=setWorn(S,p.gear);if(n>=2){s.sets[S.id]=n;S.fx(s,n);}}
   if(typeof G!=='undefined'&&G&&G.collector)total*=1.1;if(s.sp.has('glass'))s.dmg*=1.4;
   if(p.weapon)apply(p.weapon);
-  let top=0,topStyle=null,distinct=0;
-  for(const k of SK){if(s.cnt[k]>0)distinct++;if(s.cnt[k]>top||(s.cnt[k]===top&&top>0&&s.sd[k]>s.sd[topStyle])){top=s.cnt[k];topStyle=k;}}
-  let fit=1,fitName=total?'Mismatched':'Standard Issue';
-  if(top>=5){fit=1.6;fitName='Full Fit';}else if(top===4){fit=1.4;fitName='Locked In';}else if(top===3){fit=1.25;fitName='Coordinated';}else if(distinct>=5){fit=1.3;fitName='Maximalist';}else if(top===2){fit=1.1;fitName='Matching';}
+  // Your class (the style picked at the start) never changes. Only its pieces count toward Fit; other styles still add their Drip.
+  let distinct=0;for(const k of SK)if(s.cnt[k]>0)distinct++;if(s.cnt.emperor>0)distinct++;
+  const topStyle=p.cls||(p.emperor?EMP:'goth'),top=s.cnt[topStyle]||0;
+  let fit=1,fitName=total?(top?'Mismatched':'Out of Fit'):'Standard Issue';
+  if(top>=5){fit=1.6;fitName=topStyle===EMP?'Birthday Suit':'Full Fit';}else if(top===4){fit=1.4;fitName='Locked In';}else if(top===3){fit=1.25;fitName='Coordinated';}else if(distinct>=5){fit=1.3;fitName='Maximalist';}else if(top===2){fit=1.1;fitName='Matching';}
+  const poserSt=SK.find(k=>k!==topStyle&&s.cnt[k]>=5);if(poserSt){fit=POSER;fitName='Poser';}s.poserSt=poserSt||null;
   if(p.mono&&topStyle)total=s.sd[topStyle];
+  if(s.sp.has('mix'))s.dmg*=1+0.06*distinct;s.distinct=distinct;
   s.rawDrip=Math.round(total);s.fit=fit;s.fitName=fitName;s.topStyle=topStyle;s.drip=Math.round(total*fit);
-  s.dripMult=1+s.drip/BAL.dripK;s.dmg*=s.dripMult;s.dripHp=Math.round(s.drip*BAL.hpPerDrip);s.maxHp+=s.dripHp;
+  s.dripMult=1+s.drip/BAL.dripK;s.dmg*=s.dripMult;const eShare=s.cnt.emperor&&!(p.mono&&topStyle!==EMP)?s.sd.emperor/Math.max(1,p.mono?s.sd.emperor:SK.reduce((a,k)=>a+s.sd[k],0)+s.sd.emperor):0;s.dripHp=Math.round(s.drip*(1-eShare)*BAL.hpPerDrip);s.maxHp+=s.dripHp;
   for(const k of SK){const sc=1+Math.min(BAL.talentCap,s.sd[k]/400);s.scale[k]=sc;
     for(const t of TREES[k]){let r=(p.talents[k]&&p.talents[k][t.id])||0;if(r>0&&skill[k])r=Math.min(t.max+1,r+skill[k]);if(r>0)t.fx(s,r,sc);}}
+  if(p.talents&&p.talents.emperor){const sc=1+Math.min(BAL.talentCap,s.sd.emperor/400);s.scale.emperor=sc;for(const t of TREES.emperor){const r=p.talents.emperor[t.id]||0;if(r>0)t.fx(s,r,sc);}}
+  if(emp)s.dmgTaken=1+0.15*s.cnt.emperor*(1-Math.min(1,s.empArmor));
   if(p.minimal)s.maxHp*=0.5;
   s.maxHp=Math.round(s.maxHp);s.crit=Math.min(0.9,s.crit);
   return s;
 }
 const baseDmg=p=>WEAPONS[p.weapon.kind].dmg*p.weapon.mult*p.s.dmg;
-function weaponDps(w,s){const d=WEAPONS[w.kind];let m=1;for(const a of w.aff){if(a.k==='dmg')m*=1+a.v/100;if(a.k==='rate')m*=1+a.v/100;}return d.dmg*w.mult*d.count*d.rate*s.dmg*s.rate*m*(1+s.crit*(s.critMult-1));}
+function weaponDps(w,s){const d=WEAPONS[w.kind]||WEAPONS.blaster;let m=1;for(const a of w.aff){if(a.k==='dmg')m*=1+a.v/100;if(a.k==='rate')m*=1+a.v/100;}return d.dmg*w.mult*d.count*d.rate*(d.boomer?2:1)*s.dmg*s.rate*m*(1+s.crit*(s.critMult-1));}
 
 // ---------- audio ----------
 let AC=null,muted=store.get('dripcmd.muted',false);const lastS={};
@@ -1016,6 +1092,28 @@ function drawGun(g,L,aim,face,noHand){
       g.fillStyle=D;circ(g,4.8,3.6,2.5);g.strokeStyle=A;g.lineWidth=0.5;g.beginPath();g.arc(4.8,3.6,1.6,0,Math.PI*2);g.stroke();
       [[3.4,-1,'#ffc94a'],[6.2,0.8,'#ff4fa3'],[8.4,-1.4,'#7be0ff'],[10.6,0.6,'#ffc94a'],[5,-0.2,'#fff'],[9.4,-0.1,'#fff']].forEach(([x,y,c],i)=>spark(x,y,i>3?0.45:0.75,c));
       g.fillStyle=A;g.fillRect(-2,-0.5,3,0.8);break;}
+    case 'torch':{ // Hairspray Torch: aerosol can, nozzle cap, clip-on lighter
+      poly(D,[-0.4,2.6,2.2,2.6,1.4,6,-1.6,6]);guard(1.6);
+      box('#d7d2e0',-2.6,-3.6,11.4,7.2,2.2);g.fillStyle=A;g.fillRect(0.4,-3.6,2.6,7.2);g.fillStyle='rgba(255,255,255,.35)';g.fillRect(-1.8,-2.8,9.6,1);
+      box(M,8.6,-2.6,2.4,5.2,0.8);box(D,10.8,-1.2,2.2,2.2,0.5);
+      box('#3a3a44',11.4,1.6,3.4,2.6,0.6);g.fillStyle='#ff9a3c';g.beginPath();g.moveTo(14.4,-0.2);g.quadraticCurveTo(17.6,-1.4,18.6,0.2);g.quadraticCurveTo(17.2,1.6,14.4,0.8);g.closePath();g.fill();g.fillStyle='#fff3c4';circ(g,15.4,0.3,0.55);break;}
+    case 'tape':{ // Measuring Tape: yellow case with black rubber grip, red lock button, chrome clip, short blade and hook
+      poly(D,[-0.4,2.8,2,2.8,1.4,5.8,-1.4,5.8]);
+      box('#141318',-3.4,-4.6,10.2,9,3.4);box('#ffc928',-2.8,-4.1,9,8,3);
+      g.fillStyle='#d9a412';g.fillRect(-2.8,1.6,9,2.3);
+      box('#141318',-1.4,-2.7,6.2,5.2,2.4);g.fillStyle='#2b2930';circ(g,1.7,-0.1,1.7);g.fillStyle='#ffc928';circ(g,1.7,-0.1,0.6);
+      box('#c9ced8',-3.2,-5.4,4.6,1.3,0.5);box('#e0303a',3.4,-5.2,1.8,1.2,0.4);
+      g.fillStyle='#fff3b0';g.fillRect(6.2,-2.4,6.4,1.5);g.fillStyle='#1a1418';for(let x=7;x<12.6;x+=1.2)g.fillRect(x,-2.4,0.3,x%2.4<1.2?0.9:0.55);
+      g.fillStyle='#b8bec8';g.fillRect(12.4,-3,0.9,2.7);break;}
+    case 'sewing':{ // Sewing Machine Gun: arm body, thread spool, needle bar
+      poly(D,[-0.6,1.6,2,1.6,1.2,5.6,-1.6,5.6]);guard(1.6);
+      box('#2f6f6b',-2.6,-2.4,13,4.2,1.2);box('#2f6f6b',7.4,-2.4,3.4,6.6,1);g.fillStyle='rgba(255,255,255,.18)';g.fillRect(-2,-2.1,11.4,0.8);
+      g.fillStyle='#e8e2d0';g.fillRect(9.4,4,0.5,2.4);g.fillStyle='#d9d9e0';g.fillRect(10.6,-1,5.4,1.6);
+      box('#6e2433',1,-5.6,3,3.2,0.6);g.fillStyle=A;g.fillRect(1,-4.6,3,0.6);g.fillRect(1,-3.6,3,0.6);g.strokeStyle=A;g.lineWidth=0.35;g.beginPath();g.moveTo(4,-4.2);g.quadraticCurveTo(7,-4,9,-2.4);g.stroke();break;}
+    case 'heel':{ // Heel Boomerang: a patent stiletto held by the toe
+      g.fillStyle='#1a1418';g.beginPath();g.moveTo(-2,1.6);g.quadraticCurveTo(3,-4.6,11,-2.4);g.lineTo(12.6,0.4);g.quadraticCurveTo(5,-0.8,0.6,4);g.closePath();g.fill();
+      g.fillStyle='#ff4fa3';g.beginPath();g.moveTo(-1.6,1.2);g.quadraticCurveTo(3,-3.6,10.6,-2);g.lineTo(10.8,-1.2);g.quadraticCurveTo(3,-2.4,-0.4,2);g.closePath();g.fill();
+      g.fillStyle=A;g.fillRect(10.4,-0.6,1.1,6.4);g.fillStyle='rgba(255,255,255,.4)';g.fillRect(3,-2.8,4,0.5);break;}
     default:{ // Pocket Blaster: retro pistol with slide and trigger guard
       poly(D,[-0.6,1.2,2.4,1.2,1.6,5.6,-1.6,5.6]);g.fillStyle=A;circ(g,0.4,4.2,0.45);guard(1.8);
       box(M,-2.4,-1.4,9.2,3.2,1.2);
@@ -1432,7 +1530,7 @@ function drawCommando(g,x,y,sc,L,aim,t,moving,alpha){
   g.save();g.translate(x,y);g.scale(sc,sc);g.globalAlpha=alpha==null?1:alpha;
   const face=Math.cos(aim)>=0?1:-1;
   const gs=sl=>L.gear[sl]?L.gear[sl].style:null;
-  const gp=sl=>L.gear[sl]?STYLES[L.gear[sl].style].pal:BASE_PAL;
+  const gp=sl=>L.gear[sl]?STYLES[L.gear[sl].style].pal:(L.emperor?STYLES.emperor.pal:BASE_PAL);
   const cwc=sl=>L.gear[sl]&&L.gear[sl].cw?L.gear[sl].cw.c:null;
   const tp={...gp('top')},bp=gp('bottom'),kp={...gp('kicks')};if(cwc('top'))tp.top=cwc('top');if(cwc('kicks'))kp.kick=cwc('kicks');
   const w=moving?Math.sin(t*14)*1.6:0;const bob=moving?-Math.abs(Math.sin(t*14))*0.9:Math.sin(t*2.5)*0.4;
@@ -1480,7 +1578,7 @@ function drawCommando(g,x,y,sc,L,aim,t,moving,alpha){
   // head
   const hb=L.gear.head?baseOf(L.gear.head):null;
   const hc=cwc('head');if(show('head'))headBack(g,hb,hc);
-  const hsty=L.hairStyle||(girl?'bob':'short'),hcol=hb==='Milkmaid Braids'&&hc?hc:L.hair,hatted=(!hb&&!L.bare)||!!hb&&!OPEN_HEAD.includes(hb)&&!HAIR_BASES.includes(hb)&&hb!=='Milkmaid Braids';
+  const hsty=L.hairStyle||(girl?'bob':'short'),hcol=hb==='Milkmaid Braids'&&hc?hc:L.hair,hatted=(!hb&&!L.bare&&!L.emperor)||!!hb&&!OPEN_HEAD.includes(hb)&&!HAIR_BASES.includes(hb)&&hb!=='Milkmaid Braids';
   const noHair=SHAVED.includes(hb),covered=COVERS.includes(hb);
   if(!only){
     if(!back&&!noHair&&!covered&&hb!=='Milkmaid Braids')hairBack(g,hsty,hcol,face);
@@ -1491,7 +1589,8 @@ function drawCommando(g,x,y,sc,L,aim,t,moving,alpha){
       if(!noHair&&!(covered&&hb!=='Ski Mask'))hairFront(g,hb==='Milkmaid Braids'?'buzz':hsty,hcol,face,hatted);}
   }
   if(!back&&show('acc'))drawAccFace(g,aa,ac,face,L.hair);
-  if(!show('head')||(!hb&&L.bare)){}
+  if(L.emperor&&!hb&&show('head')&&!only)drawCrown(g,back);
+  if(!show('head')||(!hb&&(L.bare||L.emperor))){}
   else if(!(back&&hb==='Ski Mask')&&!(back&&hb==='Round Wire Frames')&&!(back&&hb==='Shield Shades')){if(!headExtra(g,hb,face,hc))headDetail(g,hb,face,girl,hc);}
   else if(back&&hb==='Ski Mask'){g.fillStyle=hc||'#1e1e22';circ(g,0,-31.2,7.5);circ(g,0,-38.6,1.8);}
   else if(back&&hb==='Shield Shades'){g.fillStyle='#5ff0ff';g.fillRect(-7.6,-32.2,15.2,1.2);}
@@ -1499,7 +1598,11 @@ function drawCommando(g,x,y,sc,L,aim,t,moving,alpha){
   if(!only)grailShimmer(g,L,t);
   g.restore();
 }
-function lookOf(p){const s=p.s;return {gender:p.gender,skin:p.skin,hair:p.hair,hairStyle:p.hairStyle,eyes:p.eyes,gear:p.gear,weaponKind:p.weapon.kind,accent:s&&s.topStyle?STYLES[s.topStyle].c:'#ffc94a'};}
+function drawCrown(g,back){g.save();g.translate(0,-0.6);
+  g.fillStyle='#ffd34d';g.beginPath();g.moveTo(-5,-36.6);g.lineTo(-5.8,-41.6);g.lineTo(-2.8,-38.9);g.lineTo(0,-42.8);g.lineTo(2.8,-38.9);g.lineTo(5.8,-41.6);g.lineTo(5,-36.6);g.closePath();g.fill();
+  g.fillStyle='#c98f22';g.fillRect(-5,-37.7,10,1.3);g.fillStyle='#fff3c4';[-5.8,0,5.8].forEach((x,i)=>circ(g,x,i===1?-42.8:-41.6,0.6));
+  if(!back){g.fillStyle='#ff4fa3';circ(g,0,-38.6,0.75);g.fillStyle='#5ff0ff';circ(g,-3,-38.4,0.5);circ(g,3,-38.4,0.5);}g.restore();}
+function lookOf(p){const s=p.s;return {emperor:!!p.emperor,gender:p.gender,skin:p.skin,hair:p.hair,hairStyle:p.hairStyle,eyes:p.eyes,gear:p.gear,weaponKind:p.weapon.kind,accent:s&&s.topStyle?STYLES[s.topStyle].c:'#ffc94a'};}
 
 // ---------- drawing: enemies & loot ----------
 // Floor loot: dropped clothing shows the real piece (drawn once and cached), weapons show the real gun.
@@ -1593,7 +1696,7 @@ function drawEnemy(g,e,t){
       if(e.aggro&&e.cd<0.5){g.fillStyle='#ff4d4d';circ(g,0,-r*1.8,2.4);}break;}
     case 'police':{g.fillStyle=W2('#27335e');rr(g,-r,-r*2,r*2,r*2,5);g.fill();g.fillStyle='#1a2344';g.fillRect(-r,-r*0.7,r*2,r*0.5);g.fillStyle='#ffd34d';circ(g,-r*0.45,-r*1.5,2.2);g.fillStyle=W2('#e0bf9a');circ(g,0,-r*2.3,r*0.5);
       g.fillStyle='#1b2340';g.fillRect(-r*0.6,-r*2.85,r*1.2,r*0.4);g.fillRect(-r*0.75,-r*2.5,r*1.5,r*0.12);const on=Math.floor(t*6)%2;g.fillStyle=on?'#ff3b3b':'#3b7bff';g.fillRect(-r*0.25,-r*3.15,r*0.5,r*0.3);g.globalAlpha=0.25;circ(g,0,-r*3,r*0.9);g.globalAlpha=1;break;}
-    case 'mimic':{if(e.dormant){g.translate(0,-r+Math.sin(t*3+e.anim)*2);if(!e.fake){const sts=Object.keys(STYLES),st=sts[Math.floor(Math.random()*sts.length)],sl=['head','top','kicks','acc'][Math.floor(Math.random()*4)],bs=NAMES[st][sl];e.fake={slot:sl,style:st,rarity:3+(Math.random()<0.5?1:0),base:bs[Math.floor(Math.random()*bs.length)]};}drawGarment(g,e.fake,t);break;}
+    case 'mimic':{if(e.dormant){g.translate(0,-r+Math.sin(t*3+e.anim)*2);if(!e.fake){const sts=SK,st=sts[Math.floor(Math.random()*sts.length)],sl=['head','top','kicks','acc'][Math.floor(Math.random()*4)],bs=NAMES[st][sl];e.fake={slot:sl,style:st,rarity:3+(Math.random()<0.5?1:0),base:bs[Math.floor(Math.random()*bs.length)]};}drawGarment(g,e.fake,t);break;}
       g.fillStyle=W2('#d4a13a');rr(g,-r,-r*2,r*2,r*2,4);g.fill();g.fillStyle='#fff';g.beginPath();g.moveTo(-r*0.8,-r*0.9);for(let i=0;i<=6;i++){g.lineTo(-r*0.8+i*r*0.267,-r*(i%2?0.6:0.9));}g.lineTo(r*0.8,-r*0.9);g.fill();g.fillStyle='#ff2020';circ(g,-r*0.4,-r*1.4,2);circ(g,r*0.4,-r*1.4,2);g.strokeStyle='#e8e2d0';g.lineWidth=1.4;g.beginPath();g.arc(0,-r*2.3,2.4,Math.PI,Math.PI*2.4);g.stroke();break;}
     case 'rival':{drawRival(g,e,t,r,fl);break;}
     case 'bat':{const fl2=Math.sin(t*22+e.anim)*0.7;g.translate(0,-r*1.6);g.fillStyle=W2('#3a2350');g.beginPath();g.moveTo(0,0);g.quadraticCurveTo(-r*1.2,-r*(1+fl2),-r*2,-r*0.2*fl2);g.quadraticCurveTo(-r,r*0.2,0,r*0.3);g.quadraticCurveTo(r,r*0.2,r*2,-r*0.2*fl2);g.quadraticCurveTo(r*1.2,-r*(1+fl2),0,0);g.fill();g.fillStyle=W2('#1c1422');circ(g,0,0,r*0.55);g.fillStyle='#ff5a8a';circ(g,-2,-1,1);circ(g,2,-1,1);break;}
@@ -1746,7 +1849,7 @@ const settings={auto:store.get('dripcmd.auto',true),diff:store.get('dripcmd.diff
 const aimStick={active:false,id:null,ox:0,oy:0,x:0,y:0};
 const cfg=Object.assign({gender:'f',skin:'#e3b48f',style:'goth',hairStyle:'bob',hair:'#5b2c3f',eyes:'#5a3a22',name:'Vex'},store.get('dripcmd.char',{}));
 // A damaged or hand-edited character save falls back to defaults instead of stopping the game from loading.
-{const D={gender:'f',skin:'#e3b48f',style:'goth',hairStyle:'bob',hair:'#5b2c3f',eyes:'#5a3a22',name:'Vex'};if(!STYLES[cfg.style])cfg.style='goth';if(cfg.gender!=='f'&&cfg.gender!=='m')cfg.gender='f';for(const k of ['skin','hairStyle','hair','eyes'])if(typeof cfg[k]!=='string')cfg[k]=D[k];if(typeof cfg.name!=='string')cfg.name='';cfg.name=cfg.name.slice(0,14);}
+{const D={gender:'f',skin:'#e3b48f',style:'goth',hairStyle:'bob',hair:'#5b2c3f',eyes:'#5a3a22',name:'Vex'};if(!STYLES[cfg.style]||(cfg.style==='emperor'&&!(store.get('dripcmd.prog',{})||{}).emperor))cfg.style='goth';if(cfg.gender!=='f'&&cfg.gender!=='m')cfg.gender='f';for(const k of ['skin','hairStyle','hair','eyes'])if(typeof cfg[k]!=='string')cfg[k]=D[k];if(typeof cfg.name!=='string')cfg.name='';cfg.name=cfg.name.slice(0,14);}
 const keys={};let dashPressed=false;const mouse={down:false,sx:0,sy:0};const stick={active:false,id:null,ox:0,oy:0,x:0,y:0};
 
 function newRun(){
@@ -1754,21 +1857,25 @@ function newRun(){
     hp:100,level:1,xp:0,xpNext:40,points:1,talents:{},gear:{head:null,top:null,bottom:null,kicks:null,acc:null},weapon:makeWeapon(1,0,'blaster',0),bag:[],
     hype:0,hypeT:0,shieldUp:false,shieldT:0,fireCd:0,dashCd:0,dashT:0,dashDir:{x:1,y:0},dashHit:null,invuln:0,aim:0,moving:false,kills:0,peakDrip:0,dripAcc:0,s:null};
   SK.forEach(k=>p.talents[k]={});
-  p.gear.top=makeGear(1,0,cfg.style,'top',1);p.gear.kicks=makeGear(1,0,cfg.style,'kicks',0);
+  const emp=cfg.style===EMP&&!!prog.emperor;
+  p.cls=emp?EMP:(SK.includes(cfg.style)?cfg.style:'goth');
+  if(emp){p.emperor=true;p.talents.emperor={};}
+  else{p.gear.top=makeGear(1,0,cfg.style,'top',1);p.gear.kicks=makeGear(1,0,cfg.style,'kicks',0);}
   Object.assign(p,{cash:0,rank:0,rankT:0,sigCd:0,sigMax:1,veilT:0,hist:[],histT:0,dive:null,mono:false});
-  p.passes=0;const perks=startPerks(p);
+  p.passes=0;const perks=startPerks(p,emp);
   p.s=computeStats(p);p.hp=p.s.maxHp;p.peakDrip=p.s.drip;markFound(p.gear.top);markFound(p.gear.kicks);
   G={p,tier:settings.tier,endless:settings.mode==='endless',collector:lbPerk(0),floor:1,time:0,shake:0,cam:{x:0,y:0},diff:DIFF[settings.diff],dress:null,offer:null,stock:[],rerollCost:0,sigWarnT:0,rivalOrder:[...SK].sort(()=>Math.random()-0.5),heat:0};
   buildFloor(1);
   $('#hName').textContent=p.name;
   showOnly(null);$('#hud').hidden=false;$('#bDash').hidden=!TOUCH;$('#touchHint').hidden=!TOUCH;
   state='play';
-  toast(`You start with <b>${p.points} Style Point${p.points>1?'s':''}</b>. Open Style Trees (T) to spend ${p.points>1?'them':'it'}.`,STYLES[cfg.style].c);
+  toast(`Your class is <b style="color:${STYLES[p.cls].c}">${STYLES[p.cls].name}</b>: its Signature move is yours all run, and only ${STYLES[p.cls].name} pieces count toward your Fit. You have <b>${p.points} Style Point${p.points>1?'s':''}</b>; your first 3 go into the ${STYLES[p.cls].name} tree (T).`,STYLES[p.cls].c);
   if(perks.length)setTimeout(()=>toast(`Lookbook rewards: ${perks.join(', ')}.`,'#7be0ff'),700);
+  if(emp)setTimeout(()=>toast('<b style="color:#ffd76a">♛ The Emperor.</b> You start with nothing on, and nobody will say a word. Each empty slot gives Drip that grows with your Runway rank, but you take 15% more damage per empty slot, and New Clothes give no extra HP. New pieces go to your bag instead of on you.','#ffd76a'),1000);
   if(G.tier){const tr=G.tier;setTimeout(()=>{if(G)toast(`<b>${TIERS[tr].n}</b>. ${tierDesc(tr)}`,'#ff4fa3');},1300);}
 }
-function buildFloor(n){
-  const m=genFloor(n);Object.assign(G,{floor:n,map:m,enemies:[],bullets:[],ebullets:[],pickups:[],particles:[],texts:[],rings:[],bolts:[],hazards:[],flowT:0,boss:null,card:null,flashT:0,slowmo:0,floorKills:0,miniT:0,bagWarnT:0,picnics:[],specials:[],spawns:[],trails:[],decoy:null,chal:null,mini:null,miniRoom:null,secondUsed:false,victoryT:0});G.p.mono=G.dress==='mono';G.p.minimal=G.dress==='minimal';G.p.dive=null;G.p.hist=[];refreshStats();
+function buildFloor(n){if(G&&G.p){G.p.floor=n;if(G.p.emperor&&G.p.s){const hp=G.p.hp;G.p.s=computeStats(G.p);G.p.hp=Math.min(hp,G.p.s.maxHp);}}
+  const m=genFloor(n);Object.assign(G,{floor:n,map:m,enemies:[],sweeps:[],bullets:[],ebullets:[],pickups:[],particles:[],texts:[],rings:[],bolts:[],hazards:[],flowT:0,boss:null,card:null,flashT:0,slowmo:0,floorKills:0,miniT:0,bagWarnT:0,picnics:[],specials:[],spawns:[],trails:[],decoy:null,chal:null,mini:null,miniRoom:null,secondUsed:false,victoryT:0});G.p.mono=G.dress==='mono';G.p.minimal=G.dress==='minimal';G.p.dive=null;G.p.hist=[];refreshStats();
   G.zone=ZONES[zoneIdx(n)];freeMap(G.mapCanvas);G.mapCanvas=renderMap(m,G.zone);G.exitLocked=m.boss;
   G.p.x=m.start.x;G.p.y=m.start.y;G.cam.x=G.p.x;G.cam.y=G.p.y;G.p.fireCd=0.5;
   G.flow=new Int16Array(m.w*m.h);populate();updateFlow();
@@ -1813,11 +1920,11 @@ function burst(x,y,c,n,spd){for(let i=0;i<n;i++){if(G.particles.length>PCAP())br
 function toast(html,c){const el=document.createElement('div');el.className='toast';el.style.setProperty('--tc',c||'#ffc94a');el.innerHTML=html;const box=$('#toasts');box.appendChild(el);while(box.children.length>4)box.firstChild.remove();setTimeout(()=>el.remove(),3600);}
 
 // ---------- combat ----------
-function hurtEnemy(e,d,crit,c){if(e.dead)return;if(e.dormant)wake(e);e.hp-=d;e.aggro=true;e.flash=0.08;if(isBoss(e)||e.type==='manager')bossHitFx(e,crit,c);if(V.dmgNums)addText(e.x,e.y-e.r*2.2,Math.round(d),crit?'#ffc94a':c||'#fff',crit);sfx('hit');if(e.hp<=0)killEnemy(e);}
+function hurtEnemy(e,d,crit,c){if(e.dead)return;if(e.dormant)wake(e);if(e.awkT&&e.awkT>G.time)d*=1.4;e.hp-=d;e.aggro=true;e.flash=0.08;if(isBoss(e)||e.type==='manager')bossHitFx(e,crit,c);if(V.dmgNums)addText(e.x,e.y-e.r*2.2,Math.round(d),crit?'#ffc94a':c||'#fff',crit);sfx('hit');if(e.hp<=0)killEnemy(e);}
 function wake(e){e.dormant=false;e.aggro=true;addText(e.x,e.y-30,'KNOCKOFF!','#ff5a5a',true);}
 function explode(x,y,r,d,exclude,c){G.rings.push({x,y,r,life:0.28,max:0.28,c});sfx('boom');for(const e of G.enemies){if(e.dead||e===exclude)continue;if(e.big?inBody(e,x,y,r):Math.hypot(e.x-x,e.y-y)<r+e.r)hurtEnemy(e,d,false,c);}}
 function chainFrom(from,d,n,stun){let cur=from;const hit=new Set([from]);for(let i=0;i<n;i++){let best=null,bd=175;for(const e of G.enemies){if(e.dead||hit.has(e)||e.dormant)continue;const dd=Math.hypot(e.x-cur.x,e.y-cur.y);if(dd<bd){bd=dd;best=e;}}if(!best)break;G.bolts.push({x1:cur.x,y1:cur.y-cur.r,x2:best.x,y2:best.y-best.r,life:0.16});hit.add(best);hurtEnemy(best,d,false,'#5ff0ff');if(stun)best.stun=Math.max(best.stun,0.45);cur=best;}if(n>0)sfx('zap');}
-function killEnemy(e){if(e.dead)return;e.dead=true;if(isBoss(e)||e.type==='manager')bossDeathFx(e);const p=G.p,s=p.s;p.kills++;G.floorKills++;addRank(isBoss(e)?40:e.elite?14:(e.type==='swarm'||e.type==='bat'?3:5));gainXp(Math.round(e.xp*(1+(rankMult()-1)*0.5)*(G.dress==='glass'?1.5:G.dress==='over'?1.6:1)));sfx('kill');
+function killEnemy(e){if(e.dead)return;e.dead=true;if(isBoss(e)||e.type==='manager')bossDeathFx(e);const p=G.p,s=p.s;p.kills++;G.floorKills++;addRank((isBoss(e)?40:e.elite?14:(e.type==='swarm'||e.type==='bat'?3:5))*(1+(s.applause||0)));gainXp(Math.round(e.xp*(1+(rankMult()-1)*0.5)*(G.dress==='glass'?1.5:G.dress==='over'?1.6:1)));sfx('kill');
   if(isBoss(e)){for(let i=0;i<5;i++)dropCash(e.x+rand(-40,40),e.y+rand(-30,30),(6+G.floor*2)*cashMult());}else if(Math.random()<0.35)dropCash(e.x,e.y,(1+G.floor*0.7)*(e.elite?3:1)*cashMult());
   burst(e.x,e.y-e.r,isBoss(e)?(STYLES[e.style]?STYLES[e.style].c:'#ffc94a'):'#e8e2d0',isBoss(e)?60:12,isBoss(e)?260:140);
   if(s.hypePer>0){p.hype=Math.min(s.hypeMax,p.hype+1);p.hypeT=2.6;}
@@ -1836,28 +1943,39 @@ function killEnemy(e){if(e.dead)return;e.dead=true;if(isBoss(e)||e.type==='manag
 function dropItem(x,y,it){G.pickups.push({type:'item',x,y,item:it,t:Math.random()*5});}
 function gainXp(n){const p=G.p;if(G.heat)n=Math.round(n*(1+0.05*G.heat));p.xp+=n;while(p.xp>=p.xpNext){p.xp-=p.xpNext;p.level++;p.points++;p.xpNext=Math.round(40+p.level*28+p.level*p.level*2);refreshStats();if(!(G.dress==='nolatte'&&state==='play'))p.hp=Math.min(p.s.maxHp,p.hp+p.s.maxHp*0.2);sfx('lvl');
   toast(`Clout up! Level <b>${p.level}</b>. +1 Style Point (T).`,'#7be0ff');if(state==='play'){G.rings.push({x:p.x,y:p.y,r:90,life:0.5,max:0.5,c:'#7be0ff'});}}}
-function damagePlayer(d){const p=G.p;if(p.invuln>0||p.dashT>0||p.veilT>0||p.dive||state!=='play')return;if(G.dress==='glass')d*=2;if(p.s.sp.has('glass'))d*=1.25;
+function damagePlayer(d){const p=G.p;if(p.invuln>0||p.dashT>0||p.veilT>0||p.dive||state!=='play')return;if(G.dress==='glass')d*=2;if(p.s.sp.has('glass'))d*=1.25;if(p.s.dmgTaken>1)d*=p.s.dmgTaken;
   if(p.shieldUp){p.shieldUp=false;p.shieldT=p.s.shieldCd;p.invuln=0.4;burst(p.x,p.y-14,'#5ff0ff',16,180);addText(p.x,p.y-40,'BLOCKED','#5ff0ff',true);return;}
   if(G.chal&&G.chal.type==='pose'&&!G.chal.done)chalEnd(false,'You got hit.');
-  p.hp-=d;p.invuln=0.5;if(p.rank>=14){p.rank*=0.5;addText(p.x,p.y-58,'RANK DOWN','#ff7a8a',false);}G.shake=Math.min(0.5,G.shake+0.25);sfx('hurt');addText(p.x,p.y-40,'-'+Math.round(d),'#ff5a6e',false);
+  p.hp-=d;p.invuln=0.5;if(p.rank>=14){p.rank*=0.5+Math.min(0.3,(p.s.rankHold||0)*0.67);addText(p.x,p.y-58,'RANK DOWN','#ff7a8a',false);}G.shake=Math.min(0.5,G.shake+0.25);sfx('hurt');addText(p.x,p.y-40,'-'+Math.round(d),'#ff5a6e',false);
   if(p.hp<=0){if(p.s.sp.has('second')&&!G.secondUsed){G.secondUsed=true;p.hp=1;p.invuln=2;burst(p.x,p.y-14,'#ff4fa3',30,200);addText(p.x,p.y-60,'SECOND LOOK!','#ff4fa3',true);toast('<b>Second Look</b> saved you. Untouchable for 2 seconds, then it is ready again on the next floor.','#ff4fa3');return;}p.hp=0;die();}}
-function refreshStats(){const p=G.p,old=p.s?p.s.maxHp:100;p.s=computeStats(p);if(p.s.maxHp>old)p.hp+=p.s.maxHp-old;p.hp=Math.min(p.hp,p.s.maxHp);p.hype=Math.min(p.hype,p.s.hypeMax);
+function refreshStats(){const p=G.p,old=p.s?p.s.maxHp:100,oldSets=p.s?p.s.sets:{};p.s=computeStats(p);
+  for(const S of SETS){const n=p.s.sets[S.id]||0,was=(oldSets&&oldSets[S.id])||0;if(n>was&&state!=='menu'){if(n>=3)toast(`<b style="color:${STYLES[S.st].c}">SET COMPLETE: ${S.n}.</b> ${S.d3}.`,STYLES[S.st].c);else if(n===2)toast(`<b style="color:${STYLES[S.st].c}">${S.n}</b> set, 2 of 3: ${S.d2}. Find the last piece for: ${S.d3}.`,STYLES[S.st].c);}}if(p.s.maxHp>old)p.hp+=p.s.maxHp-old;p.hp=Math.min(p.hp,p.s.maxHp);p.hype=Math.min(p.hype,p.s.hypeMax);
   if(p.s.shieldCd>0&&!p.shieldUp&&p.shieldT<=0)p.shieldT=p.s.shieldCd;if(p.s.shieldCd<=0)p.shieldUp=false;p.peakDrip=Math.max(p.peakDrip,p.s.drip);}
-function fire(ang){const p=G.p,s=p.s,Wd=WEAPONS[p.weapon.kind];const hb=1+p.hype*s.hypePer*(p.weapon.kind==='smg'?0.5:1);const base=Wd.dmg*p.weapon.mult*s.dmg*hb*(p.veilT>0?1.5:1)*(1+0.02*rankIdx(p.rank));
+function fire(ang){const p=G.p,s=p.s,Wd=WEAPONS[p.weapon.kind]||WEAPONS.blaster;const hb=1+p.hype*s.hypePer*(p.weapon.kind==='smg'?0.5:1);const base=Wd.dmg*p.weapon.mult*s.dmg*hb*(p.veilT>0?1.5:1)*(1+0.02*rankIdx(p.rank));
+  if(Wd.tape){const T=Wd.tape,crit=Math.random()<s.crit,dir=(p.tapeDir=-(p.tapeDir||1));if(!G.sweeps)G.sweeps=[];
+    G.sweeps.push({a:ang,a0:ang-dir*T.arc/2,a1:ang+dir*T.arc/2,t:0,dur:T.dur,r:T.r*Math.sqrt(s.size),dmg:base*(crit?s.critMult:1),crit,hit:new Set(),c:s.eternal?'#b784ff':s.topStyle?STYLES[s.topStyle].c:'#ffe08a'});
+    p.fireCd=1/(Wd.rate*s.rate*hb*(s.sp.has('strut')&&p.moving?1.3:1));sfx('dash');return;}
   const angs=[];if(Wd.count>1){for(let i=0;i<Wd.count;i++)angs.push(ang+(i/(Wd.count-1)-0.5)*Wd.spread*2+rand(-0.04,0.04));}else angs.push(ang+rand(-Wd.spread,Wd.spread));
   const nMain=angs.length;if(s.spread3&&p.hype>=s.hypeMax-0.01){const extra=[];for(const a of angs){extra.push(a-0.22,a+0.22);}angs.push(...extra);}
   const col=s.eternal?'#b784ff':s.topStyle?STYLES[s.topStyle].c:'#ffe08a';
-  for(let ai=0;ai<angs.length;ai++){const a=angs[ai],sk=ai<nMain?1:0.4,crit=Math.random()<s.crit;G.bullets.push({x:p.x+Math.cos(a)*16,y:p.y-8+Math.sin(a)*16,vx:Math.cos(a)*Wd.speed*s.projSpeed,vy:Math.sin(a)*Wd.speed*s.projSpeed,r:Wd.size*s.size,dmg:base*sk*(crit?s.critMult:1),crit,pierce:Wd.pierce+s.pierce,ric:s.ricochet,life:Wd.life||1.1,hit:new Set(),boom:Wd.boom||0,c:col});}
+  for(let ai=0;ai<angs.length;ai++){const a=angs[ai],sk=ai<nMain?1:0.4,crit=Math.random()<s.crit;const nb={x:p.x+Math.cos(a)*16,y:p.y-8+Math.sin(a)*16,vx:Math.cos(a)*Wd.speed*s.projSpeed,vy:Math.sin(a)*Wd.speed*s.projSpeed,r:Wd.size*s.size,dmg:base*sk*(crit?s.critMult:1),crit,pierce:Wd.pierce+s.pierce,ric:s.ricochet,life:Wd.life||1.1,hit:new Set(),boom:Wd.boom||0,c:col};
+    if(Wd.flame){nb.kind='flame';nb.r0=nb.r;nb.l0=nb.life;}else if(Wd.boomer){nb.kind='heel';nb.boomer={t:0,ret:false};nb.spin=0;}else if(Wd.tape)nb.tape=true;if(Wd.stitch)nb.stitch=Wd.stitch;
+    if(s.fitName==='Poser'&&!nb.boomer){if(Math.random()<POSER_FX.stray){const na=Math.atan2(nb.vy,nb.vx)+rand(-POSER_FX.strayAng,POSER_FX.strayAng),sp=Math.hypot(nb.vx,nb.vy);nb.vx=Math.cos(na)*sp;nb.vy=Math.sin(na)*sp;}
+      const sp=Math.hypot(nb.vx,nb.vy)||1;nb.wob={t:0,ux:nb.vx/sp,uy:nb.vy/sp,amp:rand(...POSER_FX.amp)*(Math.random()<0.5?-1:1),f:rand(...POSER_FX.freq)};}
+    G.bullets.push(nb);}
   if(s.sp.has('chainbelt')){p.shotN=(p.shotN||0)+1;if(p.shotN%8===0){const a=ang;G.bullets.push({x:p.x+Math.cos(a)*16,y:p.y-8+Math.sin(a)*16,vx:Math.cos(a)*Wd.speed*0.8,vy:Math.sin(a)*Wd.speed*0.8,r:Math.max(9,Wd.size*2.6),dmg:base*4,crit:false,pierce:3,ric:0,life:1.4,hit:new Set(),boom:0,c:'#ff4fa3',child:true});}}
-  p.fireCd=1/(Wd.rate*s.rate*hb*(s.sp.has('strut')&&p.moving?1.3:1));sfx('shoot');}
+  p.fireCd=1/(Wd.rate*s.rate*hb*(s.sp.has('strut')&&p.moving?1.3:1));sfx('shoot');
+  if(s.fitName==='Poser'&&Math.random()<POSER_FX.jam*Math.min(1,4/Wd.rate+0.25)){p.fireCd+=POSER_FX.jamT;if((p.jamTxt||0)<G.time){p.jamTxt=G.time+1.2;addText(p.x,p.y-52,'WARDROBE MALFUNCTION','#ff7a8a',false);burst(p.x+Math.cos(p.aim)*18,p.y-8+Math.sin(p.aim)*18,'#bbbbbb',6,70);}}}
 function onHit(b,e){const p=G.p,s=p.s;b.hit.add(e);let d=b.dmg;
-  if(s.sp.has('split')&&!b.child&&b.kind!=='fan'){b.child=true;const a0=Math.atan2(b.vy,b.vx),sp0=Math.hypot(b.vx,b.vy);for(const o of [-0.45,0.45])G.bullets.push({x:b.x,y:b.y,vx:Math.cos(a0+o)*sp0,vy:Math.sin(a0+o)*sp0,r:b.r*0.75,dmg:b.dmg*0.5,crit:false,pierce:0,ric:0,life:0.7,hit:new Set([e]),boom:0,c:b.c,child:true});}if(!e.hitOnce){d*=1+s.firstHit;e.hitOnce=true;}if(p.hp<p.s.maxHp*0.5)d*=1+s.lowHp;
+  if(s.sp.has('split')&&!b.child&&b.kind!=='fan'&&!b.boomer){b.child=true;const a0=Math.atan2(b.vy,b.vx),sp0=Math.hypot(b.vx,b.vy);for(const o of [-0.45,0.45])G.bullets.push({x:b.x,y:b.y,vx:Math.cos(a0+o)*sp0,vy:Math.sin(a0+o)*sp0,r:b.r*0.75,dmg:b.dmg*0.5,crit:false,pierce:0,ric:0,life:0.7,hit:new Set([e]),boom:0,c:b.c,child:true});}if(!e.hitOnce){d*=1+s.firstHit;e.hitOnce=true;}if(p.hp<p.s.maxHp*0.5)d*=1+s.lowHp;
   hurtEnemy(e,d,b.crit,b.c);
   if(s.lifesteal>0&&G.dress!=='nolatte')p.hp=Math.min(s.maxHp,p.hp+d*s.lifesteal);
   if(s.knock>0&&!isBoss(e)&&!e.heavy){const sp=Math.hypot(b.vx,b.vy)||1;const kb=s.knock*(e.type==='brute'?0.4:1);e.kx+=b.vx/sp*kb;e.ky+=b.vy/sp*kb;}
   if(s.poison>0){e.poisonT=3;e.poisonDps=Math.max(e.poisonDps,d*s.poison);}
   if(s.slow>0){e.slowT=1.6;e.slowAmt=Math.min(0.7,s.slow);}
   if(b.crit&&s.stunCrit&&!e.big)e.stun=Math.max(e.stun,0.6);
+  if(b.stitch&&!e.big){e.slowT=Math.max(e.slowT||0,1.2);e.slowAmt=Math.max(e.slowAmt||0,b.stitch);}
+  if(s.sp.has('mood')&&!b.child&&Math.random()<0.2){switch(ri(0,3)){case 0:e.poisonT=3;e.poisonDps=Math.max(e.poisonDps||0,d*0.3);break;case 1:e.slowT=1.6;e.slowAmt=Math.max(e.slowAmt||0,0.4);break;case 2:if(!e.big)e.stun=Math.max(e.stun,0.5);break;default:chainFrom(e,d*0.5,2,false);}}
   if(s.explodeR>0)explode(e.x,e.y,s.explodeR,d*s.explodeDmg,e,'#ff2e88');
   if(b.boom){explode(b.x,b.y,b.boom,d*0.6,e,b.c);b.boom=0;}
   if(s.chain>0)chainFrom(e,d*0.5,s.chain,s.chainStun);
@@ -1867,6 +1985,31 @@ function onHit(b,e){const p=G.p,s=p.s;b.hit.add(e);let d=b.dmg;
   else b.dead=true;}
 
 // ---------- update ----------
+// Measuring Tape swing: an arc that sweeps from one side of your aim to the other, following you, hitting each enemy once.
+function updSweeps(dt){if(!G.sweeps||!G.sweeps.length)return;const p=G.p;
+  for(const w of G.sweeps){const prev=Math.min(1,w.t/w.dur);w.t+=dt;const f=Math.min(1,w.t/w.dur),cx=p.x,cy=p.y-8;
+    const lo=Math.min(w.a0+(w.a1-w.a0)*0,w.a0+(w.a1-w.a0)*f),hi=Math.max(w.a0,w.a0+(w.a1-w.a0)*f);
+    for(const e of G.enemies){if(e.dead||w.hit.has(e))continue;const ex=e.x,ey=e.big?e.y:e.y-e.r*0.5,d=Math.hypot(ex-cx,ey-cy);
+      const reach=w.r+(e.big?e.big.ry:e.r);if(d>reach)continue;let da=Math.atan2(ey-cy,ex-cx)-w.a;while(da>Math.PI)da-=Math.PI*2;while(da<-Math.PI)da+=Math.PI*2;
+      const ang=w.a+da,pad=d>0?Math.asin(Math.min(1,(e.big?e.big.rx*0.5:e.r)/Math.max(d,1))):Math.PI;if(ang+pad<lo||ang-pad>hi)continue;
+      const ux=(ex-cx)/(d||1),uy=(ey-cy)/(d||1);onHit({x:ex,y:ey,vx:ux*400,vy:uy*400,dmg:w.dmg,crit:w.crit,hit:w.hit,pierce:99,ric:0,boom:0,c:w.c,kind:'fan'},e);}
+    }
+  G.sweeps=G.sweeps.filter(w=>w.t<w.dur+0.12);}
+function drawSweeps(g){if(!G.sweeps)return;const p=G.p;let cx=p.x,cy=p.y-8;
+  // The tape blade whips out of the case: a thin yellow strip that bends behind the swing, with tick marks and a metal hook.
+  const blade=(ang,lag,len,al)=>{const N=14,pts=[];for(let i=0;i<=N;i++){const u=i/N,a=ang-lag*u*u,rr=6+(len-6)*u;pts.push([cx+Math.cos(a)*rr,cy+Math.sin(a)*rr,a]);}
+    g.globalAlpha=al;g.lineCap='round';g.lineJoin='round';
+    g.strokeStyle='rgba(0,0,0,.45)';g.lineWidth=6.5;g.beginPath();pts.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.stroke();
+    g.strokeStyle='#ffd23a';g.lineWidth=4.5;g.beginPath();pts.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.stroke();
+    g.strokeStyle='#fff3b0';g.lineWidth=1.2;g.beginPath();pts.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.stroke();
+    if(al>0.6){g.strokeStyle='#2a2205';g.lineWidth=1;for(let i=1;i<N;i++){const [x,y,a]=pts[i],nx=Math.cos(a+Math.PI/2),ny=Math.sin(a+Math.PI/2),L=i%3===0?2.6:1.4;g.beginPath();g.moveTo(x-nx*2.2,y-ny*2.2);g.lineTo(x-nx*(2.2-L),y-ny*(2.2-L));g.stroke();}}
+    const [tx,ty,ta]=pts[N];g.save();g.translate(tx,ty);g.rotate(ta);g.fillStyle='#c9ced8';g.fillRect(-1,-4,3,8);g.fillStyle='#6a707a';g.fillRect(1.4,-4,1,8);g.restore();};
+  for(const w of G.sweeps){cx=p.x+Math.cos(w.a)*12;cy=p.y-8+Math.sin(w.a)*12;const f=Math.min(1,w.t/w.dur),out=w.t>w.dur?Math.max(0,1-(w.t-w.dur)/0.12):1,dir=Math.sign(w.a1-w.a0)||1;
+    const ease=1-(1-f)*(1-f),cur=w.a0+(w.a1-w.a0)*ease,len=w.r*(0.55+0.45*Math.min(1,f*2.2))*(0.6+0.4*out);g.save();
+    // a faint motion smear in your style colour, then two fading ghosts, then the blade itself
+    {const tl=cur-(w.a1-w.a0)*0.4*(1-f*0.4),a=Math.min(tl,cur),b2=Math.max(tl,cur);if((tl-w.a0)*dir>-0.4){g.globalAlpha=0.28*out;g.strokeStyle=w.c;g.lineWidth=7;g.lineCap='round';g.beginPath();g.arc(cx,cy,len-2,a,b2);g.stroke();}}
+    for(const k of [0.35,0.18]){const ga=cur-(w.a1-w.a0)*k*(1-f*0.4);if((ga-w.a0)*dir>0)blade(ga,dir*0.5,len,0.18*out);}
+    blade(cur,dir*(0.25+0.45*(1-f)),len,out);g.restore();}}
 function nearestTarget(){const p=G.p;let best=null,bd=480;for(const e of G.enemies){if(e.dead||e.dormant||(e.big&&!e.awake))continue;const d=e.big?Math.max(0,Math.hypot(e.x-p.x,e.y-p.y)-e.big.ry):Math.hypot(e.x-p.x,e.y-p.y);if(d<bd&&e.los){bd=d;best=e;}}return best;}
 function update(dt){
   const p=G.p,s=p.s,m=G.map;G.time+=dt;bossFxTick(dt);
@@ -1925,6 +2068,7 @@ function update(dt){
     if(e.kx||e.ky){move(e,e.kx*dt,e.ky*dt);const f=Math.max(0,1-9*dt);e.kx*=f;e.ky*=f;if(Math.abs(e.kx)+Math.abs(e.ky)<2){e.kx=0;e.ky=0;}}
     if(e.stun>0){e.stun-=dt;if(!e.big)continue;}
     const pdx=p.x-e.x,pdy=p.y-e.y,pd=Math.hypot(pdx,pdy);let dx=pdx,dy=pdy,d=pd;
+    if(pd<110&&!e.big&&!e.dormant&&s.sp.has('rope')){e.slowT=Math.max(e.slowT,0.2);e.slowAmt=Math.max(e.slowAmt||0,0.4);}
     if(G.decoy&&!isBoss(e)){const qx=G.decoy.x-e.x,qy=G.decoy.y-e.y,qd=Math.hypot(qx,qy);if(qd<520){dx=qx;dy=qy;d=qd||0.01;}}
     if(e.dormant){if(pd<95)wake(e);continue;}
     if(e.big){finalAI(e,dt);continue;}
@@ -1949,37 +2093,45 @@ function update(dt){
   G.enemies=G.enemies.filter(e=>!e.dead);
   // bullets
   for(const b of G.bullets){b.life-=dt;if(b.life<=0){b.dead=true;continue;}
-    if(s.homing>0){let best=null,bd=300;for(const e of G.enemies){if(e.dead||e.dormant||b.hit.has(e))continue;const dd=Math.hypot(e.x-b.x,e.y-b.y);if(dd<bd){bd=dd;best=e;}}
+    if(b.kind==='flame')b.r=b.r0*(1+(1-b.life/b.l0)*1.6);
+    if(b.wob){const w=b.wob;w.t+=dt;const k=Math.cos(w.t*w.f)*w.amp*dt,ox=-w.uy*k,oy=w.ux*k;if(!wallAt(b.x+ox,b.y+oy)){b.x+=ox;b.y+=oy;}}
+    if(b.boomer){const bm=b.boomer;bm.t+=dt;b.spin+=dt*18;
+      if(!bm.ret&&bm.t>0.4){bm.ret=true;b.hit=new Set();}
+      if(bm.ret){const dx=p.x-b.x,dy=p.y-8-b.y,dd=Math.hypot(dx,dy)||1;if(dd<20||bm.t>3){b.dead=true;continue;}const sp=Math.max(560,Math.hypot(b.vx,b.vy)),k=Math.min(1,dt*9);b.vx+=(dx/dd*sp-b.vx)*k;b.vy+=(dy/dd*sp-b.vy)*k;}}
+    if(s.homing>0&&!(b.boomer&&b.boomer.ret)){let best=null,bd=300;for(const e of G.enemies){if(e.dead||e.dormant||b.hit.has(e))continue;const dd=Math.hypot(e.x-b.x,e.y-b.y);if(dd<bd){bd=dd;best=e;}}
       if(best){const sp=Math.hypot(b.vx,b.vy),cur=Math.atan2(b.vy,b.vx),want=Math.atan2(best.y-best.r*0.5-b.y,best.x-b.x);let da=want-cur;while(da>Math.PI)da-=Math.PI*2;while(da<-Math.PI)da+=Math.PI*2;const na=cur+clamp(da,-s.homing*dt,s.homing*dt);b.vx=Math.cos(na)*sp;b.vy=Math.sin(na)*sp;}}
     const nx=b.x+b.vx*dt,ny=b.y+b.vy*dt;
-    if(b.kind!=='fan'&&wallAt(nx,ny)){if(b.boom){explode(b.x,b.y,b.boom,b.dmg*0.6,null,b.c);b.dead=true;continue;}
+    if(b.kind!=='fan'&&!(b.boomer&&b.boomer.ret)&&wallAt(nx,ny)){if(b.boomer){b.boomer.ret=true;b.hit=new Set();continue;}if(b.boom){explode(b.x,b.y,b.boom,b.dmg*0.6,null,b.c);b.dead=true;continue;}
       if(b.ric>0){const wx=wallAt(nx,b.y),wy=wallAt(b.x,ny);if(wx)b.vx*=-1;if(wy)b.vy*=-1;if(!wx&&!wy){b.vx*=-1;b.vy*=-1;}b.ric--;continue;}
       b.dead=true;burst(b.x,b.y,b.c,3,60);continue;}
     b.x=nx;b.y=ny;
     for(const e of G.enemies){if(e.dead||b.hit.has(e))continue;if(e.big?inBody(e,b.x,b.y,b.r):Math.hypot(e.x-b.x,e.y-e.r*0.5-b.y)<e.r+b.r){onHit(b,e);if(b.dead)break;}}
   }
   G.bullets=G.bullets.filter(b=>!b.dead);
+  updSweeps(dt);
   updHazards(dt);
   for(const b of G.ebullets){b.life-=dt;if(b.life<=0){b.dead=true;continue;}
-    if(b.hom){const sp=Math.hypot(b.vx,b.vy),cur=Math.atan2(b.vy,b.vx),want=Math.atan2(p.y-8-b.y,p.x-b.x);let da=want-cur;while(da>Math.PI)da-=Math.PI*2;while(da<-Math.PI)da+=Math.PI*2;const na=cur+clamp(da,-b.hom*dt,b.hom*dt);b.vx=Math.cos(na)*sp;b.vy=Math.sin(na)*sp;}
+    const fz=b.frz>0;if(fz){b.frz-=dt;b.life+=dt;}
+    if(b.hom&&!fz){const sp=Math.hypot(b.vx,b.vy),cur=Math.atan2(b.vy,b.vx),want=Math.atan2(p.y-8-b.y,p.x-b.x);let da=want-cur;while(da>Math.PI)da-=Math.PI*2;while(da<-Math.PI)da+=Math.PI*2;const na=cur+clamp(da,-b.hom*dt,b.hom*dt);b.vx=Math.cos(na)*sp;b.vy=Math.sin(na)*sp;}
     if(b.rot!=null)b.rot+=dt*12;
     if(G.dress==='couture'&&!b.cz){b.cz=1;b.vx*=1.3;b.vy*=1.3;}
     if(G.tier>=2&&!b.tz){b.tz=1;b.vx*=1.15;b.vy*=1.15;}
     if(G.dress==='mirror'&&!b.mb){b.mb=1;b.bounce=(b.bounce||0)+1;b.life=Math.max(b.life,3);}
-    const nx=b.x+b.vx*dt,ny=b.y+b.vy*dt;
+    const nx=fz?b.x:b.x+b.vx*dt,ny=fz?b.y:b.y+b.vy*dt;
     if(wallAt(nx,ny)){if(b.bounce>0){const wx=wallAt(nx,b.y),wy=wallAt(b.x,ny);if(wx)b.vx*=-1;if(wy)b.vy*=-1;if(!wx&&!wy){b.vx*=-1;b.vy*=-1;}b.bounce--;continue;}b.dead=true;burst(b.x,b.y,b.c,3,80);continue;}
     b.x=nx;b.y=ny;const gd=Math.hypot(b.x-p.x,b.y-(p.y-8));if(gd<b.r+p.r-2){if(p.veilT>0||p.dive)continue;b.dead=true;damagePlayer(b.dmg);}else if(!b.grazed&&gd<b.r+p.r+16&&p.invuln<=0){b.grazed=true;addRank(2.5);if(s.sp.has('mirror')){const tg=nearestTarget();if(tg){const a=Math.atan2((tg.big?tg.y:tg.y-tg.r*0.5)-(p.y-8),tg.x-p.x);G.bullets.push({x:p.x,y:p.y-8,vx:Math.cos(a)*560,vy:Math.sin(a)*560,r:4,dmg:baseDmg(p)*0.8,crit:false,pierce:0,ric:0,life:1,hit:new Set(),boom:0,c:'#e8fbff',child:true});}}if(G.particles.length<PCAP())G.particles.push({x:b.x,y:b.y,vx:0,vy:-30,g:0,life:0.3,max:0.3,c:'#ffffff',size:2});}}
   G.ebullets=G.ebullets.filter(b=>!b.dead);
   // pickups
   G.bagWarnT-=dt;
   for(const k of G.pickups){k.t+=dt;
-    if(k.type==='cash'){const d=Math.hypot(k.x-p.x,k.y-p.y)||1;if(d<130){const m=Math.min(d,460*dt);k.x+=(p.x-k.x)/d*m;k.y+=(p.y-k.y)/d*m;}if(d<p.r+12){k.dead=true;p.cash+=k.amt;sfx('pick');addText(p.x,p.y-46,'+$'+k.amt,'#ffd34d',false);}continue;}
+    if(k.type==='cash'){const d=Math.hypot(k.x-p.x,k.y-p.y)||1;if(d<(s.sp.has('fanny')?260:130)){const m=Math.min(d,460*dt);k.x+=(p.x-k.x)/d*m;k.y+=(p.y-k.y)/d*m;}if(d<p.r+12){k.dead=true;p.cash+=k.amt;if(s.sp.has('fanny')&&G.dress!=='nolatte')p.hp=Math.min(s.maxHp,p.hp+s.maxHp*0.01);sfx('pick');addText(p.x,p.y-46,'+$'+k.amt,'#ffd34d',false);}continue;}
     if(Math.hypot(k.x-p.x,k.y-p.y)>p.r+16)continue;
     if(k.type==='item'&&autoSellOk(k.item)){const it=k.item;k.dead=true;const isNew=it.slot!=='weapon'&&!store.get('dripcmd.found',[]).includes(it.base);markFound(it);G.soldN=(G.soldN||0)+1;if(settings.sellTo==='clout'){const v=donateValue(it);G.soldClout=(G.soldClout||0)+v;sfx('pick');addText(p.x,p.y-46,`${isNew?'NEW · ':''}DONATED +${v} CLOUT`,'#7be0ff',false);gainXp(v);}else{const v=sellValue(it);p.cash+=v;G.soldCash=(G.soldCash||0)+v;sfx('pick');addText(p.x,p.y-46,`${isNew?'NEW · ':''}SOLD +$${v}`,isNew?'#7be0ff':'#ffd34d',false);}continue;}
     if(k.type==='item'){if(p.bag.length>=BAG){if(G.bagWarnT<=0){toast('Bag is full. Donate or sell something in the Closet (C), or turn on Auto-sell there.','#ff7a8a');G.bagWarnT=3;}continue;}
       const it=k.item;k.dead=true;sfx('pick');let auto=false;const isNew=it.slot!=='weapon'&&!store.get('dripcmd.found',[]).includes(it.base);markFound(it);
-      const upg=isUpgrade(it);if(it.slot!=='weapon'&&!p.gear[it.slot]){p.gear[it.slot]=it;auto=true;refreshStats();}else{it.fresh=true;p.bag.push(it);}
-      const sub=it.slot==='weapon'?'Weapon':`${STYLES[it.style].name} ${SLOT_NAME[it.slot]} · +${it.drip} Drip`;
+      const upg=isUpgrade(it);if(it.slot!=='weapon'&&!p.gear[it.slot]&&!p.emperor){p.gear[it.slot]=it;auto=true;refreshStats();}else{it.fresh=true;p.bag.push(it);}
+      const sub=it.slot==='weapon'?'Weapon':`${stN(it.style)} ${SLOT_NAME[it.slot]} · +${it.drip} Drip`;
+      {const S=setOf(it);if(S)setTimeout(()=>toast(`<b style="color:${SET_C}">◆ SET PIECE: ${esc(S.n)}.</b> ${S.parts.map(x=>x[1]).join(', ')}. 2 worn: ${esc(S.d2)}. All 3: ${esc(S.d3)}.`,SET_C),450);}
       if(it.sp)setTimeout(()=>toast(`<b style="color:#ff4fa3">★ STATEMENT PIECE: ${esc(STMT[it.sp].n)}.</b> ${esc(STMT[it.sp].d)} ${auto?'You are wearing it.':'Wear it to use it (Closet, C).'}`,'#ff4fa3'),250);
       toast(`${isNew?'<b style="color:#7be0ff">NEW PIECE</b> ':''}<b style="color:${RAR[it.rarity].c}">${RAR[it.rarity].n} ${esc(it.name)}</b> <span class="muted">${sub}${auto?' · equipped':''}</span>${!auto&&upg?` <b style="color:#7ef0a0">▲ ${it.slot==='weapon'?'Upgrade':'Drip upgrade'}</b>`:''}`,RAR[it.rarity].c);}
     else if(k.type==='latte'){if(p.hp>=s.maxHp||G.dress==='nolatte')continue;k.dead=true;p.hp=Math.min(s.maxHp,p.hp+s.maxHp*0.25);sfx('pick');addText(p.x,p.y-40,'+HP','#7ef0a0',true);toast('Iced oat latte. <b>+25% HP</b>','#7ef0a0');}
@@ -2199,7 +2351,8 @@ function bossAI(e,sp,dt,d,dx,dy){
 }
 
 // ---------- flow between states ----------
-function floorCleared(){const p=G.p;state='between';jingle('clear');const healK=G.tier>=4?0.15:0.3;p.hp=Math.min(p.s.maxHp,p.hp+p.s.maxHp*healK);
+function floorCleared(){const p=G.p;state='between';jingle('clear');
+  let empMsg='';if(G.floor>=3&&!prog.emperor&&!p.emperor&&SLOTS.every(sl=>!p.gear[sl])){prog.emperor=true;saveProg();empMsg=' <b style="color:#ffd76a">♛ HIDDEN STYLE UNLOCKED: The Emperor.</b> You cleared a floor wearing nothing at all, and nobody said a word. Pick it in the character creator on your next run.';setTimeout(()=>toast('<b style="color:#ffd76a">♛ Hidden style unlocked: The Emperor.</b> Pick it in the character creator.','#ffd76a'),400);}const healK=G.tier>=4?0.15:0.3;p.hp=Math.min(p.s.maxHp,p.hp+p.s.maxHp*healK);
   let dressMsg='';if(G.dress){const d=dressById(G.dress),dc=G.dress;const give=r=>{const it=makeGear(G.floor+1,0,null,null,r);it.fresh=true;if(p.bag.length<BAG){p.bag.push(it);markFound(it);}return ` Dress code reward: <b style="color:${RAR[r].c}">${esc(it.name)}</b> added to your bag.`;};
     if(dc==='crowd'||dc==='plain')dressMsg=give(4);
     else if(dc==='late')dressMsg=G.dressFailed?' You were late, so no Grail this time.':give(5);
@@ -2215,7 +2368,7 @@ function floorCleared(){const p=G.p;state='between';jingle('clear');const healK=
   const nf=G.floor+1,nz=ZONES[zoneIdx(nf)];
   $('#bwNext').textContent=`Next: Floor ${nf}, ${nz.name}.${isFinaleF(nf)?' The finale: the Creative Director is waiting.':nf%3===0?' A boss guards the runway on this one.':''}${p.passes?` You have ${p.passes} VIP Pass${p.passes>1?'es':''}.`:''}${p.points>0?` You have ${p.points} unspent Style Point${p.points>1?'s':''}.`:''}`;
   if(G.soldN){const parts=[G.soldCash?`<b style="color:#ffd34d">$${G.soldCash}</b>`:'',G.soldClout?`<b style="color:#7be0ff">${G.soldClout} Clout</b>`:''].filter(Boolean).join(' and ');dressMsg+=` Auto-sold <b>${G.soldN}</b> piece${G.soldN>1?'s':''} for ${parts}.`;G.soldN=0;G.soldCash=0;G.soldClout=0;}
-  if(dressMsg)$('#bwNext').innerHTML=esc($('#bwNext').textContent)+dressMsg;
+  dressMsg+=empMsg;if(dressMsg)$('#bwNext').innerHTML=esc($('#bwNext').textContent)+dressMsg;
   renderDressOffer();showOnly('#between');}
 function nextFloor(){G.dress=G.offer&&G.offer.pick?G.offer.pick:null;G.lastDress=G.dress;G.sale=false;G.dressFailed=false;G.dressTimer=G.dress==='late'?170:0;buildFloor(G.floor+1);showOnly(null);state='play';toast(`Floor <b>${G.floor}</b> · ${G.zone.name}`,'#ffc94a');if(G.dress){const d=dressById(G.dress);setTimeout(()=>toast(`Dress code: <b>${d.name}</b>. ${d.rule} Reward: ${d.reward}`,'#ff9a3c'),500);}}
 function die(){state='dead';jingle('over');const p=G.p;const best=Math.max(store.get('dripcmd.best',0),G.floor);store.set('dripcmd.best',best);if(G.endless&&G.floor>prog.bestEndless){prog.bestEndless=G.floor;saveProg();}if(G.chal)G.chal=null;
@@ -2302,48 +2455,56 @@ function setSell(v){settings.sell=clamp(+v,-1,2);store.set('dripcmd.autosell',se
 ['#segSell','#segSell2'].forEach(id=>$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;setSell(b.dataset.v);if(pad.on)setTimeout(()=>{const a=$(`${id} [data-v="${b.dataset.v}"]`);if(a)setPadFocus(a);},20);}));
 // ---------- closet UI ----------
 let sel=null; // {from:'bag'|'slot', id, slot}
-function metaLine(it){return it.slot==='weapon'?`${RAR[it.rarity].n} · ×${it.mult} power`:`${RAR[it.rarity].n} · ${STYLES[it.style].name} · ${it.drip} Drip`;}
+const stN=st=>STYLES[st]?`<span class="stn" style="color:${STYLES[st].c}">${STYLES[st].name}</span>`:'';
+function metaLine(it){return it.slot==='weapon'?`${RAR[it.rarity].n} · ×${it.mult} power`:`${RAR[it.rarity].n} · ${stN(it.style)} · ${it.drip} Drip`;}
 function isUpgrade(it){if(!G||!it)return false;const p=G.p,ns=statsWith(it.slot,it);
   if(it.slot==='weapon')return weaponDps(it,ns)>weaponDps(p.weapon,p.s)*1.005;return ns.drip>p.s.drip||ns.dmg>p.s.dmg*1.005;}
 function sellValue(it){return Math.max(1,Math.round(shopP(G?G.floor:1)*(0.12+0.12*it.rarity)));}
-function statsWith(slot,item){const p=G.p;const c={gear:{...p.gear},weapon:p.weapon,talents:p.talents,level:p.level,mono:p.mono,minimal:p.minimal};if(slot==='weapon')c.weapon=item;else c.gear[slot]=item;return computeStats(c);}
+function statsWith(slot,item){const p=G.p;const c={gear:{...p.gear},weapon:p.weapon,talents:p.talents,level:p.level,mono:p.mono,minimal:p.minimal,emperor:p.emperor,cls:p.cls,rank:p.rank,floor:p.floor||G.floor};if(slot==='weapon')c.weapon=item;else c.gear[slot]=item;return computeStats(c);}
 function drawPreview(){const c=$('#clPrev'),g=c.getContext('2d');g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,c.width,c.height);const p=G.p;
   g.fillStyle='rgba(255,201,74,.10)';g.beginPath();g.ellipse(220,480,150,30,0,0,Math.PI*2);g.fill();
   const trying=showItem&&showItem.trying;drawCommando(g,220,480,10.5,trying?tryOnLook():lookOf(p),0.35,G.time,false);
   if(trying){g.fillStyle='rgba(0,0,0,.55)';g.fillRect(0,0,c.width,40);g.fillStyle='#ffc94a';g.font='700 18px "Chakra Petch", sans-serif';g.textAlign='left';g.textBaseline='middle';g.fillText('TRYING ON',14,20);}}
+const POSER=1; // Fit for a full outfit of a style that isn't your class (neutral, but the gun misbehaves: see POSER_FX)
+const POSER_FX={amp:[70,120],freq:[7,11],stray:0.15,strayAng:0.6,jam:0.05,jamT:0.55};
 const FIT_STEPS=[[2,'Matching',1.1],[3,'Coordinated',1.25],[4,'Locked In',1.4],[5,'Full Fit',1.6]];
 // The Drip sum spelled out: pieces x Fit = Drip -> what it does.
 function dripEquation(s){if(!s.rawDrip)return 'Wear clothes to get Drip. Every point of Drip gives <b>+1% damage</b> and <b>+0.2 max HP</b>.';
   const lb=G&&G.collector?' (incl. +10% Lookbook bonus)':'';
-  return `Pieces <b>${s.rawDrip}</b>${lb} × ${esc(s.fitName)} <b>×${s.fit}</b> = <b>${s.drip} Drip</b><br>→ <b>+${Math.round(s.drip/BAL.dripK*100)}% damage</b> and <b>+${s.dripHp} max HP</b>`;}
+  const nc=s.cnt.emperor?`<br><span style="color:#ffd76a">♛ New Clothes: ${s.cnt.emperor} empty slot${s.cnt.emperor>1?'s':''} × ${s.newClothes} Drip (rank ${RANKS[s.rankI].l}; it rises with your Runway rank). New Clothes add damage, not HP, and you take <b>+${Math.round((s.dmgTaken-1)*100)}%</b> damage.</span>`:'';
+  return `Pieces <b>${s.rawDrip}</b>${lb} × ${esc(s.fitName)} <b>×${s.fit}</b> = <b>${s.drip} Drip</b><br>→ <b>+${Math.round(s.drip/BAL.dripK*100)}% damage</b> and <b>+${s.dripHp} max HP</b>${nc}`;}
 // What to wear next for a better Fit bonus.
-function fitNext(s){const st=s.topStyle,top=st?s.cnt[st]:0,distinct=SK.filter(k=>s.cnt[k]>0).length,nm=st?`<b style="color:${STYLES[st].c}">${STYLES[st].name}</b>`:'';
-  if(!top)return 'Wear 2 pieces of one style for <b>Matching ×1.1</b>. More of the same style raises the bonus, up to <b>Full Fit ×1.6</b>.';
+function fitNext(s){const st=s.topStyle,top=st?(s.cnt[st]||0):0,distinct=SK.filter(k=>s.cnt[k]>0).length+(s.cnt.emperor?1:0),nm=st?`<b style="color:${STYLES[st].c}">${STYLES[st].name}</b>`:'';
+  if(st===EMP){if(top>=5)return '<b>Birthday Suit ×1.6</b>: nothing on at all, the best Fit there is. Keep your Runway rank high to grow your New Clothes Drip.';const nx=FIT_STEPS.find(f=>f[0]===top+1);return nx?`Next: take off ${nx[0]-top} more piece${nx[0]-top>1?'s':''} → <b>${nx[1]} ×${nx[2]}</b> (you'll take +15% damage per empty slot)`:'';}
   if(top>=5)return `<b>Full Fit ×1.6</b>: the best Fit there is. Swap in higher-Drip ${nm} pieces to grow from here.`;
-  if(s.fitName==='Maximalist')return `<b>Maximalist ×1.3</b> (5 different styles). To beat it, wear 4 of one style for <b>Locked In ×1.4</b>.`;
-  const nx=FIT_STEPS.find(f=>f[0]===top+1),need=nx[0]-top;
-  let t=`Next: ${need} more ${nm} piece${need>1?'s':''} → <b>${nx[1]} ×${nx[2]}</b>`;
+  if(s.fitName==='Maximalist')return `<b>Maximalist ×1.3</b> (5 different styles). To beat it, wear 4 ${nm} pieces (your class) for <b>Locked In ×1.4</b>.`;
+  if(s.fitName==='Poser')return `<b style="color:#ff7a8a">Poser ×${POSER}</b>: a full ${STYLES[s.poserSt].name} outfit, but you're a ${STYLES[st].name}. No Fit bonus, and the outfit fights you: your shots wobble, some fly off at odd angles, and the gun jams now and then. Swap any piece for a ${nm} piece to lose the Poser label, or wear 2 for <b>Matching ×1.1</b>.`;
+  const oof=!top&&s.rawDrip?`<b style="color:#ff7a8a">Out of Fit.</b> You aren't wearing any ${nm}, your class. Other styles still give their Drip, but only ${nm} pieces count toward your Fit.<br>`:'';
+  const want=Math.max(2,top+1),nx=FIT_STEPS.find(f=>f[0]===want),need=want-top;
+  let t=`${oof}Next: ${need} more ${nm} piece${need>1?'s':''} → <b>${nx[1]} ×${nx[2]}</b>${oof?'':'. Only your class pieces count toward Fit'}.`;
   if(top<=2&&distinct>=3)t+=`<br>Or wear 5 different styles → <b>Maximalist ×1.3</b> (you have ${distinct})`;
   return t;}
+function setsHtml(p){const rows=SETS.map(S=>({S,n:setWorn(S,p.gear)})).filter(o=>o.n>0);if(!rows.length)return '';
+  return '<div class="sets">'+rows.map(({S,n})=>`<div class="setrow${n>=2?' on':''}" style="--c:${SET_C}"><b>${esc(S.n)}</b> <span class="sc">${n}/3</span><span class="sd">${S.parts.map(([sl,b])=>`<i class="${p.gear[sl]&&p.gear[sl].base===b?'got':''}">${esc(b)}</i>`).join(' · ')}</span><span class="sd">2 pieces: ${esc(S.d2)}. All 3: ${esc(S.d3)}.</span></div>`).join('')+'</div>';}
 function renderCloset(){
   const p=G.p,s=p.s;drawPreview();
-  const fitCol=s.topStyle?STYLES[s.topStyle].c:'var(--fg)';
+  const fitCol=s.fitName==='Poser'?'#ff7a8a':s.topStyle?STYLES[s.topStyle].c:'var(--fg)';
   $('#clStats').innerHTML=`<dd class="dripeq">${dripEquation(s)}</dd><dt>Drip</dt><dd style="color:var(--gold)">${s.drip}</dd><dt>Fit</dt><dd style="color:${fitCol}">${s.fitName} ×${s.fit}</dd><dt>Total damage multiplier</dt><dd>×${s.dmg.toFixed(2)}</dd><dt>Fire rate</dt><dd>×${s.rate.toFixed(2)}</dd><dt>Crit</dt><dd>${Math.round(s.crit*100)}% for ×${s.critMult.toFixed(1)}</dd><dt>Max HP</dt><dd>${s.maxHp}</dd><dt>Weapon DPS</dt><dd>${Math.round(weaponDps(p.weapon,s))}</dd>`;
-  const maxSd=Math.max(60,...SK.map(k=>s.sd[k]));
-  $('#clBars').innerHTML=`<p class="fitnext">${fitNext(s)}</p>`+SK.map(k=>`<div class="sbar" style="--c:${STYLES[k].c}" title="${s.cnt[k]} ${STYLES[k].name} piece${s.cnt[k]===1?'':'s'} worn · ${s.sd[k]} ${STYLES[k].name} Drip powers its talents"><span>${STYLES[k].name}</span><span class="pips">${'●'.repeat(s.cnt[k])}${'○'.repeat(5-s.cnt[k])}</span><span class="t"><i style="width:${s.sd[k]/maxSd*100}%"></i></span><span class="v">${s.sd[k]}</span></div>`).join('');
+  const BK=p.emperor?[EMP,...SK]:SK,maxSd=Math.max(60,...BK.map(k=>s.sd[k]));
+  $('#clBars').innerHTML=`<p class="fitnext">${fitNext(s)}</p>`+setsHtml(p)+BK.map(k=>`<div class="sbar" style="--c:${STYLES[k].c}" title="${s.cnt[k]} ${STYLES[k].name} piece${s.cnt[k]===1?'':'s'} worn · ${s.sd[k]} ${STYLES[k].name} Drip powers its talents"><span style="color:${STYLES[k].c};font-weight:700">${STYLES[k].name}</span><span class="pips">${'●'.repeat(s.cnt[k])}${'○'.repeat(5-s.cnt[k])}</span><span class="t"><i style="width:${s.sd[k]/maxSd*100}%"></i></span><span class="v">${s.sd[k]}</span></div>`).join('');
   $('#clSlots').innerHTML=[...SLOTS,'weapon'].map(sl=>{const it=sl==='weapon'?p.weapon:p.gear[sl];const on=sel&&sel.from==='slot'&&sel.slot===sl;
-    return `<button type="button" class="slot" data-slot="${sl}" aria-pressed="${on}"><span class="sl">${SLOT_NAME[sl]}</span>${it?`<span class="sn" style="color:${RAR[it.rarity].c}">${it.sp?'<span class="spstar">★</span>':''}${esc(it.name)}</span><span class="sm">${metaLine(it)}</span>`:'<span class="sn empty">Standard issue</span><span class="sm">Nothing equipped</span>'}</button>`;}).join('');
+    return `<button type="button" class="slot${it&&setOf(it)?' set':''}" data-slot="${sl}" aria-pressed="${on}"><span class="sl">${SLOT_NAME[sl]}</span>${it?`<span class="sn" style="color:${RAR[it.rarity].c}">${it.sp?'<span class="spstar">★</span>':''}${esc(it.name)}</span><span class="sm">${metaLine(it)}</span>${setTag(it)}`:(p.emperor&&sl!=='weapon'?`<span class="sn empty" style="color:#ffd76a">♛ New Clothes</span><span class="sm">Invisible · +${s.newClothes} Drip at rank ${RANKS[s.rankI].l}</span>`:'<span class="sn empty">Standard issue</span><span class="sm">Nothing equipped</span>')}</button>`;}).join('');
   $('#clBagCount').textContent=`${p.bag.length} / ${BAG}`;$('#bDonateAll').hidden=!p.bag.length;$('#bDonateAll').textContent=p.bag.length?`Donate all (+${p.bag.reduce((a,it)=>a+donateValue(it),0)} Clout)`:'Donate all';$('#clFound').textContent=`Lookbook: ${foundCount()} of ${TOTAL_PIECES()} pieces found. Pieces also drop in up to 10 colorways, and tops and bottoms in ${Object.keys(MODS).length} wear effects.`;
   $('#clBag').innerHTML=p.bag.length?p.bag.map(it=>{const on=sel&&sel.from==='bag'&&sel.id===it.id;const sc=it.slot==='weapon'?'#d8d8e0':(it.cw?it.cw.c:STYLES[it.style].c);
     const up=isUpgrade(it);
-    return `<button type="button" class="bi${it.fresh?' fresh':''}${up?' has-upg':''}${it.sp?' stmt':''}" data-id="${it.id}" aria-pressed="${on}" style="--rc:${RAR[it.rarity].c};--sc:${sc}" title="${up?(it.slot==='weapon'?'Upgrade: more damage per second':'Upgrade: raises your Drip'):''}">${it.fresh?'<span class="newtag">NEW</span>':''}${up?'<span class="upg" aria-label="Upgrade"><svg viewBox="0 0 10 10"><path d="M5 1.5 L8.6 6 H6.2 V8.8 H3.8 V6 H1.4 Z" fill="#7ef0a0"/></svg></span>':''}<span class="bn"><span class="bsw"></span>${it.sp?'<span class="spstar">★</span>':''}${esc(it.name)}</span><span class="bm">${it.slot==='weapon'?'Weapon · ×'+it.mult:SLOT_NAME[it.slot]+' · '+it.drip+' Drip'}</span></button>`;}).join(''):'<p class="note" style="grid-column:1/-1">Empty. Loot drops from enemies, Wardrobe Crates and Knockoff Mimics.</p>';
+    return `<button type="button" class="bi${it.fresh?' fresh':''}${up?' has-upg':''}${it.sp?' stmt':''}${setOf(it)?' set':''}" data-id="${it.id}" aria-pressed="${on}" style="--rc:${RAR[it.rarity].c};--sc:${sc}" title="${up?(it.slot==='weapon'?'Upgrade: more damage per second':'Upgrade: raises your Drip'):''}">${it.fresh?'<span class="newtag">NEW</span>':''}${setTag(it)}${up?'<span class="upg" aria-label="Upgrade"><svg viewBox="0 0 10 10"><path d="M5 1.5 L8.6 6 H6.2 V8.8 H3.8 V6 H1.4 Z" fill="#7ef0a0"/></svg></span>':''}<span class="bn"><span class="bsw"></span>${it.sp?'<span class="spstar">★</span>':''}${esc(it.name)}</span><span class="bm">${it.slot==='weapon'?'Weapon · ×'+it.mult:stN(it.style)+' '+SLOT_NAME[it.slot]+' · '+it.drip+' Drip'}</span></button>`;}).join(''):'<p class="note" style="grid-column:1/-1">Empty. Loot drops from enemies, Wardrobe Crates and Knockoff Mimics.</p>';
   renderSellSegs();renderDetail();
 }
-function itemCard(it){const sub=it.slot==='weapon'?`${RAR[it.rarity].n} weapon · ×${it.mult} power`:`${RAR[it.rarity].n} · ${STYLES[it.style].name} ${SLOT_NAME[it.slot]} · ${it.drip} Drip`;
-  const lines=[];if(it.slot==='weapon'){const d=WEAPONS[it.kind];lines.push(`${d.count>1?d.count+' × ':''}${Math.round(d.dmg*it.mult)} damage, ${d.rate} shots/sec${d.pierce?', pierces '+d.pierce:''}${d.boom?', explodes':''}`);}
+function itemCard(it){const sub=it.slot==='weapon'?`${RAR[it.rarity].n} weapon · ×${it.mult} power`:`${RAR[it.rarity].n} · ${stN(it.style)} ${SLOT_NAME[it.slot]} · ${it.drip} Drip`;
+  const lines=[];if(it.slot==='weapon'){const d=WEAPONS[it.kind]||WEAPONS.blaster;lines.push(`${d.count>1?d.count+' × ':''}${Math.round(d.dmg*it.mult)} damage, ${d.rate} shots/sec${d.pierce&&d.pierce<50?', pierces '+d.pierce:''}${d.boom?', explodes':''}`);if(d.note)lines.push(d.note[0].toUpperCase()+d.note.slice(1));}
   else{lines.push(`+${it.drip} Drip (+${Math.round(it.drip/BAL.dripK*100)}% damage and +${Math.round(it.drip*BAL.hpPerDrip)} max HP, before your Fit bonus)`);lines.push(`Powers ${STYLES[it.style].name} talents (${STYLES[it.style].dmg.toLowerCase()})`);if(it.cw)lines.push(`Look: ${it.cw.n}${it.mod?' · '+MODS[it.mod]:''} (cosmetic only)`);}
   it.aff.forEach(a=>lines.push(affText(a)));
-  return `<div class="icard"><div class="in" style="color:${RAR[it.rarity].c}">${esc(it.name)}</div><div class="im">${sub}</div>${stmtHtml(it)}<ul>${lines.map(l=>`<li>${esc(l)}</li>`).join('')}</ul></div>`;}
+  return `<div class="icard"><div class="in" style="color:${RAR[it.rarity].c}">${esc(it.name)}</div><div class="im">${sub}</div>${stmtHtml(it)}${setBox(it)}<ul>${lines.map(l=>`<li>${esc(l)}</li>`).join('')}</ul></div>`;}
 function dripDelta(d){return d?`<span class="${d>0?'up':'down'}">(${d>0?'+':''}${d})</span>`:'<span>(no change)</span>';}
 function fitChange(a,b){const A=`${a.fitName} ×${a.fit}`,B=`${b.fitName} ×${b.fit}`;if(A===B)return `${A} (no change)`;return `${A} → <span class="${b.fit>a.fit?'up':b.fit<a.fit?'down':''}">${B}</span>`;}
 function sigChange(a,b){if(a.topStyle===b.topStyle)return '';const n=st=>st?SIGS[st].name:'none';return `<dt>Signature</dt><dd>${n(a.topStyle)} → <span class="down">${n(b.topStyle)}</span></dd><dd class="sigw">Heads up: this changes your main style, so your signature move changes too.</dd>`;}
@@ -2407,16 +2568,25 @@ $('#clDetail').addEventListener('click',e=>{const b=e.target.closest('[data-act]
 const treeSpent=k=>Object.values(G.p.talents[k]).reduce((a,b)=>a+b,0);
 function renderHeat(){const h=G.heat||0,pc=v=>Math.round(v*h*100);$('#heatLv').textContent=h;
   $('#heatFx').innerHTML=h?`Enemies: <b>+${pc(HEAT.hp)}% health</b>, <b>+${pc(HEAT.dmg)}% damage</b><br>You: <i>+${pc(HEAT.cash)}% Cash</i>, <i>+${pc(HEAT.xp)}% Clout</i>, <i>rarer loot</i>`:`Each level: enemies <b>+${Math.round(HEAT.hp*100)}% health</b> and <b>+${Math.round(HEAT.dmg*100)}% damage</b>. You get <i>+${Math.round(HEAT.cash*100)}% Cash</i>, <i>+${Math.round(HEAT.xp*100)}% Clout</i> and <i>rarer loot</i>.`;
-  const b=$('#bHeat');if(G.p.points>0)b.removeAttribute('aria-disabled');else b.setAttribute('aria-disabled','true');}
-function renderTalents(){const p=G.p;$('#tPts').textContent=p.points;renderHeat();
-  $('#trees').innerHTML=SK.map(k=>{const st=STYLES[k],spent=treeSpent(k),sc=p.s.scale[k];
+  const b=$('#bHeat');if(G.p.points>0&&classReady())b.removeAttribute('aria-disabled');else b.setAttribute('aria-disabled','true');
+  b.title=classReady()?'':`Spend your first ${CLASS_FIRST} points in your class tree first.`;}
+const CLASS_FIRST=3;
+const clsOf=()=>G.p.cls||(G.p.emperor?EMP:'goth');
+const classReady=()=>treeSpent(clsOf())>=CLASS_FIRST;
+function renderTalents(){const p=G.p,cls=clsOf(),ready=classReady();$('#tPts').textContent=p.points;renderHeat();
+  const others=SK.filter(k=>k!==cls),cs=treeSpent(cls);
+  const tree=(k,main)=>{const st=STYLES[k],spent=treeSpent(k),sc=p.s.scale[k]||1,gate=!main&&!ready;
     const tiers=[0,1,2].map(tier=>{const req=[0,3,6][tier];const label=['Tier 1',`Tier 2 · needs 3 in tree`,`Signature · needs 6 in tree`][tier];
-      return `<div class="tier"><div class="tier-l">${label}</div>`+TREES[k].filter(t=>t.tier===tier).map(t=>{const r=p.talents[k][t.id]||0,locked=spent<req,maxed=r>=t.max,can=!locked&&!maxed&&p.points>0;
+      return `<div class="tier"><div class="tier-l">${label}</div>`+TREES[k].filter(t=>t.tier===tier).map(t=>{const r=p.talents[k][t.id]||0,locked=gate||spent<req,maxed=r>=t.max,can=!locked&&!maxed&&p.points>0;
         return `<button type="button" class="node ${locked?'locked':''} ${maxed?'maxed':''} ${can?'can':''}" data-k="${k}" data-t="${t.id}" ${can?'':'aria-disabled="true"'}><span class="nn">${t.name}</span><span class="nr">${r}/${t.max}</span><span class="nd">${t.desc}</span></button>`;}).join('')+'</div>';}).join('');
-    return `<div class="tree" style="--c:${st.c}"><div><h4>${st.name}</h4><div class="tm">${st.dmg} · ${spent} point${spent===1?'':'s'} spent<br>Drip boost from your ${st.name} pieces: ×${sc.toFixed(2)}</div></div>${tiers}</div>`;}).join('');}
-$('#bHeat').addEventListener('click',()=>{if(!G||G.p.points<=0)return;G.p.points--;G.heat=(G.heat||0)+1;sfx('lvl');renderTalents();});
-$('#trees').addEventListener('click',e=>{const b=e.target.closest('.node');if(!b||b.getAttribute('aria-disabled')==='true'||!G)return;const p=G.p;if(p.points<=0)return;
-  const k=b.dataset.k,id=b.dataset.t;p.talents[k][id]=(p.talents[k][id]||0)+1;p.points--;refreshStats();sfx('lvl');renderTalents();});
+    return `<div class="tree${main?' main':''}" style="--c:${st.c}"><div>${main?'<p class="eyebrow" style="margin:0 0 2px">Your class</p>':''}<h4>${st.name}</h4><div class="tm">${st.dmg} · ${spent} point${spent===1?'':'s'} spent${main?`<br>Signature move: <b style="color:var(--c)">${SIGS[k].name}</b>`:''}<br>${k===EMP?'Drip boost from your New Clothes':`Drip boost from your ${st.name} pieces`}: ×${sc.toFixed(2)}</div>${main&&!ready?`<div class="tgate">Your first ${CLASS_FIRST} points go here (${cs}/${CLASS_FIRST}).</div>`:''}</div>${tiers}</div>`;};
+  const sh=!!G.showOthers;
+  $('#trees').innerHTML=tree(cls,true)+
+    `<div class="othr"><button type="button" class="btn ghost sm" id="bOthers" aria-expanded="${sh}">${sh?'Hide':'Show'} other styles (${others.length})</button><span class="note">${ready?'Cross-training: other styles\' talents work in any outfit, and grow stronger the more of that style\'s Drip you wear. They never change your class or Signature move.':`Locked until you've spent ${CLASS_FIRST} points in your ${STYLES[cls].name} tree (${cs}/${CLASS_FIRST}).`}</span></div>`+
+    (sh?`<div class="otrees" style="--nt:${others.length}">${others.map(k=>tree(k,false)).join('')}</div>`:'');}
+$('#bHeat').addEventListener('click',()=>{if(!G||G.p.points<=0||!classReady())return;G.p.points--;G.heat=(G.heat||0)+1;sfx('lvl');renderTalents();});
+$('#trees').addEventListener('click',e=>{if(e.target.closest('#bOthers')&&G){G.showOthers=!G.showOthers;sfx('pick');renderTalents();if(pad.on)setTimeout(()=>setPadFocus($('#bOthers')),20);return;}const b=e.target.closest('.node');if(!b||b.getAttribute('aria-disabled')==='true'||!G)return;const p=G.p;if(p.points<=0)return;
+  const k=b.dataset.k,id=b.dataset.t;if(k!==clsOf()&&!classReady())return;p.talents[k][id]=(p.talents[k][id]||0)+1;p.points--;refreshStats();sfx('lvl');renderTalents();});
 
 // ---------- render ----------
 function render(){
@@ -2437,7 +2607,7 @@ function render(){
     if(!lk){ctx.globalAlpha=0.15+0.1*Math.sin(t*3);ctx.fillStyle='#ffc94a';ctx.beginPath();ctx.ellipse(ex,ey,T*1.6,T*0.9,0,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;}}
   // pickups
   for(const k of G.pickups){if(k.x<vx0-30||k.x>vx1+30||k.y<vy0-30||k.y>vy1+30)continue;ctx.save();ctx.translate(k.x,k.y+Math.sin(k.t*3)*2);
-    if(k.type==='item')drawGarment(ctx,k.item,t);
+    if(k.type==='item'){drawGarment(ctx,k.item,t);if(setOf(k.item)){const y=-26+Math.sin(t*4)*1.5;ctx.fillStyle=SET_C;ctx.strokeStyle='#06201c';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(0,y-8);ctx.lineTo(6.5,y);ctx.lineTo(0,y+8);ctx.lineTo(-6.5,y);ctx.closePath();ctx.fill();ctx.stroke();}}
     else if(k.type==='cash'){ctx.fillStyle='rgba(255,211,77,.22)';circ(ctx,0,0,10);ctx.fillStyle='#ffd34d';circ(ctx,0,0,6);ctx.fillStyle='#b8862e';ctx.font='700 8px "Chakra Petch", sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('$',0,0.5);}
     else if(k.type==='latte'){ctx.fillStyle='rgba(126,240,160,.2)';circ(ctx,0,0,13);if(drawPickupArt(ctx,'latte')){ctx.restore();continue;}ctx.fillStyle='#e9dcc4';ctx.beginPath();ctx.moveTo(-5,-7);ctx.lineTo(5,-7);ctx.lineTo(3.8,7);ctx.lineTo(-3.8,7);ctx.closePath();ctx.fill();ctx.fillStyle='#b9895a';ctx.fillRect(-4.4,-1,8.8,5);ctx.strokeStyle='#7ef0a0';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(1,-7);ctx.lineTo(3,-13);ctx.stroke();}
     else if(k.type==='chest'){ctx.fillStyle='rgba(255,201,74,.18)';circ(ctx,0,0,20);if(drawPickupArt(ctx,'chest')){ctx.restore();continue;}ctx.fillStyle='#6b4a2f';rr(ctx,-14,-10,28,20,3);ctx.fill();ctx.fillStyle='#8a6240';ctx.fillRect(-14,-10,28,6);ctx.strokeStyle='#ffc94a';ctx.lineWidth=1.4;ctx.beginPath();ctx.arc(0,0,2,Math.PI,Math.PI*2.4);ctx.moveTo(0,2);ctx.lineTo(-6,6);ctx.lineTo(6,6);ctx.closePath();ctx.stroke();}
@@ -2453,7 +2623,10 @@ function render(){
   drawSpecialsTop(ctx,t);
   // bullets
   ctx.globalCompositeOperation='lighter';
-  for(const b of G.bullets){if(b.kind==='fan'){ctx.save();ctx.globalCompositeOperation='source-over';ctx.translate(b.x,b.y);ctx.rotate(Math.atan2(b.vy,b.vx));ctx.fillStyle='rgba(255,69,69,.3)';circ(ctx,0,0,b.r*1.4);ctx.fillStyle='#f4f4f4';rr(ctx,-11,-6,20,11,5);ctx.fill();ctx.fillStyle='#ff4545';ctx.fillRect(-11,3,20,3);ctx.fillRect(-4,-3,8,2);ctx.restore();continue;}const sp=Math.hypot(b.vx,b.vy)||1,ux=b.vx/sp,uy=b.vy/sp,L=Math.min(sp*0.032,28)+b.r*0.5,ln=(k,w,c,al)=>{ctx.strokeStyle=c;ctx.globalAlpha=al;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(b.x-ux*L*k,b.y-uy*L*k);ctx.lineTo(b.x,b.y);ctx.stroke();};ctx.lineCap='round';ln(1,b.r*2.4,b.c,0.28);ln(0.7,b.r*1.35,b.c,1);ln(0.4,b.r*(b.crit?0.9:0.6),'#ffffff',1);ctx.globalAlpha=1;ctx.lineCap='butt';}
+  drawSweeps(ctx);
+  for(const b of G.bullets){if(b.kind==='heel'){ctx.save();ctx.translate(b.x,b.y);ctx.rotate(b.spin||0);ctx.scale(1.45,1.45);ctx.fillStyle='rgba(255,79,163,.22)';circ(ctx,0,0,b.r*2);ctx.fillStyle='#1a1418';ctx.beginPath();ctx.moveTo(-9,2);ctx.quadraticCurveTo(-2,-7,8,-3);ctx.lineTo(9,0);ctx.quadraticCurveTo(0,-2,-6,4);ctx.closePath();ctx.fill();ctx.fillStyle='#ff4fa3';ctx.beginPath();ctx.moveTo(-8,1.4);ctx.quadraticCurveTo(-2,-5.6,7.4,-2.6);ctx.lineTo(7.6,-1.6);ctx.quadraticCurveTo(-1,-3.6,-6.6,2.6);ctx.closePath();ctx.fill();ctx.fillStyle=b.c;ctx.fillRect(6,-2.6,2.2,9);ctx.restore();continue;}
+    if(b.kind==='flame'){const k=clamp(1-b.life/(b.l0||0.34),0,1);ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=0.45*(1-k);ctx.fillStyle=k<0.5?'#ff8a2e':'#c0302a';circ(ctx,b.x,b.y,b.r*1.4);ctx.globalAlpha=0.8*(1-k)+0.1;ctx.fillStyle=k<0.3?'#fff3c4':k<0.65?'#ffb347':'#ff5a3c';circ(ctx,b.x,b.y,b.r*0.8);ctx.restore();continue;}
+    if(b.kind==='fan'){ctx.save();ctx.globalCompositeOperation='source-over';ctx.translate(b.x,b.y);ctx.rotate(Math.atan2(b.vy,b.vx));ctx.fillStyle='rgba(255,69,69,.3)';circ(ctx,0,0,b.r*1.4);ctx.fillStyle='#f4f4f4';rr(ctx,-11,-6,20,11,5);ctx.fill();ctx.fillStyle='#ff4545';ctx.fillRect(-11,3,20,3);ctx.fillRect(-4,-3,8,2);ctx.restore();continue;}const sp=Math.hypot(b.vx,b.vy)||1,ux=b.vx/sp,uy=b.vy/sp,L=Math.min(sp*0.032,28)+b.r*0.5,ln=(k,w,c,al)=>{ctx.strokeStyle=c;ctx.globalAlpha=al;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(b.x-ux*L*k,b.y-uy*L*k);ctx.lineTo(b.x,b.y);ctx.stroke();};ctx.lineCap='round';ln(1,b.r*2.4,b.c,0.28);ln(0.7,b.r*1.35,b.c,1);ln(0.4,b.r*(b.crit?0.9:0.6),'#ffffff',1);ctx.globalAlpha=1;ctx.lineCap='butt';}
   ctx.globalCompositeOperation='source-over';
   for(const b of G.ebullets)drawEB(ctx,b,t);
   ctx.globalCompositeOperation='lighter';
@@ -2499,7 +2672,7 @@ const pctS=x=>(Math.round(x*10)/10)+'%';
 function updHUD(){const p=G.p,s=p.s;
   setS('#hpFill','width',pctS(p.hp/s.maxHp*100));setT('#hpTxt',`${Math.ceil(p.hp)} / ${s.maxHp}`);H$('#hpBar').classList.toggle('shield',p.shieldUp);
   setS('#xpFill','width',pctS(p.xp/p.xpNext*100));setT('#hLvl',String(p.level));
-  setT('#dripTxt',String(s.drip));setT('#dripFx',`+${Math.round(s.drip/BAL.dripK*100)}% damage · +${s.dripHp} HP`);setT('#fitTxt',s.fit>1?`${s.fitName} ×${s.fit}`:`${s.fitName} · no Fit bonus`);setS('#fitTxt','color',s.topStyle?STYLES[s.topStyle].c:'var(--muted)');
+  setT('#dripTxt',String(s.drip));setT('#dripFx',`+${Math.round(s.drip/BAL.dripK*100)}% damage · +${s.dripHp} HP`);setT('#fitTxt',s.fit!==1?`${s.fitName} ×${s.fit}`:`${s.fitName} · no Fit bonus`);setS('#fitTxt','color',s.fitName==='Poser'?'#ff7a8a':s.topStyle?STYLES[s.topStyle].c:'var(--muted)');
   setT('#floorTxt',`Floor ${G.floor}${G.endless&&G.floor>FINALE_EVERY?' · Encore':''} · ${G.zone.name}${G.heat?' · Heat '+G.heat:''}`);
   H$('#passTxt').hidden=!p.passes;if(p.passes)setT('#passTxt',`VIP Pass ×${p.passes}`);
   {const ch=G.chal;H$('#chalBadge').hidden=!ch;if(ch){const tl=ch.type==='heels'?`wave ${Math.max(1,ch.wave)}/${ch.waves} · no dashing`:`${Math.ceil(Math.max(0,ch.t))}s left`;setT('#chalBadge',`Catwalk: ${CHALS[ch.type].n} · ${tl}`);}}
@@ -2566,6 +2739,7 @@ const SIGS={
   y2k:{name:'Y2K Bug',cd:15,desc:'An EMP deletes every enemy bullet near you and freezes nearby enemies for 2 seconds.'},
   punk:{name:'Stage Dive',cd:11,desc:'Leap where you aim and land in a huge explosion that throws enemies back. Untouchable mid-air.'},
   cottage:{name:'Picnic',cd:16,desc:'Lay a picnic blanket for 6 seconds. You heal quickly on it, and enemies on it are slowed.'},
+  emperor:{name:'Nobody Says a Word',cd:15,desc:'Awkward silence. Nearby enemies and their bullets freeze for 2.5 seconds, frozen enemies take 40% more damage, and your Runway rank jumps.'},
 };
 let sigPressed=false;
 function useSignature(){const p=G.p,st=p.s.topStyle;if(G.dress==='plain'){if(G.sigWarnT<=0){addText(p.x,p.y-50,'PLAIN CLOTHES: NO SIGNATURE','#ff9a3c',false);G.sigWarnT=2;}return;}
@@ -2581,6 +2755,9 @@ function useSignature(){const p=G.p,st=p.s.topStyle;if(G.dress==='plain'){if(G.s
       G.rings.push({x:p.x,y:p.y-10,r:420,life:0.5,max:0.5,c:'#5ff0ff'});G.shake=Math.max(G.shake,0.3);sfx('zap');break;}
     case 'punk':{let tx=p.x,ty=p.y;for(let d=10;d<=210;d+=10){const nx=p.x+Math.cos(a)*d,ny=p.y+Math.sin(a)*d;if(hitsWall(nx,ny,p.r))break;tx=nx;ty=ny;}p.dive={t:0,dur:0.45,x0:p.x,y0:p.y,x1:tx,y1:ty};p.invuln=Math.max(p.invuln,0.6);break;}
     case 'cottage':G.picnics.push({x:p.x,y:p.y,r:110,life:6});break;
+    case 'emperor':{const dur=2.5+(p.s.procession?1:0),R=460;for(const b of G.ebullets){if(Math.hypot(b.x-p.x,b.y-p.y)<R)b.frz=dur;}
+      for(const e of G.enemies){if(e.dead||e.dormant)continue;const dd=e.big?Math.max(0,Math.hypot(e.x-p.x,e.y-p.y)-e.big.ry):Math.hypot(e.x-p.x,e.y-p.y);if(dd<R){e.stun=Math.max(e.stun,isBoss(e)?1:dur);e.awkT=G.time+dur;if(!e.big)addText(e.x,e.y-e.r*2.4,'...','#fff3c4',false);}}
+      addRank(15);G.rings.push({x:p.x,y:p.y-10,r:R,life:0.6,max:0.6,c:'#ffd76a'});G.shake=Math.max(G.shake,0.2);sfx('zap');break;}
   }}
 function updateSig(dt){const p=G.p;if(p.sigCd>0)p.sigCd-=dt;if(p.veilT>0)p.veilT-=dt;G.sigWarnT-=dt;
   p.histT=(p.histT||0)-dt;if(p.histT<=0){p.histT=0.1;p.hist.push({x:p.x,y:p.y,hp:p.hp});if(p.hist.length>20)p.hist.shift();}
@@ -2598,8 +2775,10 @@ const RANKS=[{l:'D',n:'Dull',at:0,c:'#8a8196',m:1},{l:'C',n:'Cute',at:14,c:'#7be
 function rankIdx(v){let i=0;for(let k=0;k<RANKS.length;k++)if(v>=RANKS[k].at)i=k;return i;}
 const rankMult=()=>G?RANKS[rankIdx(G.p.rank)].m:1;
 function addRank(n){const p=G.p,b=rankIdx(p.rank);p.rank=Math.min(108,p.rank+n*(G.dress==='glass'?2:1));p.rankT=2.2;const a=rankIdx(p.rank);
+  if(a>b&&hasSp('photo')){for(const e of G.enemies){if(!e.dead&&!e.dormant&&!e.big&&Math.hypot(e.x-p.x,e.y-p.y)<260)e.stun=Math.max(e.stun,isBoss(e)?0.5:1.2);}G.rings.push({x:p.x,y:p.y-10,r:260,life:0.35,max:0.35,c:'#ffffff'});burst(p.x,p.y-30,'#ffffff',14,200);}
   if(a>b){const R=RANKS[a];addText(p.x,p.y-64,`RANK ${R.l}!`,R.c,true);if(a>=4)toast(`Runway rank <b style="color:${R.c}">${R.l}</b>: ${R.n}! Loot ×${R.m}`,R.c);sfx('pick');}}
-function rankTick(dt){const p=G.p;if(p.rankT>0)p.rankT-=dt;else p.rank=Math.max(0,p.rank-dt*(3+rankIdx(p.rank)*1.3));}
+function rankTick(dt){const p=G.p;if(p.rankT>0)p.rankT-=dt;else p.rank=Math.max(0,p.rank-dt*(3+rankIdx(p.rank)*1.3)*(1-Math.min(0.6,(p.s&&p.s.rankHold)||0)));
+  if(p.emperor){const ri=rankIdx(p.rank);if(ri!==p.empRi){p.empRi=ri;const hp=p.hp;refreshStats();p.hp=Math.min(hp,p.s.maxHp);}}}
 
 // ---------- cash ----------
 const shopP=f=>25*(1+0.45*(f-1))*(G&&G.sale?0.5:1);
@@ -2608,7 +2787,7 @@ function dropCash(x,y,amt){if(amt<=0)return;amt=Math.max(1,Math.round(amt));G.pi
 
 // ---------- dress codes ----------
 const DRESS=[
-  {id:'mono',name:'Monochrome',rule:'Only your main style counts toward your Drip.',reward:'Double loot drops.'},
+  {id:'mono',name:'Monochrome',rule:'Only your class style counts toward your Drip.',reward:'Double loot drops.'},
   {id:'casual',name:'Casual Friday',rule:'Enemies move 30% faster.',reward:'Every drop is Fresh or better, and rarer overall.'},
   {id:'lights',name:'Lights Out',rule:'You can barely see past arm’s length.',reward:'+75% Cash.'},
   {id:'glass',name:'Glass Runway',rule:'You take double damage.',reward:'Runway rank fills twice as fast, and +50% Clout.'},
@@ -2691,9 +2870,9 @@ const shopDisc=()=>lbPerk(80)?0.85:1;
 const LBM=[{at:10,t:'Pocket money',d:'Start every run with $40.'},{at:25,t:'Third piece',d:'Start with a head piece in your style.'},{at:40,t:'Head start',d:'+1 Style Point at the start of every run.'},{at:60,t:'Better basics',d:'Your starting pieces are one rarity higher.'},{at:80,t:'Insider discount',d:'The Pop-up Boutique and the Tailor are 15% cheaper.'},{at:100,t:'Signature look',d:'Start every run with a random Statement Piece in your bag.'},{at:0,t:'Complete collection',d:'+10% Drip on everything you wear, always.'}];
 const lbAt=m=>m.at||TOTAL_PIECES();
 function lbPerk(at){return foundCount()>=(at||TOTAL_PIECES());}
-function startPerks(p){const st=cfg.style,b=lbPerk(60)?1:0,got=[];
-  if(b){p.gear.top=makeGear(1,0,st,'top',2);p.gear.kicks=makeGear(1,0,st,'kicks',1);got.push('better basics');}
-  if(lbPerk(25)){p.gear.head=makeGear(1,0,st,'head',b);got.push('a head piece');}
+function startPerks(p,emp){const st=cfg.style,b=lbPerk(60)?1:0,got=[];
+  if(b&&!emp){p.gear.top=makeGear(1,0,st,'top',2);p.gear.kicks=makeGear(1,0,st,'kicks',1);got.push('better basics');}
+  if(lbPerk(25)&&!emp){p.gear.head=makeGear(1,0,st,'head',b);got.push('a head piece');}
   if(lbPerk(10)){p.cash+=40;got.push('$40');}
   if(lbPerk(40)){p.points+=1;got.push('+1 Style Point');}
   if(lbPerk(100)){const it=makeStmtGear(1);it.fresh=true;p.bag.push(it);got.push('a Statement Piece');}
@@ -2716,6 +2895,12 @@ const STMT={
   encore:{n:'Encore',d:'Your Signature move recharges 35% faster.'},
   carpet:{n:'Red Carpet',d:'Each enemy you defeat heals 2% of your max HP.'},
   spiked:{n:'Spiked Collar',d:'Enemies that touch you take 3× your shot damage and get knocked back.'},
+  rope:{n:'Velvet Rope',d:'Enemies that get close to you are slowed by 40%.'},
+  mood:{n:'Mood Ring',d:'Every hit has a 20% chance to poison, slow, stun or arc lightning, picked at random.'},
+  mix:{n:'Mix & Match',d:'+6% damage for each different style you are wearing (up to +36%).'},
+  fanny:{n:'Fanny Pack',d:'Cash flies to you from twice as far, and each pickup heals 1% of your max HP.'},
+  photo:{n:'Photo Op',d:'Ranking up sets off a camera flash that stuns nearby enemies for 1.2 seconds.'},
+  thread:{n:'Invisible Thread',d:'This piece gives 50% more Drip. For the Emperor, its slot also still counts as wearing nothing.'},
 };
 function pickStmt(){const worn=(typeof G!=='undefined'&&G&&G.p&&G.p.s&&G.p.s.sp)||new Set();const ks=Object.keys(STMT),fresh=ks.filter(k=>!worn.has(k));return pick(fresh.length?fresh:ks);}
 function makeStmtGear(f){const it=makeGear(f,2,null,null,Math.max(3,rollRarity(f,2)));it.sp=pickStmt();return it;}
@@ -3037,8 +3222,8 @@ syncSettings();
 function fullFit(style,i){const o={};SLOTS.forEach(s=>o[s]={style,slot:s,base:NAMES[style][s][i%NAMES[style][s].length]});return o;}
 function drawMenuPreviews(t){const c=$('#pvBig');if(!c)return;const g=c.getContext('2d');g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,c.width,c.height);
   g.fillStyle=STYLES[cfg.style].c;g.globalAlpha=0.16;g.beginPath();g.ellipse(180,414,120,22,0,0,Math.PI*2);g.fill();g.globalAlpha=1;
-  const fit=fullFit(cfg.style,cfg.gender==='f'?0:1);fit.head=null;
-  drawCommando(g,180,412,9.4,{bare:true,gender:cfg.gender,skin:cfg.skin,hair:cfg.hair,hairStyle:cfg.hairStyle,eyes:cfg.eyes,gear:fit,weaponKind:cfg.gender==='f'?'smg':'scatter',accent:STYLES[cfg.style].c},0.3,t||1,false);}
+  const empL=cfg.style===EMP,fit=empL?{head:null,top:null,bottom:null,kicks:null,acc:null}:fullFit(cfg.style,cfg.gender==='f'?0:1);fit.head=null;
+  drawCommando(g,180,412,9.4,{emperor:empL,bare:true,gender:cfg.gender,skin:cfg.skin,hair:cfg.hair,hairStyle:cfg.hairStyle,eyes:cfg.eyes,gear:fit,weaponKind:cfg.gender==='f'?'smg':'scatter',accent:STYLES[cfg.style].c},0.3,t||1,false);}
 function saveCfg(){store.set('dripcmd.char',cfg);}
 function renderCreator(){
   segSet('segBuild',cfg.gender);
@@ -3046,18 +3231,27 @@ function renderCreator(){
   $('#hairStyles').innerHTML=HAIRSTYLES.map(([k,n])=>`<button type="button" data-hs="${k}" aria-pressed="${k===cfg.hairStyle}">${n}</button>`).join('');
   $('#hairCols').innerHTML=HAIRCOLS.map(([c,n])=>`<button type="button" class="sw" style="--c:${c}" data-hc="${c}" title="${n}" aria-label="${n} hair" aria-pressed="${c===cfg.hair}"></button>`).join('');
   $('#eyeCols').innerHTML=EYECOLS.map(([c,n])=>`<button type="button" class="sw" style="--c:${c}" data-ec="${c}" title="${n}" aria-label="${n} eyes" aria-pressed="${c===cfg.eyes}"></button>`).join('');
+  {const dot=(c,n)=>`<i style="--c:${c}"></i>${esc(n)}`,hs=HAIRSTYLES.find(h=>h[0]===cfg.hairStyle),hc=HAIRCOLS.find(h=>h[0]===cfg.hair),ec=EYECOLS.find(h=>h[0]===cfg.eyes),si=SKINS.indexOf(cfg.skin);
+   $('#ddv-skin').innerHTML=dot(cfg.skin,si>=0?`Tone ${si+1}`:'Custom');$('#ddv-hs').textContent=hs?hs[1]:cfg.hairStyle;$('#ddv-hc').innerHTML=dot(cfg.hair,hc?hc[1]:'Custom');$('#ddv-ec').innerHTML=dot(cfg.eyes,ec?ec[1]:'Custom');
+   for(const [k,id] of [['skin','#skins'],['hs','#hairStyles'],['hc','#hairCols'],['ec','#eyeCols']]){const open=ddOpen===k;$(id).hidden=!open;const b=$('#ddb-'+k);b.setAttribute('aria-expanded',String(open));}}
   if(document.activeElement!==$('#cName'))$('#cName').value=cfg.name||'';}
+let ddOpen=null;
 $('.creator').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.classList.contains('ddbtn')){ddOpen=ddOpen===b.dataset.dd?null:b.dataset.dd;sfx('pick');renderCreator();if(pad.on)setTimeout(()=>setPadFocus($('#'+b.id)),20);return;}
   if(b.closest('#segBuild')){const was=cfg.gender;cfg.gender=b.dataset.v;if(!cfg.name||cfg.name===(was==='f'?'Vex':'Kade'))cfg.name=cfg.gender==='f'?'Vex':'Kade';}
   else if(b.dataset.skin)cfg.skin=b.dataset.skin;else if(b.dataset.hs)cfg.hairStyle=b.dataset.hs;else if(b.dataset.hc)cfg.hair=b.dataset.hc;else if(b.dataset.ec)cfg.eyes=b.dataset.ec;
   else if(b.id==='bRandom'){cfg.gender=pick(['f','m']);cfg.skin=pick(SKINS);cfg.hairStyle=pick(HAIRSTYLES)[0];cfg.hair=pick(HAIRCOLS)[0];cfg.eyes=pick(EYECOLS)[0];if(['Vex','Kade',''].includes(cfg.name||''))cfg.name=cfg.gender==='f'?'Vex':'Kade';}
   else return;saveCfg();renderCreator();if(pad.on){const key=keyOf(b);setTimeout(()=>{const again=key&&document.querySelector('#menu '+key);if(again)setPadFocus(again);},20);}});
 $('#cName').addEventListener('input',e=>{cfg.name=e.target.value.slice(0,14);saveCfg();});
 renderCreator();
-$('#styleChips').innerHTML=SK.map(k=>`<button type="button" class="sty" data-s="${k}" style="--c:${STYLES[k].c}" aria-pressed="${k===cfg.style}"><span class="sn">${STYLES[k].name}</span><span class="sd">${STYLES[k].dmg}</span><span class="sb">${STYLES[k].blurb}</span></button>`).join('');
-$('#styleChips').addEventListener('click',e=>{const b=e.target.closest('.sty');if(!b)return;cfg.style=b.dataset.s;saveCfg();document.querySelectorAll('.sty').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));drawMenuPreviews();});
+function renderStyleChips(){const unl=!!prog.emperor;if(cfg.style===EMP&&!unl)cfg.style='goth';
+  $('#styleChips').innerHTML=SK.map(k=>`<button type="button" class="sty" data-s="${k}" style="--c:${STYLES[k].c}" aria-pressed="${k===cfg.style}"><span class="sn">${STYLES[k].name}</span><span class="sd">${STYLES[k].dmg} · ${SIGS[k].name}</span><span class="sb">${STYLES[k].blurb}</span></button>`).join('')+
+  (unl?`<button type="button" class="sty emp" data-s="emperor" style="--c:${STYLES.emperor.c}" aria-pressed="${cfg.style===EMP}"><span class="sn">♛ The Emperor <em>Hidden style</em></span><span class="sd">${STYLES.emperor.dmg} · ${SIGS.emperor.name}</span><span class="sb">${STYLES.emperor.blurb}</span></button>`
+    :`<button type="button" class="sty locked" disabled aria-disabled="true" style="--c:#5a5466"><span class="sn">??? <em>Hidden style</em></span><span class="sd">Locked</span><span class="sb">Some say the finest outfit is the one nobody can see. Clear floor 3 wearing it.</span></button>`);}
+renderStyleChips();
+$('#styleChips').addEventListener('click',e=>{const b=e.target.closest('.sty');if(!b||b.disabled)return;cfg.style=b.dataset.s;saveCfg();document.querySelectorAll('.sty').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));drawMenuPreviews();});
 $('#drops').innerHTML=[['8%','#ffc94a',0],['23%','#ffd46a',1.1],['41%','#ff7abd',0.5],['57%','#ffc94a',1.8],['74%','#ff4fa3',0.9],['90%','#ffc94a',2.2]].map(([l,c,d])=>`<i style="left:${l};--c:${c};--d:${d}s"></i>`).join('');
-function updBest(){const b=store.get('dripcmd.best',0);$('#bestTxt').textContent=[b?`Best run: floor ${b}`:'',prog.wins?`Shows closed: ${prog.wins}`:'',prog.bestEndless?`Endless best: floor ${prog.bestEndless}`:''].filter(Boolean).join(' · ');if(typeof renderRules==='function')renderRules();}
+function updBest(){if(typeof renderStyleChips==='function'&&state==='menu'){renderStyleChips();drawMenuPreviews();}const b=store.get('dripcmd.best',0);$('#bestTxt').textContent=[b?`Best run: floor ${b}`:'',prog.wins?`Shows closed: ${prog.wins}`:'',prog.bestEndless?`Endless best: floor ${prog.bestEndless}`:''].filter(Boolean).join(' · ');if(typeof renderRules==='function')renderRules();}
 $('#bStart').addEventListener('click',()=>{initAudio();newRun();});
 drawMenuPreviews();updBest();applyVideo();syncSettingsUi();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(state==='menu')drawMenuPreviews();});
@@ -3088,7 +3282,7 @@ const ACH=[ // ids are save keys; some keep their first names (e.g. kills100) so
   {id:'drip500',g:'style',n:'Dripping',d:'Reach 1,000 Drip.'},
   {id:'drip1500',g:'style',n:'Drip Lord',d:'Reach 3,000 Drip.'},
   {id:'sigtal',g:'style',n:'Signature Look',d:'Learn Signature talents in two different Style Trees in one run.'},
-  {id:'sigs6',g:'style',n:'Six Moves',d:'Use all six Signature moves in one run.'},
+  {id:'sigs6',g:'style',n:'Six Moves',d:'Use all six Signature moves, one class at a time (any runs).',goal:6,val:()=>achData.st.sigs.filter(k=>SK.includes(k)).length},
   {id:'heat5',g:'style',n:'Turn It Up',d:'Close the show at Heat 5 or higher.'},
   {id:'grail',g:'wardrobe',n:'Holy Grail',d:'Wear three Grail pieces at once.'},
   {id:'stmt3',g:'wardrobe',n:'Making a Statement',d:'Wear five Statement Pieces at once.'},
@@ -3133,7 +3327,7 @@ function achTick(){if(!G||!G.p||!['play','between','closet','talents','shop'].in
   if(G.endless&&G.floor>=36)achUnlock('endless20');
   if(!achData.got.grail&&wornAtLeast(p,5)>=3)achUnlock('grail');
   if(!achData.got.sigtal&&SK.filter(k=>TREES[k].some(t=>t.tier===2&&(p.talents[k][t.id]||0)>0)).length>=2)achUnlock('sigtal');
-  if(G.achSigs&&G.achSigs.size>=6)achUnlock('sigs6');
+  if(achData.st.sigs.filter(k=>SK.includes(k)).length>=6)achUnlock('sigs6');
   if(G.achChals&&G.achChals.size>=3)achUnlock('chals3');
   achCheckGoals();if(achDirty)achSave();}
 setInterval(achTick,500);
