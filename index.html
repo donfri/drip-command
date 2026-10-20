@@ -507,6 +507,23 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
   /* Long menus keep their title and Back button pinned at the top while you scroll. */
   .touch .sheet>.wrap>.secth:first-child{position:sticky;top:0;z-index:3;margin:calc(-1*(env(safe-area-inset-top,0px) + 12px)) calc(-1*max(16px,env(safe-area-inset-right,0px))) 0 calc(-1*max(16px,env(safe-area-inset-left,0px)));padding:calc(env(safe-area-inset-top,0px) + 10px) max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));background:#0c0911f2;border-bottom:1px solid var(--line)}
 }
+/* Between floors on phones: one-line title, compact stats and dress-code cards. */
+@media (max-height:520px),(max-width:560px){
+  .touch #between .wrap{gap:10px}
+  .touch #between .big{font-size:clamp(26px,5.2vw,34px);line-height:1}
+  .touch #between .eyebrow{font-size:10px}
+  .touch #between .statline{gap:4px 18px}
+  .touch #between .statline div{gap:0}
+  .touch #between .statline b{font-size:18px}
+  .touch #between .statline span{font-size:8px}
+  .touch #between .note{font-size:12px;line-height:1.4}
+  .touch #between .card{padding:10px;gap:8px}
+  .touch #between .dcgrid,.touch #between .evgrid{gap:8px}
+  .touch #between .dcard{padding:8px 10px;gap:3px;font-size:12px}
+  .touch #between .dcn,.touch #between .evn{font-size:16px}
+  .touch #between .evbody{margin:4px 0 2px;font-size:12px}
+}
+@media (max-height:520px){.touch #between .big br{display:none}}
 @media (max-height:520px){
   .touch .sheet>.wrap>.secth:first-child .eyebrow{display:none}
   .touch .sheet>.wrap>.secth:first-child{padding-top:calc(env(safe-area-inset-top,0px) + 6px);padding-bottom:6px}
@@ -779,7 +796,7 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
 <div id="between" class="sheet" hidden>
   <div class="wrap center">
     <p class="eyebrow" id="bwEyebrow">Floor 1 cleared</p>
-    <h2 class="big">Runway<br>walked.</h2>
+    <h2 class="big">Runway<br> walked.</h2>
     <div class="statline" id="bwStats"></div>
     <p class="note" id="bwNext"></p>
     <div class="card" id="dressOffer" hidden></div>
