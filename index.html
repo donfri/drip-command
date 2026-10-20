@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Drip Command"><meta name="theme-color" content="#0c0911"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Drip Command</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,6 +13,7 @@
   color-scheme:dark;
 }
 html,body{height:100%}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{background:var(--ink);color:var(--fg);font-family:var(--ui);font-size:15px;overflow:hidden;user-select:none;-webkit-user-select:none}
 #game{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;background:var(--ink)}
 button{font:inherit;color:inherit;cursor:pointer}
@@ -239,7 +240,7 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
 .setline .sparts{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px;color:var(--muted)}.setline .sparts i{font-style:normal}.setline .sparts i.got{color:#38e8c6;font-weight:700}
 .setline>div:not(.sparts){color:var(--muted)}.setline>div.on{color:var(--fg)}
 .stn{font-weight:700}
-.recap{display:grid;grid-template-columns:220px minmax(0,1fr);gap:18px;text-align:left;background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--hp);padding:14px;max-width:820px;margin:0 auto;width:100%}
+.recap{box-sizing:border-box;display:grid;grid-template-columns:220px minmax(0,1fr);gap:18px;text-align:left;background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--hp);padding:14px;max-width:820px;margin:0 auto;width:100%}
 @media (max-width:640px){.recap{grid-template-columns:minmax(0,1fr)}.rcfit{justify-self:center}}
 .rcfit canvas{width:220px;height:260px;max-width:100%;background:radial-gradient(circle at 50% 70%,#2a1c34,#0d0a12 70%);border:1px solid var(--line)}
 .rcinfo{display:grid;gap:8px;align-content:start;min-width:0}
@@ -332,7 +333,7 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
 .showcase canvas{cursor:grab;touch-action:none;width:220px;height:220px;max-width:100%;border:1px solid var(--rc,var(--line));background:#0d0a12;display:block}
 .showcase .cap{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:6px}
 .showcase .info{display:grid;gap:10px;min-width:0}
-@media (max-width:620px){.showcase{grid-template-columns:minmax(0,1fr)}.showcase canvas{width:100%;height:auto;aspect-ratio:1}}
+@media (max-width:620px){.showcase{grid-template-columns:minmax(0,1fr);justify-items:center}.showcase>*{width:100%}.showcase canvas{width:min(100%,260px);height:auto;aspect-ratio:1;margin:0 auto}.showcase .cap{text-align:center}}
 .icard .in{font-weight:700;font-size:18px;line-height:1.2}
 .icard .im{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:2px}
 .icard ul{margin:8px 0 0;padding-left:18px;font-size:14px;line-height:1.5}
@@ -442,6 +443,17 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
   .touch #toasts .toast:nth-last-child(n+3){display:none}
 }
 .touch button kbd{display:none}
+/* Narrow screens: nothing in a menu may push the page wider than the screen. */
+.wrap>*,.closet>*,.closet>*>*{min-width:0}
+.closet>div{grid-template-columns:minmax(0,1fr)}
+@media (max-width:760px){
+  .ctlcard{grid-template-columns:minmax(0,1fr)!important}
+  .ctlbtns{justify-items:start!important}
+}
+@media (max-width:760px),(max-height:520px){
+  .sheet .seg{flex-wrap:wrap;width:auto}
+  .sheet .seg button{flex:1 1 auto}
+}
 #a2hs{display:flex;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);padding:8px 8px 8px 12px;font-size:13px;line-height:1.35}
 #a2hs b{color:var(--gold)}#a2hs p{margin:0;flex:1}
 #a2hs button{background:none;border:0;color:var(--muted);font-size:20px;line-height:1;padding:4px 8px}
@@ -526,9 +538,9 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
         <div class="opt"><span class="ol">Daily Runway</span><button class="btn ghost sm" id="bDaily" type="button" style="justify-self:start">Play today's runway</button><span class="oh" id="dailyHint"></span></div>
       </div>
     </div>
-    <div class="card" style="grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px">
+    <div class="card ctlcard" style="grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px">
       <div class="controls" id="controlsTxt"></div>
-      <div style="display:grid;gap:6px;justify-items:end">
+      <div class="ctlbtns" style="display:grid;gap:6px;justify-items:end">
         <div class="row"><button class="btn ghost" id="bLegend" type="button">Enemies</button><button class="btn ghost" id="bLookbook2" type="button">Lookbook</button><button class="btn ghost" id="bAch" type="button">Achievements <span class="badge" id="achBadge" style="font-size:10px"></span></button><button class="btn ghost" id="bHist" type="button">History</button><button class="btn ghost" id="bSettings" type="button">Settings</button><button class="btn" id="bStart" type="button" data-padfirst>Deploy</button></div>
         <span class="best" id="bestTxt"></span>
       </div>
@@ -762,6 +774,7 @@ const $=s=>document.querySelector(s);
 const cv=$('#game'), ctx=cv.getContext('2d');
 let W=0,H=0,DPR=1,ZOOM=1;
 const TOUCH = matchMedia('(pointer:coarse)').matches;document.documentElement.classList.toggle('touch',TOUCH);
+[['apple-mobile-web-app-capable','yes'],['mobile-web-app-capable','yes'],['apple-mobile-web-app-status-bar-style','black-translucent'],['apple-mobile-web-app-title','Drip Command'],['theme-color','#0c0911']].forEach(([n,c])=>{if(!document.querySelector(`meta[name="${n}"]`)){const m=document.createElement('meta');m.name=n;m.content=c;document.head.appendChild(m);}});
 const IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const STANDALONE=matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone===true;
 const FS_API=!!(document.fullscreenEnabled&&document.documentElement.requestFullscreen);
@@ -2693,7 +2706,7 @@ function tryOnLook(){const p=G.p,L=lookOf(p);if(!showItem||!showItem.trying)retu
   if(slot==='weapon')return {...L,weaponKind:it.kind};return {...L,gear:{...p.gear,[slot]:it}};}
 function slotFocus(it,slot){
   if(slot==='head')return [10.5,-33.5];if(slot==='top')return [8,-19.5];if(slot==='bottom'){const b=BOT[baseOf(it)];return b&&b.len==='maxi'?[6.5,-8]:[8,-8];}if(slot==='kicks'){const k=KICK_ARCH[baseOf(it)]||'';return /knee|rain|moon/.test(k)?[8,-5.5]:[11,-3];}
-  const a=ACC_ARCH[baseOf(it)]||'';if(a==='parasol')return [6.2,-40];if(/mustache|earrings|pinearrings/.test(a))return [12,-29.5];if(/beltchain|studbelt|walletchain|pocketwatch|phone|charm|satchel|basket|tote/.test(a))return [8,-15];if(/watch|bracelet/.test(a))return [11,-18];return [9,-22];}
+  const a=ACC_ARCH[baseOf(it)]||'';if(a==='parasol')return [6.2,-40];if(/^(beltchain|walletchain|studbelt)$/.test(a))return [13,-13];if(/^(choker|beads|spikecollar|lacecollar|locket|cross|brooch|chain)$/.test(a))return [17,-24.5];if(a==='earrings'||a==='pinearrings')return [19,-28.5];if(/mustache|earrings|pinearrings/.test(a))return [12,-29.5];if(/beltchain|studbelt|walletchain|pocketwatch|phone|charm|satchel|basket|tote/.test(a))return [8,-15];if(/watch|bracelet/.test(a))return [11,-18];return [9,-22];}
 function drawItemPreview(){const c=document.getElementById('clItemPrev');if(!c||!showItem||!G)return;const g=c.getContext('2d'),W2=c.width,H2=c.height,t=G.time,{it,slot}=showItem,rc=RAR[it.rarity].c;
   g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,W2,H2);
   const bg=g.createRadialGradient(W2/2,H2*0.55,10,W2/2,H2*0.55,W2*0.7);bg.addColorStop(0,rc+'40');bg.addColorStop(1,'#0d0a12');g.fillStyle=bg;g.fillRect(0,0,W2,H2);
@@ -2703,7 +2716,7 @@ function drawItemPreview(){const c=document.getElementById('clItemPrev');if(!c||
     const [sc0,fy]=slotFocus(it,slot),sc=sc0*1.15;
     const cx=Math.cos(itemRot),sxv=(cx<0?-1:1)*Math.max(0.05,Math.abs(cx));
     g.save();g.fillStyle='rgba(0,0,0,.4)';g.beginPath();g.ellipse(W2/2,H2*0.84,W2*0.26*Math.max(0.35,Math.abs(cx)),12,0,0,Math.PI*2);g.fill();
-    g.beginPath();g.rect(0,0,W2,H2-34);g.clip();g.translate(W2/2,0);g.scale(sxv,1);g.translate(-W2/2,0);drawCommando(g,W2/2,H2/2-fy*sc,sc,{...look,back:cx<0},0.35,t,false);g.restore();}
+    g.beginPath();g.rect(0,0,W2,H2-34);g.clip();g.translate(W2/2,0);g.scale(sxv,1);g.translate(-W2/2,0);drawCommando(g,W2/2,H2/2-fy*sc,sc,{...look,back:slot==='acc'?false:cx<0},0.35,t,false);g.restore();}
   if(it.rarity>=4){for(let i=0;i<5;i++){const ph=t*1.3+i*1.7,a=Math.max(0,Math.sin(ph));if(a<0.05)continue;g.globalAlpha=a;g.fillStyle=i%2?rc:'#fff';star(g,(i*97+Math.floor(t*0.77+i)*53)%W2,(i*61+Math.floor(t*0.77+i)*89)%H2,4+a*6);}g.globalAlpha=1;}
   g.fillStyle='rgba(0,0,0,.55)';g.fillRect(0,H2-34,W2,34);g.fillStyle=rc;g.font='700 16px "Chakra Petch", sans-serif';g.textAlign='left';g.textBaseline='middle';g.fillText(RAR[it.rarity].n.toUpperCase(),12,H2-17);
   g.fillStyle='#f4eefb';g.textAlign='right';g.fillText(slot==='weapon'?'×'+it.mult+' power':it.drip+' DRIP',W2-12,H2-17);}
@@ -3402,7 +3415,7 @@ renderRules();
 
 // ---------- menu ----------
 function ctrlHtml(){
-  if(TOUCH)return 'Drag anywhere on the left side to move. '+(settings.auto?'You fire automatically at the nearest enemy.':'Drag on the right side to aim and fire.')+' Tap <b>DASH</b> to dodge through attacks. Closet and Styles buttons sit under the minimap. Reach the gold <b>Runway</b> to go deeper.';
+  if(TOUCH)return 'Drag anywhere on the left side to move. '+(settings.auto?'You fire automatically at the nearest enemy.':'Drag on the right side to aim and fire.')+' Tap <b>DASH</b> to dodge through attacks and <b>GO</b> for your signature move. Closet, Style Trees and Pause are the icons at the top right. Reach the gold <b>Runway</b> to go deeper.';
   if(typeof pad!=='undefined'&&pad.on)return '<b style="color:#7be0ff">Controller:</b> left stick moves · '+(settings.auto?'auto-fire, or aim with the right stick':'right stick aims and fires (or hold RT)')+' · <kbd>A</kbd> dash · <kbd>RB</kbd> signature move · <kbd>X</kbd> closet · <kbd>Y</kbd> style trees · <kbd>Start</kbd> pause<br>Reach the gold <b>Runway</b> on each floor to go deeper.';
   return '<kbd>WASD</kbd> move · '+(settings.auto?'auto-fire at the nearest enemy · hold <kbd>Mouse</kbd> to aim yourself':'<kbd>Arrow keys</kbd> shoot that way · or aim with the <kbd>Mouse</kbd> and hold <kbd>Left click</kbd>')+' · <kbd>Space</kbd> dash · <kbd>E</kbd>/<kbd>Right click</kbd> signature move · <kbd>C</kbd> closet · <kbd>T</kbd> style trees · <kbd>Esc</kbd> pause · <kbd>M</kbd> mute · <kbd>H</kbd> show hitbox<br>Reach the gold <b>Runway</b> on each floor to go deeper.';}
 function syncSettings(){
