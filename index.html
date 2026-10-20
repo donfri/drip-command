@@ -485,6 +485,17 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
   .touch #bossBar{top:calc(env(safe-area-inset-top,0px) + 210px);bottom:auto!important;width:calc(100vw - 24px)}
   .touch #toasts{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 104px);width:calc(100vw - 24px)}
 }
+/* Boss health bar sits at the top of the screen (not over the fight); pop-up messages move below it while a boss is up. */
+#bossBar{top:calc(env(safe-area-inset-top,0px) + 14px);bottom:auto!important;width:min(560px,max(260px,calc(100vw - 680px)))}
+#bossBar:not([hidden]) ~ #toasts{top:calc(env(safe-area-inset-top,0px) + 70px)}
+@media (max-height:520px),(max-width:560px){
+  .touch #bossBar{top:calc(env(safe-area-inset-top,0px) + 8px);bottom:auto!important;width:min(400px,max(190px,calc(100vw - 480px)))}
+  .touch #bossBar:not([hidden]) ~ #toasts{top:calc(env(safe-area-inset-top,0px) + 44px)}
+}
+@media (max-width:560px){
+  .touch #bossBar{top:calc(env(safe-area-inset-top,0px) + 206px);width:calc(100vw - 24px)}
+  .touch #bossBar:not([hidden]) ~ #toasts{top:auto}
+}
 </style>
 
 <canvas id="game" aria-label="Drip Command game arena"></canvas>
