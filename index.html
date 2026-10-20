@@ -239,6 +239,24 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
 .setline .sparts{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px;color:var(--muted)}.setline .sparts i{font-style:normal}.setline .sparts i.got{color:#38e8c6;font-weight:700}
 .setline>div:not(.sparts){color:var(--muted)}.setline>div.on{color:var(--fg)}
 .stn{font-weight:700}
+.recap{display:grid;grid-template-columns:220px minmax(0,1fr);gap:18px;text-align:left;background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--hp);padding:14px;max-width:820px;margin:0 auto;width:100%}
+@media (max-width:640px){.recap{grid-template-columns:minmax(0,1fr)}.rcfit{justify-self:center}}
+.rcfit canvas{width:220px;height:260px;max-width:100%;background:radial-gradient(circle at 50% 70%,#2a1c34,#0d0a12 70%);border:1px solid var(--line)}
+.rcinfo{display:grid;gap:8px;align-content:start;min-width:0}
+.rckill{font-family:var(--display);font-size:clamp(22px,3vw,30px);line-height:1.05;color:var(--hp)}
+.rchi{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px}
+.rchi>div{background:var(--panel2);border:1px solid var(--line);padding:6px 8px;display:grid}.rchi b{font-family:var(--display);font-size:20px;font-weight:400}.rchi span{font-size:11px;color:var(--muted);line-height:1.3}
+.rcgear{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;font-weight:600}.rcgear .eyebrow{flex-basis:100%}
+.htable{display:grid;gap:2px;overflow-x:auto}
+.hrow{display:grid;grid-template-columns:110px 100px 120px 50px minmax(200px,1fr) 60px 60px 80px 80px;gap:10px;align-items:center;background:var(--panel);padding:8px 10px;font-size:13px;min-width:900px}
+.hrow em{display:block;font-style:normal;font-size:11px;color:var(--muted)}
+.hhead{background:transparent;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.evbody{display:grid;gap:4px;margin:8px 0 4px;font-size:14px;line-height:1.5}.evn{font-family:var(--display);font-weight:400;font-size:22px;color:var(--gold)}
+.evdone{color:var(--fg);max-width:none;margin:6px 0 0}
+.dconf{display:inline-flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13px}
+.dconf .dw{flex-basis:100%;text-align:right;font-size:11px;color:var(--muted)}.dconf .dw.hot{color:#ffb3bd}
+.lockb.on{border-color:var(--gold);color:var(--gold)}
+.lockic{margin-right:4px;font-size:11px}
 .spline{margin-top:8px;padding:8px 10px;border-left:3px solid var(--pink);background:#ff4fa314;font-size:13px;line-height:1.45}
 .spline b{color:var(--pink);font-weight:700;letter-spacing:.02em}
 .spstar{color:var(--pink);margin-right:4px}
@@ -449,12 +467,13 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
         <div class="opt"><span class="ol">Firing</span><div class="seg" id="segFire"><button type="button" data-v="auto">Auto</button><button type="button" data-v="manual">Twin-stick</button></div><span class="oh" id="fireHint"></span></div>
         <div class="opt"><span class="ol">Spotlight tier</span><div class="seg" id="segTier"></div><span class="oh" id="tierHint"></span></div>
         <div class="opt"><span class="ol">Mode</span><div class="seg" id="segMode"></div><span class="oh" id="modeHint"></span></div>
+        <div class="opt"><span class="ol">Daily Runway</span><button class="btn ghost sm" id="bDaily" type="button" style="justify-self:start">Play today's runway</button><span class="oh" id="dailyHint"></span></div>
       </div>
     </div>
     <div class="card" style="grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px">
       <div class="controls" id="controlsTxt"></div>
       <div style="display:grid;gap:6px;justify-items:end">
-        <div class="row"><button class="btn ghost" id="bLegend" type="button">Enemies</button><button class="btn ghost" id="bLookbook2" type="button">Lookbook</button><button class="btn ghost" id="bAch" type="button">Achievements <span class="badge" id="achBadge" style="font-size:10px"></span></button><button class="btn ghost" id="bSettings" type="button">Settings</button><button class="btn" id="bStart" type="button" data-padfirst>Deploy</button></div>
+        <div class="row"><button class="btn ghost" id="bLegend" type="button">Enemies</button><button class="btn ghost" id="bLookbook2" type="button">Lookbook</button><button class="btn ghost" id="bAch" type="button">Achievements <span class="badge" id="achBadge" style="font-size:10px"></span></button><button class="btn ghost" id="bHist" type="button">History</button><button class="btn ghost" id="bSettings" type="button">Settings</button><button class="btn" id="bStart" type="button" data-padfirst>Deploy</button></div>
         <span class="best" id="bestTxt"></span>
       </div>
     </div>
@@ -517,6 +536,9 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
         <div class="srow"><span>Damage numbers</span><div class="seg" id="segDmg"><button type="button" data-v="on">On</button><button type="button" data-v="off">Off</button></div></div>
         <div class="srow"><span>Retro scanlines</span><div class="seg" id="segScan"><button type="button" data-v="on">On</button><button type="button" data-v="off">Off</button></div></div>
         <div class="srow"><span>FPS counter</span><div class="seg" id="segFps"><button type="button" data-v="on">On</button><button type="button" data-v="off">Off</button></div></div>
+        <div class="srow"><span>Show hitbox <kbd>H</kbd></span><div class="seg" id="segHit"><button type="button" data-v="on">On</button><button type="button" data-v="off">Off</button></div></div>
+        <div class="srow"><span>Colorblind filter</span><div class="seg" id="segCb"><button type="button" data-v="off">Off</button><button type="button" data-v="protan">Protan</button><button type="button" data-v="deutan">Deutan</button><button type="button" data-v="tritan">Tritan</button></div></div>
+        <p class="note">Protan helps with red-weak sight, Deutan with green-weak (the most common), Tritan with blue-weak. They recolour the whole game so reds, greens and blues are easier to tell apart.</p>
       </section>
       <section class="card"><h3 class="sh">Gameplay</h3>
         <div class="srow"><span>Firing</span><div class="seg" id="segFire2"><button type="button" data-v="auto">Auto</button><button type="button" data-v="manual">Twin-stick</button></div></div>
@@ -561,10 +583,9 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
         <div class="slots" id="clSlots"></div>
         <div class="detail" id="clDetail"></div>
         <div class="row" style="justify-content:space-between"><p class="note" id="clFound" style="margin:0"></p><button type="button" class="btn ghost" id="bLookbook" style="padding:6px 12px;font-size:12px">View Lookbook</button></div>
-        <div class="secth"><h3>Bag</h3><div class="legend"><span><i class="lg-new">NEW</i>New since you last looked</span><span><svg viewBox="0 0 10 10" width="14" height="14" style="background:#1f5c35;border-radius:50%;padding:2px"><path d="M5 1.5 L8.6 6 H6.2 V8.8 H3.8 V6 H1.4 Z" fill="#7ef0a0"/></svg>Upgrade: more Drip (weapons: more damage)</span></div><div class="row" style="gap:10px"><span class="muted" id="clBagCount" style="font-size:12px"></span><button type="button" class="btn ghost" id="bDonateAll" style="padding:6px 12px;font-size:12px">Donate all</button></div></div>
+        <div class="secth"><h3>Bag</h3><div class="legend"><span><i class="lg-new">NEW</i>New since you last looked</span><span><svg viewBox="0 0 10 10" width="14" height="14" style="background:#1f5c35;border-radius:50%;padding:2px"><path d="M5 1.5 L8.6 6 H6.2 V8.8 H3.8 V6 H1.4 Z" fill="#7ef0a0"/></svg>Upgrade: more Drip (weapons: more damage)</span></div><div class="row" style="gap:10px"><span class="muted" id="clBagCount" style="font-size:12px"></span><button type="button" class="btn ghost" id="bDonateAll" style="padding:6px 12px;font-size:12px">Donate all</button><span class="dconf" id="donateConfirm" hidden></span></div></div>
         <div class="row" style="gap:10px"><span class="muted" style="font-size:11px;letter-spacing:.16em;text-transform:uppercase">Auto-sell</span><div class="seg" id="segSell2"></div><span class="row sellto" style="gap:8px"><span class="muted" style="font-size:11px;letter-spacing:.16em;text-transform:uppercase">Into</span><span class="seg" id="segSellTo2"></span></span></div>
         <p class="note" id="sellNote2" style="margin-top:-6px"></p>
-        <div class="detail" id="donateConfirm" hidden></div>
         <div class="bag" id="clBag"></div>
       </div>
     </div>
@@ -635,13 +656,22 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
   </div>
 </div>
 
+<!-- RUN HISTORY -->
+<div id="history" class="sheet" hidden>
+  <div class="wrap">
+    <div class="secth"><div><p class="eyebrow">Your last 20 runs</p><h2 class="h2">Run History</h2></div><button class="btn ghost" id="bCloseHist" type="button" data-padfirst>Back <kbd>Esc</kbd></button></div>
+    <div id="histBody"></div>
+  </div>
+</div>
+
 <!-- DEAD -->
 <div id="dead" class="sheet" hidden>
   <div class="wrap center">
     <p class="eyebrow">Run over</p>
     <h2 class="big" style="color:var(--hp)">You got<br>styled on.</h2>
     <div class="statline" id="deadStats"></div>
-    <div class="row"><button class="btn" id="bAgain" type="button" data-padfirst>Run it back</button></div>
+    <div class="recap" id="deadRecap"></div>
+    <div class="row"><button class="btn" id="bAgain" type="button" data-padfirst>Run it back</button><button class="btn ghost" id="bHist2" type="button">Run history</button></div>
   </div>
 </div>
 
@@ -834,6 +864,7 @@ const ENEMIES={
   bin:{hp:70,spd:0,r:15,dmg:9,xp:14,ai:'pattern',pat:'binring',range:380,rate:3,col:'#ffd34d',fixed:true},
   mallcop:{hp:64,spd:120,r:14,dmg:9,xp:16,ai:'pattern',pat:'sweep',range:320,rate:2.8,col:'#6aa8ff'},
   papz:{hp:48,spd:84,r:12,dmg:11,xp:16,ai:'pattern',pat:'burst',range:380,rate:2.4,col:'#fff3c4'},
+  bouncer:{hp:110,spd:72,r:17,dmg:14,xp:24,ai:'pattern',pat:'bouncer',range:330,rate:2.6,col:'#ff3b6b',heavy:true},
   muse:{hp:58,spd:70,r:13,dmg:10,xp:18,ai:'pattern',pat:'star',range:360,rate:2.6,col:'#e8e2ff'},
   manager:{hp:520,spd:56,r:24,dmg:16,xp:90,ai:'pattern',pat:'mixed',range:420,rate:1.8,col:'#ffc94a',heavy:true},
   final:{hp:3600,spd:0,r:40,dmg:20,xp:600,ai:'final'},
@@ -853,6 +884,7 @@ const ZONES=[
   {name:'Outlet Mall Catacombs',f1:'#151c21',f2:'#182128',wall:'#24404a',face:'#0c161b',edge:'#3f7482',bg:'#04080a'},
   {name:'Fashion Week Underground',f1:'#211318',f2:'#26161c',wall:'#4a2330',face:'#190a0f',edge:'#8a3f58',bg:'#0a0405'},
   {name:'The Runway Abyss',f1:'#151515',f2:'#1a1a1a',wall:'#2c2c2c',face:'#0b0b0b',edge:'#c9a34a',bg:'#040404'},
+  {name:'The After-Party',f1:'#120e26',f2:'#171233',wall:'#2a1d55',face:'#0a0718',edge:'#ff4fd8',bg:'#04020b'},
 ];
 const SKINS=['#f6d7c3','#f3cfb3','#e3b48f','#d9a37e','#b97a52','#a86b45','#7d4a2b','#5a3520'];
 
@@ -933,6 +965,7 @@ const SONGS={
   zone0:{name:'Thrift Hop',key:65,mode:'major',bpm:128,prog:[5,3,0,4],seed:23,drums:['k..ks...k.k.s..s','h.hoh.h.h.hoh.h.'],bass:[0,12,0,12,0,12,7,12]},
   zone1:{name:'Outlet After Hours',key:62,mode:'major',bpm:124,prog:[0,5,3,4],seed:37,drums:['k...s..kk...s...','hhh.hhh.hhh.hhh.'],bass:[0,0,7,0,12,0,7,5]},
   zone2:{name:'Backstage Pass',key:67,mode:'major',bpm:136,prog:[3,4,2,5],seed:41,drums:['k.k.s...k.k.s.k.','h.h.h.hoh.h.h.ho'],bass:[0,12,7,12,0,12,7,12]},
+  zone4:{name:'Last Call',key:61,mode:'minor',bpm:140,prog:[0,6,3,4],seed:83,drums:['k..k..s.k.kk..s.','hohohohohohohoho'],bass:[0,12,0,12,10,12,7,12]},
   zone3:{name:'Golden Runway',key:58,mode:'major',bpm:132,prog:[0,2,3,4],seed:53,drums:['k...s.k.k...s...','h.hhh.hhh.hhh.hh'],bass:[0,7,12,7,0,7,12,7]},
   boss:{name:'Fit Check Showdown',key:62,mode:'minor',bpm:152,prog:[0,5,6,4],seed:71,drums:['k.k.s..kk.k.s.ss','hhhhhhhhhhhhhhhh'],bass:[0,12,0,12,0,12,7,12]},
   fitting:{name:'Fitting Room',key:64,mode:'major',bpm:96,prog:[0,3,5,4],seed:5,drums:['k.......k..k....','..h...h...h...h.'],bass:[0,0,7,0,12,0,7,0],soft:true},
@@ -990,8 +1023,16 @@ function updNowPlaying(){const el=$('#nowPlaying');if(el)el.textContent=M.cur?`N
 // ---------- video helpers ----------
 const PCAP=()=>({low:150,medium:400,high:700})[V.particles]||700;
 const DRIPRATE=()=>({low:0.3,medium:0.6,high:1})[V.particles]||1;
+if(V.hitbox==null)V.hitbox=false;if(!['off','protan','deutan','tritan'].includes(V.cb))V.cb='off';
 function saveV(){store.set('dripcmd.video',V);}
-function applyVideo(){resize();$('#scan').hidden=!V.scan;$('#fps').hidden=!V.fps;}
+// Colorblind filters: daltonize-style colour matrices (shift the colours you can't tell apart into ones you can), applied to the whole page.
+const CB_M={protan:'1.0000 0.0000 0.0000 0 0  0.4789 0.4769 0.0442 0 0  0.5973 -0.6887 1.0914 0 0  0 0 0 1 0',
+  deutan:'1.0000 0.0000 0.0000 0 0  0.1628 0.7250 0.1122 0 0  0.4547 -0.6454 1.1907 0 0  0 0 0 1 0',
+  tritan:'0.7412 -0.4072 0.6660 0 0  0.0751 0.5852 0.3397 0 0  0.0000 0.0000 1.0000 0 0  0 0 0 1 0'};
+function applyCb(){let svg=document.getElementById('cbDefs');if(!svg){svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.id='cbDefs';svg.setAttribute('aria-hidden','true');svg.style.cssText='position:absolute;width:0;height:0;overflow:hidden';
+    svg.innerHTML=Object.entries(CB_M).map(([k,m])=>`<filter id="cb-${k}" color-interpolation-filters="linearRGB"><feColorMatrix type="matrix" values="${m}"/></filter>`).join('');document.body.appendChild(svg);}
+  document.documentElement.style.filter=V.cb&&V.cb!=='off'?`url(#cb-${V.cb})`:'';}
+function applyVideo(){resize();$('#scan').hidden=!V.scan;$('#fps').hidden=!V.fps;applyCb();}
 let fpsAcc=0,fpsN=0;function tickFps(dt){if(!V.fps)return;fpsAcc+=dt;fpsN++;if(fpsAcc>=0.5){$('#fps').textContent=Math.round(fpsN/fpsAcc)+' FPS';fpsAcc=0;fpsN=0;}}
 function toggleFullscreen(){try{if(document.fullscreenElement){document.exitFullscreen();}else{const r=document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();if(r&&r.catch)r.catch(()=>toast("Fullscreen isn't available in this window. It works in the downloaded file or a desktop build.",'#ff7a8a'));else if(!r)toast("Fullscreen isn't available in this window.",'#ff7a8a');}}catch(e){toast("Fullscreen isn't available in this window.",'#ff7a8a');}}
 document.addEventListener('fullscreenchange',()=>{$('#bFull').textContent=document.fullscreenElement?'Exit fullscreen':'Enter fullscreen';setTimeout(resize,50);});
@@ -1003,13 +1044,13 @@ function closeSettings(){if(state!=='settings')return;state=settingsFrom;showOnl
 function segSet(id,val){document.querySelectorAll(`#${id} button`).forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===val)));}
 function syncSettingsUi(){
   [['sMaster','vMaster',V.master],['sMusic','vMusic',V.music],['sSfx','vSfx',V.sfx],['sShake','vShake',V.shake]].forEach(([s,v,x])=>{$('#'+s).value=Math.round(x*100);$('#'+v).textContent=Math.round(x*100)+'%';});
-  segSet('segMute',muted?'on':'off');segSet('segRes',V.res);segSet('segCam',V.cam);segSet('segPart',V.particles);segSet('segDmg',V.dmgNums?'on':'off');segSet('segScan',V.scan?'on':'off');segSet('segFps',V.fps?'on':'off');
+  segSet('segMute',muted?'on':'off');segSet('segRes',V.res);segSet('segCam',V.cam);segSet('segPart',V.particles);segSet('segDmg',V.dmgNums?'on':'off');segSet('segScan',V.scan?'on':'off');segSet('segFps',V.fps?'on':'off');segSet('segHit',V.hitbox?'on':'off');segSet('segCb',V.cb);
   segSet('segFire2',settings.auto?'auto':'manual');segSet('segDiff2',settings.diff);
   $('#diffNote').textContent=G?`This run is on ${G.diff.name}. A new difficulty applies to your next run.`:DIFF[settings.diff].hint;
   $('#padStatus').innerHTML=pad.on?'<b style="color:#7be0ff">Controller connected.</b> D-pad or left stick moves between buttons, A selects, B goes back.':'No controller detected. Plug one in or connect it over Bluetooth, then press any button.';
   $('#bFull').textContent=document.fullscreenElement?'Exit fullscreen':'Enter fullscreen';updNowPlaying();if(typeof renderSellSegs==='function')renderSellSegs();}
 [['sMaster','master'],['sMusic','music'],['sSfx','sfx'],['sShake','shake']].forEach(([id,k])=>$('#'+id).addEventListener('input',e=>{V[k]=+e.target.value/100;saveV();applyMix();syncSettingsUi();if(k==='sfx')sfx('pick');}));
-const SEGS={segMute:v=>setMute(v==='on'),segRes:v=>{V.res=v;applyVideo();},segCam:v=>{V.cam=v;applyVideo();},segPart:v=>{V.particles=v;},segDmg:v=>{V.dmgNums=v==='on';},segScan:v=>{V.scan=v==='on';applyVideo();},segFps:v=>{V.fps=v==='on';applyVideo();},
+const SEGS={segMute:v=>setMute(v==='on'),segRes:v=>{V.res=v;applyVideo();},segCam:v=>{V.cam=v;applyVideo();},segPart:v=>{V.particles=v;},segDmg:v=>{V.dmgNums=v==='on';},segScan:v=>{V.scan=v==='on';applyVideo();},segFps:v=>{V.fps=v==='on';applyVideo();},segHit:v=>{V.hitbox=v==='on';},segCb:v=>{V.cb=v;applyCb();},
   segFire2:v=>{settings.auto=v==='auto';store.set('dripcmd.auto',settings.auto);},segDiff2:v=>{settings.diff=v;store.set('dripcmd.diff',v);}};
 for(const id in SEGS)$('#'+id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;SEGS[id](b.dataset.v);saveV();syncSettings();syncSettingsUi();});
 $('#bFull').addEventListener('click',toggleFullscreen);
@@ -1031,7 +1072,7 @@ function padNav(dir){const cur=document.activeElement;const list=focusables();if
     let pri,sec;if(dir==='up'){pri=-dy;sec=dx;}else if(dir==='down'){pri=dy;sec=dx;}else if(dir==='left'){pri=-dx;sec=dy;}else{pri=dx;sec=dy;}
     if(pri<=4)continue;const sc=pri+Math.abs(sec)*2.2;if(sc<bs){bs=sc;best=el;}}
   if(best)setPadFocus(best);}
-function padBack(){if(state==='achieve'){closeAch();return;}if(state==='shop'){closeShop();return;}if(state==='lookbook'){closeLookbook();return;}if(state==='legend'){closeLegend();return;}if(state==='closet'||state==='talents')backFromSheet();else if(state==='paused'){state='play';showOnly(null);}else if(state==='settings')closeSettings();}
+function padBack(){if(state==='history'){closeHistory();return;}if(state==='achieve'){closeAch();return;}if(state==='shop'){closeShop();return;}if(state==='lookbook'){closeLookbook();return;}if(state==='legend'){closeLegend();return;}if(state==='closet'||state==='talents')backFromSheet();else if(state==='paused'){state='play';showOnly(null);}else if(state==='settings')closeSettings();}
 function pollPad(dt){const gps=navigator.getGamepads?navigator.getGamepads():[];let gp=null;for(const g of gps||[])if(g&&g.connected){gp=g;break;}
   if(!gp){if(pad.on){pad.on=false;syncSettings();}return;}
   if(!pad.on){pad.on=true;pad.prev=gp.buttons.map(b=>b.pressed);toast('Controller connected. <b>A</b> selects, <b>B</b> goes back.','#7be0ff');syncSettings();if(state!=='play')focusFirst();return;}
@@ -1685,6 +1726,17 @@ function drawEnemy(g,e,t){
   const W2=c=>fl?'#ffffff':c;
   if(e.elite&&!e.dormant){g.strokeStyle='#ffc94a';g.globalAlpha=0.5+0.3*Math.sin(t*5+e.anim);g.lineWidth=2;g.beginPath();g.ellipse(0,0,r*1.25,r*0.45,0,0,Math.PI*2);g.stroke();g.globalAlpha=0.12;g.fillStyle='#ffc94a';g.beginPath();g.ellipse(0,-r,r*1.3,r*1.4,0,0,Math.PI*2);g.fill();g.globalAlpha=1;}
   if(!drawEnemyArt(g,e,t,r,fl))switch(e.type){
+    case 'bouncer':{const w=Math.sin(t*5+e.anim)*1.2,ch=e.chg>0||e.tele>0;
+      g.fillStyle=W2('#16161c');g.fillRect(-r*0.62,-r*0.62+w,r*0.5,r*0.62);g.fillRect(r*0.12,-r*0.62-w,r*0.5,r*0.62);
+      g.fillStyle=W2('#0d0d12');rr(g,-r*1.05,-r*2.1,r*2.1,r*1.55,r*0.4);g.fill();
+      g.fillStyle=W2('#24242c');rr(g,-r*1.3,-r*2.0,r*0.42,r*1.0,r*0.2);g.fill();rr(g,r*0.88,-r*2.0,r*0.42,r*1.0,r*0.2);g.fill();
+      g.fillStyle='#f2ead8';g.font=`700 ${Math.round(r*0.36)}px "Chakra Petch", sans-serif`;g.textAlign='center';g.textBaseline='middle';g.fillText('SECURITY',0,-r*1.42);
+      g.fillStyle=W2('#a8744f');circ(g,0,-r*2.42,r*0.55);g.fillStyle='#0a0a0e';rr(g,-r*0.5,-r*2.56,r*1.0,r*0.2,r*0.08);g.fill();
+      g.fillStyle=ch?'#ff3b6b':'#3b3b44';circ(g,-r*0.24,-r*2.47,r*0.06);circ(g,r*0.24,-r*2.47,r*0.06);
+      g.strokeStyle='#d9d9e0';g.lineWidth=1;g.beginPath();g.moveTo(r*0.5,-r*2.4);g.quadraticCurveTo(r*0.75,-r*2.1,r*0.55,-r*1.85);g.stroke();
+      g.fillStyle='#c9a34a';g.fillRect(r*0.95,-r*1.25,r*0.45,r*0.6);g.fillStyle='#f2ead8';g.fillRect(r*1.0,-r*1.18,r*0.35,r*0.45);
+      if(ch){g.strokeStyle='#ff3b6b';g.globalAlpha=0.6;g.lineWidth=2;g.beginPath();g.ellipse(0,-r*1.2,r*1.5,r*1.6,0,0,Math.PI*2);g.stroke();g.globalAlpha=1;}
+      break;}
     case 'drone':{const b=Math.sin(t*3+e.anim)*1.2;g.fillStyle=W2('#cdbd99');rr(g,-r,-r*2+b,r*2,r*2,5);g.fill();g.fillStyle=W2('#8f7f5c');g.fillRect(-r,-r*0.75+b,r*2,r*0.7);g.fillStyle='#3a3a3a';rr(g,-r*0.7,-r*1.6+b,r*1.4,r*0.36,2);g.fill();g.fillStyle=e.aggro?'#fff3c4':'#777';g.fillRect(-r*0.5,-r*1.5+b,r,r*0.12);break;}
     case 'swarm':{g.translate(0,-r);g.rotate(Math.sin(t*6+e.anim)*0.5);g.fillStyle=W2('#ff9a6b');g.beginPath();g.moveTo(-r,-r*0.7);g.lineTo(r*0.5,-r*0.7);g.lineTo(r*1.15,0);g.lineTo(r*0.5,r*0.7);g.lineTo(-r,r*0.7);g.closePath();g.fill();g.fillStyle='#0c0911';circ(g,r*0.45,0,r*0.2);g.strokeStyle='#7a2d12';g.lineWidth=1.4;g.beginPath();g.moveTo(-r*0.6,r*0.4);g.lineTo(-r*0.1,-r*0.4);g.stroke();circ(g,-r*0.6,-r*0.3,1);circ(g,-r*0.1,r*0.3,1);break;}
     case 'brute':{const w=Math.sin(t*6+e.anim)*1.5;g.fillStyle=W2('#e8cfb0');g.fillRect(-r*0.7,-r*0.55+w,r*0.5,r*0.55);g.fillRect(r*0.2,-r*0.55-w,r*0.5,r*0.55);g.fillStyle='#fff';g.fillRect(-r*0.7,-r*0.2+w,r*0.5,r*0.2);g.fillRect(r*0.2,-r*0.2-w,r*0.5,r*0.2);
@@ -1852,29 +1904,40 @@ const cfg=Object.assign({gender:'f',skin:'#e3b48f',style:'goth',hairStyle:'bob',
 {const D={gender:'f',skin:'#e3b48f',style:'goth',hairStyle:'bob',hair:'#5b2c3f',eyes:'#5a3a22',name:'Vex'};if(!STYLES[cfg.style]||(cfg.style==='emperor'&&!(store.get('dripcmd.prog',{})||{}).emperor))cfg.style='goth';if(cfg.gender!=='f'&&cfg.gender!=='m')cfg.gender='f';for(const k of ['skin','hairStyle','hair','eyes'])if(typeof cfg[k]!=='string')cfg[k]=D[k];if(typeof cfg.name!=='string')cfg.name='';cfg.name=cfg.name.slice(0,14);}
 const keys={};let dashPressed=false;const mouse={down:false,sx:0,sy:0};const stick={active:false,id:null,ox:0,oy:0,x:0,y:0};
 
-function newRun(){
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function dailyKey(d){d=d||new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function dailyInfo(){const key=dailyKey();let h=2166136261;for(const ch of 'dripcmd-daily-'+key){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}const seed=h>>>0,R=mulberry32(seed);
+  const cls=SK[Math.floor(R()*SK.length)],pool=DRESS.filter(d=>d.id!=='late').map(d=>d.id),dress=pool[Math.floor(R()*pool.length)];return {key,seed,cls,dress};}
+function dailyData(){const d=store.get('dripcmd.daily',{})||{};return d.key===dailyKey()?d:{key:dailyKey(),best:0,plays:0};}
+function dailyBest(){return dailyData().best||0;}
+function dailySave(score){const d=dailyData();d.plays=(d.plays||0)+1;d.best=Math.max(d.best||0,score);d.last=score;store.set('dripcmd.daily',d);}
+function newRun(daily){
   const p={x:0,y:0,r:12,gender:cfg.gender,skin:cfg.skin,name:(cfg.name||'').trim()||(cfg.gender==='f'?'Vex':'Kade'),hair:cfg.hair,hairStyle:cfg.hairStyle,eyes:cfg.eyes,
     hp:100,level:1,xp:0,xpNext:40,points:1,talents:{},gear:{head:null,top:null,bottom:null,kicks:null,acc:null},weapon:makeWeapon(1,0,'blaster',0),bag:[],
     hype:0,hypeT:0,shieldUp:false,shieldT:0,fireCd:0,dashCd:0,dashT:0,dashDir:{x:1,y:0},dashHit:null,invuln:0,aim:0,moving:false,kills:0,peakDrip:0,dripAcc:0,s:null};
   SK.forEach(k=>p.talents[k]={});
-  const emp=cfg.style===EMP&&!!prog.emperor;
-  p.cls=emp?EMP:(SK.includes(cfg.style)?cfg.style:'goth');
+  const D=daily===true?dailyInfo():null,R0=Math.random;if(D)Math.random=mulberry32(D.seed);
+  const emp=!D&&cfg.style===EMP&&!!prog.emperor;
+  p.cls=D?D.cls:emp?EMP:(SK.includes(cfg.style)?cfg.style:'goth');
   if(emp){p.emperor=true;p.talents.emperor={};}
-  else{p.gear.top=makeGear(1,0,cfg.style,'top',1);p.gear.kicks=makeGear(1,0,cfg.style,'kicks',0);}
+  else{p.gear.top=makeGear(1,0,p.cls,'top',1);p.gear.kicks=makeGear(1,0,p.cls,'kicks',0);}
   Object.assign(p,{cash:0,rank:0,rankT:0,sigCd:0,sigMax:1,veilT:0,hist:[],histT:0,dive:null,mono:false});
-  p.passes=0;const perks=startPerks(p,emp);
+  p.passes=0;const perks=D?[]:startPerks(p,emp,p.cls);if(D)Math.random=R0;
   p.s=computeStats(p);p.hp=p.s.maxHp;p.peakDrip=p.s.drip;markFound(p.gear.top);markFound(p.gear.kicks);
-  G={p,tier:settings.tier,endless:settings.mode==='endless',collector:lbPerk(0),floor:1,time:0,shake:0,cam:{x:0,y:0},diff:DIFF[settings.diff],dress:null,offer:null,stock:[],rerollCost:0,sigWarnT:0,rivalOrder:[...SK].sort(()=>Math.random()-0.5),heat:0};
+  G={p,tier:D?0:settings.tier,endless:D?false:settings.mode==='endless',collector:D?false:lbPerk(0),daily:D,floor:1,time:0,shake:0,cam:{x:0,y:0},diff:D?DIFF.standard:DIFF[settings.diff],dress:D?D.dress:null,offer:null,stock:[],rerollCost:0,sigWarnT:0,rivalOrder:[...SK].sort(()=>Math.random()-0.5),heat:0};
+  if(D){const R=mulberry32(D.seed^0x9e3779b9);G.rivalOrder=[...SK].sort(()=>R()-0.5);}
   buildFloor(1);
   $('#hName').textContent=p.name;
   showOnly(null);$('#hud').hidden=false;$('#bDash').hidden=!TOUCH;$('#touchHint').hidden=!TOUCH;
   state='play';
   toast(`Your class is <b style="color:${STYLES[p.cls].c}">${STYLES[p.cls].name}</b>: its Signature move is yours all run, and only ${STYLES[p.cls].name} pieces count toward your Fit. You have <b>${p.points} Style Point${p.points>1?'s':''}</b>; your first 3 go into the ${STYLES[p.cls].name} tree (T).`,STYLES[p.cls].c);
   if(perks.length)setTimeout(()=>toast(`Lookbook rewards: ${perks.join(', ')}.`,'#7be0ff'),700);
+  if(D)setTimeout(()=>{const dc=dressById(D.dress);toast(`<b style="color:var(--gold)">Daily Runway · ${D.key}.</b> Everyone gets the same class (<b style="color:${STYLES[D.cls].c}">${STYLES[D.cls].name}</b>), the same floors and the same dress code on every floor: <b>${dc.name}</b>. ${dc.rule} Reward: ${dc.reward} Standard difficulty, no Lookbook perks. Best today: ${dailyBest().toLocaleString()}.`,'#ffc94a');},900);
   if(emp)setTimeout(()=>toast('<b style="color:#ffd76a">♛ The Emperor.</b> You start with nothing on, and nobody will say a word. Each empty slot gives Drip that grows with your Runway rank, but you take 15% more damage per empty slot, and New Clothes give no extra HP. New pieces go to your bag instead of on you.','#ffd76a'),1000);
   if(G.tier){const tr=G.tier;setTimeout(()=>{if(G)toast(`<b>${TIERS[tr].n}</b>. ${tierDesc(tr)}`,'#ff4fa3');},1300);}
 }
-function buildFloor(n){if(G&&G.p){G.p.floor=n;if(G.p.emperor&&G.p.s){const hp=G.p.hp;G.p.s=computeStats(G.p);G.p.hp=Math.min(hp,G.p.s.maxHp);}}
+function buildFloor(n){if(G&&G.daily&&!G._seeding){G._seeding=true;const R=Math.random;Math.random=mulberry32((G.daily.seed+n*7919)>>>0);try{buildFloor(n);}finally{Math.random=R;G._seeding=false;}return;}
+  if(G&&G.p){G.p.floor=n;if(G.p.emperor&&G.p.s){const hp=G.p.hp;G.p.s=computeStats(G.p);G.p.hp=Math.min(hp,G.p.s.maxHp);}}
   const m=genFloor(n);Object.assign(G,{floor:n,map:m,enemies:[],sweeps:[],bullets:[],ebullets:[],pickups:[],particles:[],texts:[],rings:[],bolts:[],hazards:[],flowT:0,boss:null,card:null,flashT:0,slowmo:0,floorKills:0,miniT:0,bagWarnT:0,picnics:[],specials:[],spawns:[],trails:[],decoy:null,chal:null,mini:null,miniRoom:null,secondUsed:false,victoryT:0});G.p.mono=G.dress==='mono';G.p.minimal=G.dress==='minimal';G.p.dive=null;G.p.hist=[];refreshStats();
   G.zone=ZONES[zoneIdx(n)];freeMap(G.mapCanvas);G.mapCanvas=renderMap(m,G.zone);G.exitLocked=m.boss;
   G.p.x=m.start.x;G.p.y=m.start.y;G.cam.x=G.p.x;G.cam.y=G.p.y;G.p.fireCd=0.5;
@@ -1920,11 +1983,11 @@ function burst(x,y,c,n,spd){for(let i=0;i<n;i++){if(G.particles.length>PCAP())br
 function toast(html,c){const el=document.createElement('div');el.className='toast';el.style.setProperty('--tc',c||'#ffc94a');el.innerHTML=html;const box=$('#toasts');box.appendChild(el);while(box.children.length>4)box.firstChild.remove();setTimeout(()=>el.remove(),3600);}
 
 // ---------- combat ----------
-function hurtEnemy(e,d,crit,c){if(e.dead)return;if(e.dormant)wake(e);if(e.awkT&&e.awkT>G.time)d*=1.4;e.hp-=d;e.aggro=true;e.flash=0.08;if(isBoss(e)||e.type==='manager')bossHitFx(e,crit,c);if(V.dmgNums)addText(e.x,e.y-e.r*2.2,Math.round(d),crit?'#ffc94a':c||'#fff',crit);sfx('hit');if(e.hp<=0)killEnemy(e);}
+function hurtEnemy(e,d,crit,c){if(e.dead)return;if(e.dormant)wake(e);if(e.awkT&&e.awkT>G.time)d*=1.4;if(!G.bigHit||d>G.bigHit.d)G.bigHit={d,name:enemyName(e),floor:G.floor};e.hp-=d;e.aggro=true;e.flash=0.08;if(isBoss(e)||e.type==='manager')bossHitFx(e,crit,c);if(V.dmgNums)addText(e.x,e.y-e.r*2.2,Math.round(d),crit?'#ffc94a':c||'#fff',crit);sfx('hit');if(e.hp<=0)killEnemy(e);}
 function wake(e){e.dormant=false;e.aggro=true;addText(e.x,e.y-30,'KNOCKOFF!','#ff5a5a',true);}
 function explode(x,y,r,d,exclude,c){G.rings.push({x,y,r,life:0.28,max:0.28,c});sfx('boom');for(const e of G.enemies){if(e.dead||e===exclude)continue;if(e.big?inBody(e,x,y,r):Math.hypot(e.x-x,e.y-y)<r+e.r)hurtEnemy(e,d,false,c);}}
 function chainFrom(from,d,n,stun){let cur=from;const hit=new Set([from]);for(let i=0;i<n;i++){let best=null,bd=175;for(const e of G.enemies){if(e.dead||hit.has(e)||e.dormant)continue;const dd=Math.hypot(e.x-cur.x,e.y-cur.y);if(dd<bd){bd=dd;best=e;}}if(!best)break;G.bolts.push({x1:cur.x,y1:cur.y-cur.r,x2:best.x,y2:best.y-best.r,life:0.16});hit.add(best);hurtEnemy(best,d,false,'#5ff0ff');if(stun)best.stun=Math.max(best.stun,0.45);cur=best;}if(n>0)sfx('zap');}
-function killEnemy(e){if(e.dead)return;e.dead=true;if(isBoss(e)||e.type==='manager')bossDeathFx(e);const p=G.p,s=p.s;p.kills++;G.floorKills++;addRank((isBoss(e)?40:e.elite?14:(e.type==='swarm'||e.type==='bat'?3:5))*(1+(s.applause||0)));gainXp(Math.round(e.xp*(1+(rankMult()-1)*0.5)*(G.dress==='glass'?1.5:G.dress==='over'?1.6:1)));sfx('kill');
+function killEnemy(e){if(e.dead)return;e.dead=true;if(isBoss(e)||e.type==='manager'){(G.bossLog=G.bossLog||[]).push({name:enemyName(e),floor:G.floor});}if(isBoss(e)||e.type==='manager')bossDeathFx(e);const p=G.p,s=p.s;p.kills++;G.floorKills++;addRank((isBoss(e)?40:e.elite?14:(e.type==='swarm'||e.type==='bat'?3:5))*(1+(s.applause||0)));gainXp(Math.round(e.xp*(1+(rankMult()-1)*0.5)*(G.dress==='glass'?1.5:G.dress==='over'?1.6:1)));sfx('kill');
   if(isBoss(e)){for(let i=0;i<5;i++)dropCash(e.x+rand(-40,40),e.y+rand(-30,30),(6+G.floor*2)*cashMult());}else if(Math.random()<0.35)dropCash(e.x,e.y,(1+G.floor*0.7)*(e.elite?3:1)*cashMult());
   burst(e.x,e.y-e.r,isBoss(e)?(STYLES[e.style]?STYLES[e.style].c:'#ffc94a'):'#e8e2d0',isBoss(e)?60:12,isBoss(e)?260:140);
   if(s.hypePer>0){p.hype=Math.min(s.hypeMax,p.hype+1);p.hypeT=2.6;}
@@ -1943,9 +2006,13 @@ function killEnemy(e){if(e.dead)return;e.dead=true;if(isBoss(e)||e.type==='manag
 function dropItem(x,y,it){G.pickups.push({type:'item',x,y,item:it,t:Math.random()*5});}
 function gainXp(n){const p=G.p;if(G.heat)n=Math.round(n*(1+0.05*G.heat));p.xp+=n;while(p.xp>=p.xpNext){p.xp-=p.xpNext;p.level++;p.points++;p.xpNext=Math.round(40+p.level*28+p.level*p.level*2);refreshStats();if(!(G.dress==='nolatte'&&state==='play'))p.hp=Math.min(p.s.maxHp,p.hp+p.s.maxHp*0.2);sfx('lvl');
   toast(`Clout up! Level <b>${p.level}</b>. +1 Style Point (T).`,'#7be0ff');if(state==='play'){G.rings.push({x:p.x,y:p.y,r:90,life:0.5,max:0.5,c:'#7be0ff'});}}}
-function damagePlayer(d){const p=G.p;if(p.invuln>0||p.dashT>0||p.veilT>0||p.dive||state!=='play')return;if(G.dress==='glass')d*=2;if(p.s.sp.has('glass'))d*=1.25;if(p.s.dmgTaken>1)d*=p.s.dmgTaken;
+// Names for the death recap and run history.
+function enemyName(e){if(!e)return 'something';if(typeof e==='string')return e;if(e.name)return e.name;const L=LEGEND.find(l=>l.type===e.type&&!l.elite);return (e.elite?'Elite ':'')+(L?L.name:e.type);}
+function tagSrc(e,eb0,hz0){if(!e)return;for(let i=eb0;i<G.ebullets.length;i++)if(!G.ebullets[i].src)G.ebullets[i].src=e;for(let i=hz0;i<G.hazards.length;i++)if(!G.hazards[i].src)G.hazards[i].src=e;}
+function damagePlayer(d,src){const p=G.p;if(p.invuln>0||p.dashT>0||p.veilT>0||p.dive||state!=='play')return;if(G.dress==='glass')d*=2;if(p.s.sp.has('glass'))d*=1.25;if(p.s.dmgTaken>1)d*=p.s.dmgTaken;
   if(p.shieldUp){p.shieldUp=false;p.shieldT=p.s.shieldCd;p.invuln=0.4;burst(p.x,p.y-14,'#5ff0ff',16,180);addText(p.x,p.y-40,'BLOCKED','#5ff0ff',true);return;}
   if(G.chal&&G.chal.type==='pose'&&!G.chal.done)chalEnd(false,'You got hit.');
+  G.lastHit={src:enemyName(src),boss:!!(src&&typeof src==='object'&&(isBoss(src)||src.type==='manager')),dmg:Math.round(d)};
   p.hp-=d;p.invuln=0.5;if(p.rank>=14){p.rank*=0.5+Math.min(0.3,(p.s.rankHold||0)*0.67);addText(p.x,p.y-58,'RANK DOWN','#ff7a8a',false);}G.shake=Math.min(0.5,G.shake+0.25);sfx('hurt');addText(p.x,p.y-40,'-'+Math.round(d),'#ff5a6e',false);
   if(p.hp<=0){if(p.s.sp.has('second')&&!G.secondUsed){G.secondUsed=true;p.hp=1;p.invuln=2;burst(p.x,p.y-14,'#ff4fa3',30,200);addText(p.x,p.y-60,'SECOND LOOK!','#ff4fa3',true);toast('<b>Second Look</b> saved you. Untouchable for 2 seconds, then it is ready again on the next floor.','#ff4fa3');return;}p.hp=0;die();}}
 function refreshStats(){const p=G.p,old=p.s?p.s.maxHp:100,oldSets=p.s?p.s.sets:{};p.s=computeStats(p);
@@ -2060,8 +2127,8 @@ function update(dt){
   else{const t=nearestTarget();if(t){aimAng=Math.atan2((t.big?t.y:t.y-t.r*0.5)-(p.y-8),t.x-p.x);firing=true;}}
   if(aimAng!=null){p.aim=aimAng;if(firing&&p.fireCd<=0)fire(aimAng);}else if(len>0.1)p.aim=Math.atan2(my,mx);
   // enemies
-  const alive=[];
-  for(const e of G.enemies){if(e.dead)continue;alive.push(e);
+  const alive=[];let srcE=null,eb0=G.ebullets.length,hz0=G.hazards.length;
+  for(const e of G.enemies){tagSrc(srcE,eb0,hz0);srcE=e;eb0=G.ebullets.length;hz0=G.hazards.length;if(e.dead)continue;alive.push(e);
     e.flash-=dt;if(e.pop>0)e.pop=Math.max(0,e.pop-dt*7);
     if(e.poisonT>0){e.poisonT-=dt;e.hp-=e.poisonDps*dt;e.poisonTick+=dt;if(e.poisonTick>0.5){e.poisonTick=0;if(V.dmgNums)addText(e.x,e.y-e.r*2,Math.round(e.poisonDps*0.5),'#8fd46b',false);}if(e.hp<=0){killEnemy(e);continue;}if(e.poisonT<=0)e.poisonDps=0;}
     if(e.slowT>0)e.slowT-=dt;
@@ -2086,8 +2153,9 @@ function update(dt){
     else if(e.ai==='boss')bossAI(e,sp,dt,d,dx,dy);
     else if(e.ai==='rival')rivalAI(e,sp,dt,d,dx,dy);
     else if(e.ai==='pattern')patternAI(e,sp,dt,d,dx,dy);
-    if(pd<e.r+p.r){damagePlayer(e.dmg);spikeHit(e);}
+    if(pd<e.r+p.r){damagePlayer(e.dmg,e);spikeHit(e);}
   }
+  tagSrc(srcE,eb0,hz0);
   // separation
   for(let i=0;i<alive.length;i++){const a=alive[i];if(!a.aggro||a.dead)continue;for(let j=i+1;j<alive.length;j++){const b=alive[j];if(!b.aggro||b.dead)continue;const dx=b.x-a.x,dy=b.y-a.y,rr2=a.r+b.r;if(Math.abs(dx)>rr2||Math.abs(dy)>rr2)continue;const d=Math.hypot(dx,dy)||0.01;if(d<rr2){const push=(rr2-d)/2,nx=dx/d,ny=dy/d;if(!isBoss(a))move(a,-nx*push,-ny*push);if(!isBoss(b))move(b,nx*push,ny*push);}}}
   G.enemies=G.enemies.filter(e=>!e.dead);
@@ -2119,7 +2187,7 @@ function update(dt){
     if(G.dress==='mirror'&&!b.mb){b.mb=1;b.bounce=(b.bounce||0)+1;b.life=Math.max(b.life,3);}
     const nx=fz?b.x:b.x+b.vx*dt,ny=fz?b.y:b.y+b.vy*dt;
     if(wallAt(nx,ny)){if(b.bounce>0){const wx=wallAt(nx,b.y),wy=wallAt(b.x,ny);if(wx)b.vx*=-1;if(wy)b.vy*=-1;if(!wx&&!wy){b.vx*=-1;b.vy*=-1;}b.bounce--;continue;}b.dead=true;burst(b.x,b.y,b.c,3,80);continue;}
-    b.x=nx;b.y=ny;const gd=Math.hypot(b.x-p.x,b.y-(p.y-8));if(gd<b.r+p.r-2){if(p.veilT>0||p.dive)continue;b.dead=true;damagePlayer(b.dmg);}else if(!b.grazed&&gd<b.r+p.r+16&&p.invuln<=0){b.grazed=true;addRank(2.5);if(s.sp.has('mirror')){const tg=nearestTarget();if(tg){const a=Math.atan2((tg.big?tg.y:tg.y-tg.r*0.5)-(p.y-8),tg.x-p.x);G.bullets.push({x:p.x,y:p.y-8,vx:Math.cos(a)*560,vy:Math.sin(a)*560,r:4,dmg:baseDmg(p)*0.8,crit:false,pierce:0,ric:0,life:1,hit:new Set(),boom:0,c:'#e8fbff',child:true});}}if(G.particles.length<PCAP())G.particles.push({x:b.x,y:b.y,vx:0,vy:-30,g:0,life:0.3,max:0.3,c:'#ffffff',size:2});}}
+    b.x=nx;b.y=ny;const gd=Math.hypot(b.x-p.x,b.y-(p.y-8));if(gd<b.r+p.r-2){if(p.veilT>0||p.dive)continue;b.dead=true;damagePlayer(b.dmg,b.src||'a stray bullet');}else if(!b.grazed&&gd<b.r+p.r+16&&p.invuln<=0){b.grazed=true;addRank(2.5);if(s.sp.has('mirror')){const tg=nearestTarget();if(tg){const a=Math.atan2((tg.big?tg.y:tg.y-tg.r*0.5)-(p.y-8),tg.x-p.x);G.bullets.push({x:p.x,y:p.y-8,vx:Math.cos(a)*560,vy:Math.sin(a)*560,r:4,dmg:baseDmg(p)*0.8,crit:false,pierce:0,ric:0,life:1,hit:new Set(),boom:0,c:'#e8fbff',child:true});}}if(G.particles.length<PCAP())G.particles.push({x:b.x,y:b.y,vx:0,vy:-30,g:0,life:0.3,max:0.3,c:'#ffffff',size:2});}}
   G.ebullets=G.ebullets.filter(b=>!b.dead);
   // pickups
   G.bagWarnT-=dt;
@@ -2218,11 +2286,11 @@ function rivalAI(e,sp,dt,d,dx,dy){
 function updHazards(dt){const p=G.p;
   for(const h of G.hazards){
     if(h.warn>0){h.warn-=dt;if(h.warn>0)continue;
-      if(h.type==='bomb'){h.dead=true;G.rings.push({x:h.x,y:h.y,r:h.r,life:0.3,max:0.3,c:h.c});burst(h.x,h.y,h.c,18,200);sfx('boom');if(Math.hypot(p.x-h.x,p.y-h.y)<h.r)damagePlayer(h.dmg);
-        for(let i=0;i<6;i++){const a=i/6*Math.PI*2;G.ebullets.push({x:h.x,y:h.y,vx:Math.cos(a)*190,vy:Math.sin(a)*190,r:4,dmg:h.dmg*0.4,life:1.4,c:h.c});}continue;}}
+      if(h.type==='bomb'){h.dead=true;G.rings.push({x:h.x,y:h.y,r:h.r,life:0.3,max:0.3,c:h.c});burst(h.x,h.y,h.c,18,200);sfx('boom');if(Math.hypot(p.x-h.x,p.y-h.y)<h.r)damagePlayer(h.dmg,h.src);
+        for(let i=0;i<6;i++){const a=i/6*Math.PI*2;G.ebullets.push({x:h.x,y:h.y,vx:Math.cos(a)*190,vy:Math.sin(a)*190,r:4,dmg:h.dmg*0.4,life:1.4,c:h.c,src:h.src});}continue;}}
     h.life-=dt;if(h.life<=0){h.dead=true;continue;}
-    if(h.type==='beam'){const ax=h.x,ay=h.y,bx=ax+Math.cos(h.ang)*h.len,by=ay+Math.sin(h.ang)*h.len,px=p.x,py=p.y-8;const l2=(bx-ax)**2+(by-ay)**2;let t=((px-ax)*(bx-ax)+(py-ay)*(by-ay))/l2;t=clamp(t,0,1);if(Math.hypot(px-(ax+t*(bx-ax)),py-(ay+t*(by-ay)))<h.w/2+p.r*0.6)damagePlayer(h.dmg);}
-    if(h.type==='puddle'&&Math.hypot(p.x-h.x,p.y-h.y)<h.r)damagePlayer(h.dmg);}
+    if(h.type==='beam'){const ax=h.x,ay=h.y,bx=ax+Math.cos(h.ang)*h.len,by=ay+Math.sin(h.ang)*h.len,px=p.x,py=p.y-8;const l2=(bx-ax)**2+(by-ay)**2;let t=((px-ax)*(bx-ax)+(py-ay)*(by-ay))/l2;t=clamp(t,0,1);if(Math.hypot(px-(ax+t*(bx-ax)),py-(ay+t*(by-ay)))<h.w/2+p.r*0.6)damagePlayer(h.dmg,h.src);}
+    if(h.type==='puddle'&&Math.hypot(p.x-h.x,p.y-h.y)<h.r)damagePlayer(h.dmg,h.src);}
   G.hazards=G.hazards.filter(h=>!h.dead);}
 // ---------- bullet looks (visual only: hitboxes stay the same) ----------
 const PSK={influencer:'heart',stylist:'pin',dj:'note',bin:'tag',papz:'dart',muse:'star',manager:'card'};
@@ -2269,7 +2337,8 @@ const STORY={
     "The racks go quiet. A lanyard jingles somewhere in the dark.\n\"Sir. Ma'am. Whatever you are. This floor closes at nine, and you're not on the list.\"\nThe Thrift Store Manager has priced everything down here, including you. Final sale. No returns.",
     "Buzzing fluorescent light. A clearance sign flickers: EVERYTHING MUST GO.\n\"Seventy percent off,\" the Outlet Manager hisses, \"and you're still not worth it.\"\nThey've been guarding the catacomb stairs since the mall died. They are not letting a walk-in through.",
     "A headset crackles. \"Places, people. We have an UNSCHEDULED model on the runway.\"\nThe Show Producer has a clipboard, a call sheet, and a very short temper. Nobody walks this show without an invite.\nTonight you walk anyway.",
-    "Velvet rope. Candlelight. A smile that never reaches the eyes.\n\"Welcome to the Abyss. Your table is ready, and so is your coffin.\"\nThe Abyss Concierge has turned away legends at this door. Show them why you're the exception."
+    "Velvet rope. Candlelight. A smile that never reaches the eyes.\n\"Welcome to the Abyss. Your table is ready, and so is your coffin.\"\nThe Abyss Concierge has turned away legends at this door. Show them why you're the exception.",
+    "Bass you can feel in your teeth. Neon on wet concrete. A rooftop, a city, a line around the block.\n\"Name?\" The Head of Security doesn't look up from the clipboard. \"Not here. Not tonight. Not ever.\"\nThe after-party is invite only. You never needed an invite."
   ],
   rival:{
     goth:"The lights drop to candle-black. Bats fold out of the rafters.\n\"You wear grief like a costume,\" Countess Vesper whispers. \"I wear it like a crown.\"\nShe has mourned every trend that ever died down here, and she means to mourn you next.",
@@ -2362,7 +2431,8 @@ function floorCleared(){const p=G.p;state='between';jingle('clear');
     else if(dc==='clearance'){G.sale=true;dressMsg=' Dress code reward: the Boutique is half price.';}
     else dressMsg=` You wore the ${d.name} dress code.`;
     G.dress=null;p.mono=false;p.minimal=false;refreshStats();if(dc==='nolatte')p.hp=p.s.maxHp;}
-  const prev=G.lastDress;const pool=DRESS.filter(d=>d.id!==prev).map(d=>d.id).sort(()=>Math.random()-0.5);G.offer={ids:pool.slice(0,2),pick:null};genStock();G.rerollCost=Math.round(shopP(G.floor+1)*0.8);
+  const prev=G.lastDress;const pool=DRESS.filter(d=>d.id!==prev).map(d=>d.id).sort(()=>Math.random()-0.5);G.offer=G.daily?{ids:[G.daily.dress],pick:G.daily.dress,locked:true}:{ids:pool.slice(0,2),pick:null};
+  G.event=null;if(!G.daily&&G.floor>=2&&!isFinaleF(G.floor+1)&&Math.random()<EVENT_CHANCE){G.event=makeEvent();if(G.event)G.offer=null;}genStock();G.rerollCost=Math.round(shopP(G.floor+1)*0.8);
   $('#bwEyebrow').textContent=`Floor ${G.floor} cleared`;
   $('#bwStats').innerHTML=`<div><b>$${p.cash}</b><span>Cash</span></div><div><b>${G.floorKills}</b><span>Crimes stopped</span></div><div><b>${p.s.drip}</b><span>Drip</span></div><div><b>${p.level}</b><span>Clout level</span></div><div><b>${Math.ceil(p.hp)}/${p.s.maxHp}</b><span>HP (healed ${Math.round(healK*100)}%)</span></div>`;
   const nf=G.floor+1,nz=ZONES[zoneIdx(nf)];
@@ -2371,10 +2441,40 @@ function floorCleared(){const p=G.p;state='between';jingle('clear');
   dressMsg+=empMsg;if(dressMsg)$('#bwNext').innerHTML=esc($('#bwNext').textContent)+dressMsg;
   renderDressOffer();showOnly('#between');}
 function nextFloor(){G.dress=G.offer&&G.offer.pick?G.offer.pick:null;G.lastDress=G.dress;G.sale=false;G.dressFailed=false;G.dressTimer=G.dress==='late'?170:0;buildFloor(G.floor+1);showOnly(null);state='play';toast(`Floor <b>${G.floor}</b> · ${G.zone.name}`,'#ffc94a');if(G.dress){const d=dressById(G.dress);setTimeout(()=>toast(`Dress code: <b>${d.name}</b>. ${d.rule} Reward: ${d.reward}`,'#ff9a3c'),500);}}
+const HIST_MAX=20;
+const fmtT=secs=>`${Math.floor(secs/60)}:${String(Math.floor(secs%60)).padStart(2,'0')}`;
+function runScore(won){const p=G.p;return Math.max(0,(G.floor-1)*1000+p.kills*10+Math.round(p.peakDrip)+(won?5000:0));}
+function recordRun(won){if(!G||G.recorded===(won?'w':'d'))return;G.recorded=won?'w':'d';const p=G.p;
+  const e={t:Date.now(),cls:p.cls||'goth',mode:G.daily?'daily':G.endless?'endless':'runway',diff:G.diff.name,tier:G.tier||0,heat:G.heat||0,floor:G.floor,won:!!won,killer:won?null:(G.lastHit?G.lastHit.src:'something'),secs:Math.round(G.time),kills:p.kills,drip:p.peakDrip,score:runScore(won)};
+  try{const h=store.get('dripcmd.history',[]);const list=Array.isArray(h)?h:[];list.unshift(e);store.set('dripcmd.history',list.slice(0,HIST_MAX));}catch(_){}
+  if(G.daily)dailySave(e.score);return e;}
+function renderRecap(){const p=G.p,L=G.lastHit;const worn=SLOTS.map(sl=>p.gear[sl]).filter(Boolean);
+  const hi=[];if(G.bigHit)hi.push(`<div><b>${Math.round(G.bigHit.d).toLocaleString()}</b><span>Biggest hit · ${esc(G.bigHit.name)}</span></div>`);
+  hi.push(`<div><b style="color:${RANKS[G.peakRank||0].c}">${RANKS[G.peakRank||0].l}</b><span>Best runway rank · ${RANKS[G.peakRank||0].n}</span></div>`);
+  const bl=G.bossLog||[];hi.push(`<div><b>${bl.length}</b><span>${bl.length?'Bosses beaten · last: '+esc(bl[bl.length-1].name):'Bosses beaten'}</span></div>`);
+  hi.push(`<div><b>${fmtT(G.time)}</b><span>Run time</span></div>`);
+  const best=G.bigHit&&bl.length?`Out-dripped <b>${esc(bl[bl.length-1].name)}</b> on floor ${bl[bl.length-1].floor}.`:G.bigHit?`A <b>${Math.round(G.bigHit.d).toLocaleString()}</b>-damage hit on ${esc(G.bigHit.name)} (floor ${G.bigHit.floor}).`:'Showing up. Everyone starts somewhere.';
+  $('#deadRecap').innerHTML=`<div class="rcfit"><canvas id="rcPrev" width="220" height="260" aria-label="Your outfit at the end of the run"></canvas></div>
+    <div class="rcinfo"><p class="eyebrow" style="margin:0">Taken out by</p><div class="rckill">${esc(L?L.src:'something')}</div>
+    <p class="note" style="max-width:none">${L?`The last hit did <b>${L.dmg}</b> damage on floor ${G.floor}${L.boss?', in a boss fight':''}.`:''} ${G.daily?`<br><b style="color:var(--gold)">Daily Runway score: ${runScore(false).toLocaleString()}</b> · best today ${dailyBest().toLocaleString()}`:''}</p>
+    <p class="note" style="max-width:none"><b style="color:var(--fg)">Best moment:</b> ${best}</p>
+    <div class="rchi">${hi.join('')}</div>
+    <div class="rcgear"><p class="eyebrow" style="margin:0 0 4px">The final fit · ${esc(p.s.fitName)} ×${p.s.fit} · ${p.s.drip} Drip</p>${worn.length?worn.map(it=>`<span style="color:${RAR[it.rarity].c}">${it.sp?'★ ':''}${esc(it.name)}</span>`).join(''):'<span class="muted">Nothing at all.</span>'}<span style="color:${RAR[p.weapon.rarity].c}">${esc(p.weapon.name)}</span></div></div>`;
+  const c=$('#rcPrev'),g=c.getContext('2d');g.fillStyle='rgba(255,201,74,.10)';g.beginPath();g.ellipse(110,236,80,16,0,0,Math.PI*2);g.fill();drawCommando(g,110,236,5.2,lookOf(p),0.35,G.time,false);}
+let histFrom='menu';
+function openHistory(){if(state!=='menu'&&state!=='dead')return;histFrom=state;state='history';showOnly('#history');renderHistory();}
+function closeHistory(){if(state!=='history')return;state=histFrom;showOnly(histFrom==='dead'?'#dead':'#menu');}
+function renderHistory(){const h=store.get('dripcmd.history',[]);const list=Array.isArray(h)?h:[];
+  const MN={runway:'Runway',endless:'Endless',daily:'Daily'};
+  $('#histBody').innerHTML=list.length?`<div class="htable"><div class="hrow hhead"><span>When</span><span>Class</span><span>Mode</span><span>Floor</span><span>Result</span><span>Time</span><span>Kills</span><span>Peak Drip</span><span>Score</span></div>`+
+    list.map(r=>{const st=STYLES[r.cls]||STYLES.goth;let when='';try{when=new Date(r.t).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}catch(_){}
+      return `<div class="hrow"><span>${esc(when)}</span><span style="color:${st.c};font-weight:700">${esc(st.name)}</span><span>${MN[r.mode]||r.mode}<em>${esc(r.diff||'')}${r.tier?' · '+ROMAN[r.tier]:''}${r.heat?' · Heat '+r.heat:''}</em></span><span><b>${r.floor}</b></span><span>${r.won?'<b style="color:var(--gold)">Closed the show</b>':'Taken out by <b>'+esc(r.killer||'something')+'</b>'}</span><span>${fmtT(r.secs||0)}</span><span>${(r.kills||0).toLocaleString()}</span><span>${(r.drip||0).toLocaleString()}</span><span>${(r.score||0).toLocaleString()}</span></div>`;}).join('')+'</div>'
+    :'<p class="note">No runs yet. Your last 20 runs show up here: class, how far you got, what took you out and your score.</p>';}
 function die(){state='dead';jingle('over');const p=G.p;const best=Math.max(store.get('dripcmd.best',0),G.floor);store.set('dripcmd.best',best);if(G.endless&&G.floor>prog.bestEndless){prog.bestEndless=G.floor;saveProg();}if(G.chal)G.chal=null;
+  recordRun(false);renderRecap();
   $('#deadStats').innerHTML=`<div><b>${G.floor}</b><span>Floor reached</span></div><div><b>${p.kills}</b><span>Crimes stopped</span></div><div><b>${p.peakDrip}</b><span>Peak Drip</span></div><div><b>${p.level}</b><span>Clout level</span></div><div><b>${best}</b><span>Best floor</span></div>`;
   setTimeout(()=>{if(state==='dead')showOnly('#dead');},700);}
-function showOnly(id){['#menu','#closet','#talents','#pause','#between','#dead','#victory','#settings','#lookbook','#legend','#shop','#achieve'].forEach(s=>$(s).hidden=s!==id);if(typeof pad!=='undefined'&&pad.on&&id)setTimeout(focusFirst,30);setTimeout(()=>{cv.style.cursor=(!settings.auto&&!TOUCH&&state==='play')?'none':'default';if(G)$('#pauseDiff').textContent=`Difficulty: ${G.diff.name} (set when the run starts).`;},0);}
+function showOnly(id){['#menu','#closet','#talents','#pause','#between','#dead','#victory','#settings','#lookbook','#legend','#shop','#achieve','#history'].forEach(s=>$(s).hidden=s!==id);if(typeof pad!=='undefined'&&pad.on&&id)setTimeout(focusFirst,30);setTimeout(()=>{cv.style.cursor=(!settings.auto&&!TOUCH&&state==='play')?'none':'default';if(G)$('#pauseDiff').textContent=`Difficulty: ${G.diff.name} (set when the run starts).`;},0);}
 let prevState='play';
 const LEGEND=[
   {type:'drone',name:'Normcore Drone',where:'All floors',tags:['Melee','Common'],desc:'Beige, blank and relentless. Walks straight at you and hits on contact.',tip:'Easy on its own, dangerous in a crowd. Keep moving.'},
@@ -2394,6 +2494,7 @@ const LEGEND=[
   {type:'mallcop',name:'Mall Cop',where:'Outlet Mall Catacombs',tags:['Fast','Sweeping arc','Zone special'],desc:'Rolls in on a Segway and sweeps a fan of bullets across the room.',tip:'The sweep has a start and an end. Move against it.'},
   {type:'papz',name:'Paparazzo',where:'Fashion Week Underground',tags:['Ranged','3-shot burst','Zone special'],desc:'Lines up a dashed shot, then fires three fast bullets down that line.',tip:'The shots go where the line was, not where you are. Step aside.'},
   {type:'muse',name:'Faceless Muse',where:'The Runway Abyss',tags:['Blinks','Double star','Zone special'],desc:'Blinks next to you and fires two eight-way stars, one after the other.',tip:'The second star fills the gaps of the first. Back away between them.'},
+  {type:'bouncer',name:'The Bouncer',where:'The After-Party (Endless only)',tags:['Tough','Rope wall','Shove charge','Zone special'],desc:'Checks the list. From a distance it sends a velvet-rope wall of bullets at you with a gap to slip through. Up close it shoves: a fast charge straight at you.',tip:'Find the gap in the wall. When it says you are not on the list, dash sideways.'},
   {type:'manager',name:'Floor Manager',where:'Most floors without a rival, from floor 2',tags:['Mini-boss','Mixed patterns','Calls staff'],desc:'Rotates rings, fans, spirals and calls for staff. Shows its own health bar.',tip:'Worth it: half the time it drops a Statement Piece.'},
 ];
 let legendFrom='menu';
@@ -2439,7 +2540,7 @@ $('#lbBody').addEventListener('click',e=>{const el=e.target.closest('.lbcard');i
   lbCw[key]=lbCw[key]==null?0:(lbCw[key]+1>=list.length?null:lbCw[key]+1);const cw=lbCw[key]==null?null:list[lbCw[key]];el.querySelector('.m').textContent=cw?cw.n:'Default colorway';drawLookCard(el.querySelector('canvas'),st2,sl,b,true,lbCw[key]);sfx('pick');});
 $('#bCloseLook').addEventListener('click',closeLookbook);
 $('#bLookbook').addEventListener('click',openLookbook);$('#bLookbook2').addEventListener('click',()=>{initAudio();openLookbook();});
-function openCloset(){if(state!=='play'&&state!=='between')return;prevState=state;state='closet';sel=null;showItem=null;$('#donateConfirm').hidden=true;showOnly('#closet');renderCloset();}
+function openCloset(){if(state!=='play'&&state!=='between')return;prevState=state;state='closet';sel=null;showItem=null;$('#donateConfirm').hidden=true;$('#donateConfirm').innerHTML='';showOnly('#closet');renderCloset();}
 function openTalents(){if(state!=='play'&&state!=='between')return;prevState=state;state='talents';showOnly('#talents');renderTalents();}
 function backFromSheet(){if(prevState==='between'){state='between';showOnly('#between');floorClearedRefresh();}else{state='play';showOnly(null);}}
 function floorClearedRefresh(){const p=G.p;const el=$('#bwStats');if(el){el.children[0].querySelector('b').textContent='$'+p.cash;el.children[2].querySelector('b').textContent=p.s.drip;el.children[4].querySelector('b').textContent=`${Math.ceil(p.hp)}/${p.s.maxHp}`;}}
@@ -2494,10 +2595,10 @@ function renderCloset(){
   $('#clBars').innerHTML=`<p class="fitnext">${fitNext(s)}</p>`+setsHtml(p)+BK.map(k=>`<div class="sbar" style="--c:${STYLES[k].c}" title="${s.cnt[k]} ${STYLES[k].name} piece${s.cnt[k]===1?'':'s'} worn · ${s.sd[k]} ${STYLES[k].name} Drip powers its talents"><span style="color:${STYLES[k].c};font-weight:700">${STYLES[k].name}</span><span class="pips">${'●'.repeat(s.cnt[k])}${'○'.repeat(5-s.cnt[k])}</span><span class="t"><i style="width:${s.sd[k]/maxSd*100}%"></i></span><span class="v">${s.sd[k]}</span></div>`).join('');
   $('#clSlots').innerHTML=[...SLOTS,'weapon'].map(sl=>{const it=sl==='weapon'?p.weapon:p.gear[sl];const on=sel&&sel.from==='slot'&&sel.slot===sl;
     return `<button type="button" class="slot${it&&setOf(it)?' set':''}" data-slot="${sl}" aria-pressed="${on}"><span class="sl">${SLOT_NAME[sl]}</span>${it?`<span class="sn" style="color:${RAR[it.rarity].c}">${it.sp?'<span class="spstar">★</span>':''}${esc(it.name)}</span><span class="sm">${metaLine(it)}</span>${setTag(it)}`:(p.emperor&&sl!=='weapon'?`<span class="sn empty" style="color:#ffd76a">♛ New Clothes</span><span class="sm">Invisible · +${s.newClothes} Drip at rank ${RANKS[s.rankI].l}</span>`:'<span class="sn empty">Standard issue</span><span class="sm">Nothing equipped</span>')}</button>`;}).join('');
-  $('#clBagCount').textContent=`${p.bag.length} / ${BAG}`;$('#bDonateAll').hidden=!p.bag.length;$('#bDonateAll').textContent=p.bag.length?`Donate all (+${p.bag.reduce((a,it)=>a+donateValue(it),0)} Clout)`:'Donate all';$('#clFound').textContent=`Lookbook: ${foundCount()} of ${TOTAL_PIECES()} pieces found. Pieces also drop in up to 10 colorways, and tops and bottoms in ${Object.keys(MODS).length} wear effects.`;
+  $('#clBagCount').textContent=`${p.bag.length} / ${BAG}`;{const dv=p.bag.filter(it=>!it.locked);$('#bDonateAll').hidden=!dv.length||!$('#donateConfirm').hidden;$('#bDonateAll').textContent=dv.length?`Donate all (+${dv.reduce((a,it)=>a+donateValue(it),0)} Clout)${dv.length<p.bag.length?' · skips 🔒':''}`:'Donate all';}$('#clFound').textContent=`Lookbook: ${foundCount()} of ${TOTAL_PIECES()} pieces found. Pieces also drop in up to 10 colorways, and tops and bottoms in ${Object.keys(MODS).length} wear effects.`;
   $('#clBag').innerHTML=p.bag.length?p.bag.map(it=>{const on=sel&&sel.from==='bag'&&sel.id===it.id;const sc=it.slot==='weapon'?'#d8d8e0':(it.cw?it.cw.c:STYLES[it.style].c);
     const up=isUpgrade(it);
-    return `<button type="button" class="bi${it.fresh?' fresh':''}${up?' has-upg':''}${it.sp?' stmt':''}${setOf(it)?' set':''}" data-id="${it.id}" aria-pressed="${on}" style="--rc:${RAR[it.rarity].c};--sc:${sc}" title="${up?(it.slot==='weapon'?'Upgrade: more damage per second':'Upgrade: raises your Drip'):''}">${it.fresh?'<span class="newtag">NEW</span>':''}${setTag(it)}${up?'<span class="upg" aria-label="Upgrade"><svg viewBox="0 0 10 10"><path d="M5 1.5 L8.6 6 H6.2 V8.8 H3.8 V6 H1.4 Z" fill="#7ef0a0"/></svg></span>':''}<span class="bn"><span class="bsw"></span>${it.sp?'<span class="spstar">★</span>':''}${esc(it.name)}</span><span class="bm">${it.slot==='weapon'?'Weapon · ×'+it.mult:stN(it.style)+' '+SLOT_NAME[it.slot]+' · '+it.drip+' Drip'}</span></button>`;}).join(''):'<p class="note" style="grid-column:1/-1">Empty. Loot drops from enemies, Wardrobe Crates and Knockoff Mimics.</p>';
+    return `<button type="button" class="bi${it.fresh?' fresh':''}${up?' has-upg':''}${it.sp?' stmt':''}${setOf(it)?' set':''}" data-id="${it.id}" aria-pressed="${on}" style="--rc:${RAR[it.rarity].c};--sc:${sc}" title="${up?(it.slot==='weapon'?'Upgrade: more damage per second':'Upgrade: raises your Drip'):''}">${it.fresh?'<span class="newtag">NEW</span>':''}${setTag(it)}${up?'<span class="upg" aria-label="Upgrade"><svg viewBox="0 0 10 10"><path d="M5 1.5 L8.6 6 H6.2 V8.8 H3.8 V6 H1.4 Z" fill="#7ef0a0"/></svg></span>':''}<span class="bn"><span class="bsw"></span>${it.locked?'<span class="lockic" title="Locked">🔒</span>':''}${it.sp?'<span class="spstar">★</span>':''}${esc(it.name)}</span><span class="bm">${it.slot==='weapon'?'Weapon · ×'+it.mult:stN(it.style)+' '+SLOT_NAME[it.slot]+' · '+it.drip+' Drip'}</span></button>`;}).join(''):'<p class="note" style="grid-column:1/-1">Empty. Loot drops from enemies, Wardrobe Crates and Knockoff Mimics.</p>';
   renderSellSegs();renderDetail();
 }
 function itemCard(it){const sub=it.slot==='weapon'?`${RAR[it.rarity].n} weapon · ×${it.mult} power`:`${RAR[it.rarity].n} · ${stN(it.style)} ${SLOT_NAME[it.slot]} · ${it.drip} Drip`;
@@ -2521,7 +2622,7 @@ function renderDetail(){const p=G.p,el=$('#clDetail');
       (slot==='weapon'?`<dt>Weapon DPS</dt><dd>${diff(weaponDps(p.weapon,os),weaponDps(it,ns),v=>Math.round(v))}</dd>`:`<dt>Drip</dt><dd>${diff(os.drip,ns.drip,v=>v)} ${dripDelta(ns.drip-os.drip)}</dd><dt>Fit</dt><dd>${fitChange(os,ns)}</dd>${sigChange(os,ns)}`)+
       `<dt>Damage</dt><dd>${diff(os.dmg,ns.dmg,v=>'×'+v.toFixed(2))}</dd><dt>Max HP</dt><dd>${diff(os.maxHp,ns.maxHp,v=>v)}</dd></dl>`;
     const xp=5+it.rarity*8+Math.round((it.drip||20)/4);
-    html+=`<div class="row"><button type="button" class="btn" data-act="equip">Equip</button><button type="button" class="btn ghost" data-act="donate">Donate for +${xp} Clout</button><button type="button" class="btn ghost" data-act="sell">Sell for $${sellValue(it)}</button></div>`;}
+    const lk=!!it.locked;html+=`<div class="row"><button type="button" class="btn" data-act="equip">Equip</button><button type="button" class="btn ghost" data-act="donate" ${lk?'disabled title="Unlock it first"':''}>Donate for +${xp} Clout</button><button type="button" class="btn ghost" data-act="sell" ${lk?'disabled title="Unlock it first"':''}>Sell for $${sellValue(it)}</button><button type="button" class="btn ghost lockb${lk?' on':''}" data-act="lock" aria-pressed="${lk}">${lk?'🔒 Locked':'🔓 Lock'}</button></div>${lk?'<p class="note" style="margin:0">Locked: it can\'t be sold or donated, and Donate all skips it.</p>':''}`;}
   else if(slot!=='weapon'){html+=`<div class="row"><button type="button" class="btn ghost" data-act="unequip" ${p.bag.length>=BAG?'disabled':''}>Take off</button></div>`;}
   el.innerHTML=`<div class="showcase" style="--rc:${RAR[it.rarity].c}"><div><canvas id="clItemPrev" width="440" height="440" aria-label="Close-up of ${esc(it.name)}"></canvas><div class="cap">${slot==='weapon'?'Weapon close-up':'Item close-up · drag to spin'}</div></div><div class="info">${html}</div></div>`;drawItemPreview();}
 let showItem=null,itemRot=0,itemDrag=null;
@@ -2549,18 +2650,20 @@ addEventListener('pointermove',e=>{if(!itemDrag)return;itemRot+=(e.clientX-itemD
 addEventListener('pointerup',()=>{itemDrag=null;});addEventListener('pointercancel',()=>{itemDrag=null;});
 $('#clBag').addEventListener('click',e=>{const b=e.target.closest('.bi');if(!b)return;sel={from:'bag',id:+b.dataset.id};const it=G.p.bag.find(x=>x.id===sel.id);if(it)it.fresh=false;renderCloset();});
 function donateValue(it){return 5+it.rarity*8+Math.round((it.drip||20)/4);}
-$('#bDonateAll').addEventListener('click',()=>{if(!G)return;const p=G.p;if(!p.bag.length)return;const xp=p.bag.reduce((a,it)=>a+donateValue(it),0),ups=p.bag.filter(isUpgrade).length,hi=p.bag.filter(it=>it.rarity>=4||it.sp).length;
-  const el=$('#donateConfirm');el.hidden=false;
-  el.innerHTML=`<p style="margin:0;font-size:15px">Donate all <b>${p.bag.length}</b> items in your bag for <b style="color:var(--xp)">+${xp} Clout</b>?</p>${ups||hi?`<p class="note" style="color:#ffb3bd">Heads up: that includes ${[ups?`${ups} upgrade${ups>1?'s':''} (▲)`:'',hi?`${hi} Iconic, Grail or Statement piece${hi>1?'s':''}`:''].filter(Boolean).join(' and ')}. Donated items are gone for good.</p>`:'<p class="note">Donated items are gone for good. Anything you are wearing stays on.</p>'}<div class="row"><button type="button" class="btn" id="bDonateYes" data-padfirst>Donate ${p.bag.length} items</button><button type="button" class="btn ghost" id="bDonateNo">Cancel</button></div>`;
-  $('#bDonateYes').addEventListener('click',()=>{const n=p.bag.length,tot=p.bag.reduce((a,it)=>a+donateValue(it),0);p.bag=[];sel=null;showItem=null;el.hidden=true;gainXp(tot);sfx('pick');toast(`Donated <b>${n}</b> items for <b>+${tot} Clout</b>.`,'#7be0ff');renderCloset();if(pad.on)setTimeout(focusFirst,40);});
-  $('#bDonateNo').addEventListener('click',()=>{el.hidden=true;if(pad.on)setPadFocus($('#bDonateAll'));});
-  if(pad.on)setTimeout(()=>setPadFocus($('#bDonateNo')),30);el.scrollIntoView({block:'nearest'});});
+$('#bDonateAll').addEventListener('click',()=>{if(!G)return;const p=G.p;const list=p.bag.filter(it=>!it.locked);if(!list.length)return;const xp=list.reduce((a,it)=>a+donateValue(it),0),ups=list.filter(isUpgrade).length,hi=list.filter(it=>it.rarity>=4||it.sp).length;
+  const el=$('#donateConfirm');el.hidden=false;$('#bDonateAll').hidden=true;
+  const warn=ups||hi?`Includes ${[ups?`${ups} upgrade${ups>1?'s':''}`:'',hi?`${hi} Iconic/Grail/Statement`:''].filter(Boolean).join(' and ')}. Gone for good.`:'Gone for good. Worn and 🔒 locked pieces stay.';
+  el.innerHTML=`<span class="dq">Donate <b>${list.length}</b> for <b style="color:var(--xp)">+${xp} Clout</b>?</span><button type="button" class="btn" id="bDonateYes" style="padding:6px 12px;font-size:12px">Yes, donate</button><button type="button" class="btn ghost" id="bDonateNo" style="padding:6px 12px;font-size:12px">Cancel</button><span class="dw${ups||hi?' hot':''}">${warn}</span>`;
+  $('#bDonateYes').addEventListener('click',()=>{const gone=p.bag.filter(it=>!it.locked),n=gone.length,tot=gone.reduce((a,it)=>a+donateValue(it),0);p.bag=p.bag.filter(it=>it.locked);if(sel&&sel.from==='bag'&&!p.bag.some(x=>x.id===sel.id)){sel=null;showItem=null;}el.hidden=true;gainXp(tot);sfx('pick');toast(`Donated <b>${n}</b> items for <b>+${tot} Clout</b>.`,'#7be0ff');renderCloset();if(pad.on)setTimeout(focusFirst,40);});
+  $('#bDonateNo').addEventListener('click',()=>{el.hidden=true;renderCloset();if(pad.on)setTimeout(()=>setPadFocus($('#bDonateAll')),20);});
+  if(pad.on)setTimeout(()=>setPadFocus($('#bDonateNo')),30);});
 $('#clDetail').addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b||!G)return;const p=G.p,act=b.dataset.act;
   if(act==='equip'){const i=p.bag.findIndex(x=>x.id===sel.id);if(i<0)return;const it=p.bag[i];p.bag.splice(i,1);
     if(it.slot==='weapon'){p.bag.push(p.weapon);p.weapon=it;}else{if(p.gear[it.slot])p.bag.push(p.gear[it.slot]);p.gear[it.slot]=it;}
     refreshStats();sel={from:'slot',slot:it.slot};sfx('pick');}
   else if(act==='sell'){const i=p.bag.findIndex(x=>x.id===sel.id);if(i<0)return;const it=p.bag[i];p.bag.splice(i,1);p.cash+=sellValue(it);sfx('pick');toast(`Sold for <b>$${sellValue(it)}</b>.`,'#ffd34d');sel=null;}
   else if(act==='donate'){const i=p.bag.findIndex(x=>x.id===sel.id);if(i<0)return;const it=p.bag[i];p.bag.splice(i,1);const xp=5+it.rarity*8+Math.round((it.drip||20)/4);gainXp(xp);sel=null;}
+  else if(act==='lock'){const it=p.bag.find(x=>x.id===sel.id);if(!it)return;it.locked=!it.locked;sfx('pick');renderCloset();if(pad.on)setTimeout(()=>setPadFocus(document.querySelector('[data-act="lock"]')),20);return;}
   else if(act==='unequip'){if(p.bag.length>=BAG)return;const it=p.gear[sel.slot];if(!it)return;p.bag.push(it);p.gear[sel.slot]=null;refreshStats();}
   renderCloset();});
 
@@ -2618,7 +2721,8 @@ function render(){
   for(const e of ents){if(e===p){
       if(p.shieldUp){ctx.strokeStyle='rgba(95,240,255,.55)';ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(p.x,p.y-12,26,34,0,0,Math.PI*2);ctx.stroke();}
       if(p.s.drip>=150){ctx.fillStyle=`rgba(255,201,74,${0.08+0.05*Math.sin(t*4)})`;ctx.beginPath();ctx.ellipse(p.x,p.y+17,26,8,0,0,Math.PI*2);ctx.fill();}
-      let a=p.invuln>0&&p.dashT<=0&&!p.dive?(Math.floor(t*20)%2?0.4:1):1;if(p.veilT>0){a=0.32;ctx.fillStyle='rgba(165,107,255,.18)';circ(ctx,p.x,p.y-14,30);}const lift=p.dive?Math.sin(Math.PI*Math.min(1,p.dive.t/p.dive.dur))*46:0;drawCommando(ctx,p.x,p.y+18-lift,1.4*(1+lift/200),lookOf(p),p.aim,t,p.moving,a);}
+      let a=p.invuln>0&&p.dashT<=0&&!p.dive?(Math.floor(t*20)%2?0.4:1):1;if(p.veilT>0){a=0.32;ctx.fillStyle='rgba(165,107,255,.18)';circ(ctx,p.x,p.y-14,30);}const lift=p.dive?Math.sin(Math.PI*Math.min(1,p.dive.t/p.dive.dur))*46:0;drawCommando(ctx,p.x,p.y+18-lift,1.4*(1+lift/200),lookOf(p),p.aim,t,p.moving,a);
+      if(V.hitbox){const hr=Math.max(3,p.r-2);ctx.save();ctx.globalAlpha=0.9;ctx.strokeStyle='#0a0710';ctx.lineWidth=3.5;ctx.beginPath();ctx.arc(p.x,p.y-8,hr,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='#ffffff';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(p.x,p.y-8,hr,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#ff4fa3';ctx.strokeStyle='#0a0710';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(p.x,p.y-8,3,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.restore();}}
     else drawEnemy(ctx,e,t);}
   drawSpecialsTop(ctx,t);
   // bullets
@@ -2673,7 +2777,7 @@ function updHUD(){const p=G.p,s=p.s;
   setS('#hpFill','width',pctS(p.hp/s.maxHp*100));setT('#hpTxt',`${Math.ceil(p.hp)} / ${s.maxHp}`);H$('#hpBar').classList.toggle('shield',p.shieldUp);
   setS('#xpFill','width',pctS(p.xp/p.xpNext*100));setT('#hLvl',String(p.level));
   setT('#dripTxt',String(s.drip));setT('#dripFx',`+${Math.round(s.drip/BAL.dripK*100)}% damage · +${s.dripHp} HP`);setT('#fitTxt',s.fit!==1?`${s.fitName} ×${s.fit}`:`${s.fitName} · no Fit bonus`);setS('#fitTxt','color',s.fitName==='Poser'?'#ff7a8a':s.topStyle?STYLES[s.topStyle].c:'var(--muted)');
-  setT('#floorTxt',`Floor ${G.floor}${G.endless&&G.floor>FINALE_EVERY?' · Encore':''} · ${G.zone.name}${G.heat?' · Heat '+G.heat:''}`);
+  setT('#floorTxt',`${G.daily?'Daily · ':''}Floor ${G.floor}${G.endless&&G.floor>FINALE_EVERY?' · Encore':''} · ${G.zone.name}${G.heat?' · Heat '+G.heat:''}`);
   H$('#passTxt').hidden=!p.passes;if(p.passes)setT('#passTxt',`VIP Pass ×${p.passes}`);
   {const ch=G.chal;H$('#chalBadge').hidden=!ch;if(ch){const tl=ch.type==='heels'?`wave ${Math.max(1,ch.wave)}/${ch.waves} · no dashing`:`${Math.ceil(Math.max(0,ch.t))}s left`;setT('#chalBadge',`Catwalk: ${CHALS[ch.type].n} · ${tl}`);}}
   const hy=s.hypePer>0;H$('#hypeRow').hidden=!hy;if(hy)setT('#hypeTxt',`${Math.floor(p.hype)} / ${s.hypeMax}`);
@@ -2698,6 +2802,7 @@ addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(state==='story'){e
   if(k===' '&&state==='play')dashPressed=true;
   if(k==='e'&&state==='play')sigPressed=true;
   if(k==='m')setMute(!muted);
+  if(k==='h'&&!e.repeat&&(state==='play'||state==='paused')){V.hitbox=!V.hitbox;saveV();toast(V.hitbox?'Hitbox <b>shown</b>: enemy bullets only hurt you inside the white ring. Press <b>H</b> to hide it.':'Hitbox hidden. Press <b>H</b> to show it.','#ffffff');}
   if(state==='play'){if(k==='c')openCloset();else if(k==='t')openTalents();else if(k==='escape'||k==='p')openPause();}
   else if(state==='closet'&&(k==='c'||k==='escape'))backFromSheet();
   else if(state==='talents'&&(k==='t'||k==='escape'))backFromSheet();
@@ -2706,6 +2811,7 @@ addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(state==='story'){e
   else if(state==='lookbook'&&k==='escape')closeLookbook();
   else if(state==='legend'&&k==='escape')closeLegend();
   else if(state==='achieve'&&k==='escape')closeAch();
+  else if(state==='history'&&k==='escape')closeHistory();
   else if(state==='shop'&&k==='escape')closeShop();
   else if(state==='between'){if(k==='enter')nextFloor();else if(k==='c')openCloset();else if(k==='t')openTalents();}});
 addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false;});
@@ -2774,7 +2880,7 @@ function drawPicnics(g){for(const k of G.picnics){const a=Math.min(1,k.life);g.s
 const RANKS=[{l:'D',n:'Dull',at:0,c:'#8a8196',m:1},{l:'C',n:'Cute',at:14,c:'#7be0ff',m:1.1},{l:'B',n:'Bold',at:30,c:'#8fd46b',m:1.2},{l:'A',n:'Fierce',at:48,c:'#ffc94a',m:1.3},{l:'S',n:'Serving',at:66,c:'#ff9a3c',m:1.4},{l:'SS',n:'Slaying',at:82,c:'#ff4fa3',m:1.5},{l:'SSS',n:'Iconic',at:95,c:'#b784ff',m:1.6}];
 function rankIdx(v){let i=0;for(let k=0;k<RANKS.length;k++)if(v>=RANKS[k].at)i=k;return i;}
 const rankMult=()=>G?RANKS[rankIdx(G.p.rank)].m:1;
-function addRank(n){const p=G.p,b=rankIdx(p.rank);p.rank=Math.min(108,p.rank+n*(G.dress==='glass'?2:1));p.rankT=2.2;const a=rankIdx(p.rank);
+function addRank(n){const p=G.p,b=rankIdx(p.rank);p.rank=Math.min(108,p.rank+n*(G.dress==='glass'?2:1));p.rankT=2.2;const a=rankIdx(p.rank);if(a>(G.peakRank||0))G.peakRank=a;
   if(a>b&&hasSp('photo')){for(const e of G.enemies){if(!e.dead&&!e.dormant&&!e.big&&Math.hypot(e.x-p.x,e.y-p.y)<260)e.stun=Math.max(e.stun,isBoss(e)?0.5:1.2);}G.rings.push({x:p.x,y:p.y-10,r:260,life:0.35,max:0.35,c:'#ffffff'});burst(p.x,p.y-30,'#ffffff',14,200);}
   if(a>b){const R=RANKS[a];addText(p.x,p.y-64,`RANK ${R.l}!`,R.c,true);if(a>=4)toast(`Runway rank <b style="color:${R.c}">${R.l}</b>: ${R.n}! Loot ×${R.m}`,R.c);sfx('pick');}}
 function rankTick(dt){const p=G.p;if(p.rankT>0)p.rankT-=dt;else p.rank=Math.max(0,p.rank-dt*(3+rankIdx(p.rank)*1.3)*(1-Math.min(0.6,(p.s&&p.s.rankHold)||0)));
@@ -2805,11 +2911,36 @@ const DRESS=[
   {id:'nolatte',name:'No Lattes',rule:'No healing of any kind: lattes, regen, lifesteal, picnics.',reward:'Full heal and +2 Style Points when you clear the floor.'},
 ];
 const dressById=id=>DRESS.find(d=>d.id===id);
-function renderDressOffer(){const el=$('#dressOffer');const o=G.offer;if(!o){el.hidden=true;return;}el.hidden=false;
+const EVENT_CHANCE=0.3;
+function makeEvent(){const p=G.p,f=G.floor+1,worn=SLOTS.filter(sl=>p.gear[sl]&&!p.gear[sl].sp&&p.gear[sl].rarity<5);const pool=['sample','lostfound','fitting'];if(worn.length)pool.push('swap','swap');
+  const id=pick(pool);
+  if(id==='swap'){const sl=pick(worn);return {id,slot:sl,old:p.gear[sl].id};}
+  if(id==='sample'){const items=[makeLoot(f,1),makeLoot(f,1),makeLoot(f,1.5)];return {id,items};}
+  if(id==='lostfound')return {id,cash:Math.round(shopP(f)*2.2)};
+  return {id};}
+function renderEvent(){const el=$('#dressOffer'),ev=G.event,p=G.p;el.hidden=false;let h='',opts='';
+  const card=(k,title,body,cls)=>`<button type="button" class="dcard ${cls||''}" data-ev="${k}"><b class="dcn">${title}</b><span>${body}</span></button>`;
+  if(ev.id==='swap'){const it=p.gear[ev.slot];h=`<b class="evn">Clothing Swap</b><span>A stylist in the stairwell eyes your <b style="color:${it?RAR[it.rarity].c:'#fff'}">${esc(it?it.name:'piece')}</b>. They'll trade it for whatever is in their garment bag: same slot, <b>one rarity higher</b>, any style. No peeking.</span>`;
+    opts=card('yes','Swap it','Lose this piece, wear the mystery one.')+card('no','No thanks','Keep what you have.','skip');}
+  else if(ev.id==='sample'){h=`<b class="evn">Sample Sale</b><span>A rack of samples, free to a good home. Take one.</span>`;
+    opts=ev.items.map((it,i)=>card('s'+i,`<span style="color:${RAR[it.rarity].c}">${esc(it.name)}</span>`,it.slot==='weapon'?`${RAR[it.rarity].n} weapon`:`${RAR[it.rarity].n} · ${stN(it.style)} ${SLOT_NAME[it.slot]} · ${it.drip} Drip${it.sp?' · <b style="color:var(--pink)">★ '+esc(STMT[it.sp].n)+'</b>':''}`)).join('')+card('no','Leave it','Walk on by.','skip');}
+  else if(ev.id==='lostfound'){h=`<b class="evn">Lost &amp; Found</b><span>Someone left their stuff behind. Take the cash, or gamble on the bag (anything from Thrifted to Grail).</span>`;
+    opts=card('cash',`Take <b style="color:#ffd34d">$${ev.cash}</b>`,'A sure thing.')+card('bag','Take the mystery bag','One random piece. Could be junk, could be a Grail.');}
+  else{h=`<b class="evn">After-Hours Fitting</b><span>The fitting room is open late. Rest up, or rehearse.</span>`;
+    opts=card('heal','Full heal','Walk into the next floor at full HP.')+card('point','+1 Style Point','Spend it in the Style Trees (T).');}
+  el.innerHTML=`<div class="secth" style="margin:0"><h3>Something's happening between floors</h3><span class="muted" style="font-size:12px">No dress code this time</span></div><div class="evbody">${h}</div>${ev.done?`<p class="note evdone">${ev.done}</p>`:`<div class="dcgrid">${opts}</div>`}`;}
+function eventPick(k){const ev=G.event,p=G.p;if(!ev||ev.done)return;const f=G.floor+1;let msg='';
+  if(ev.id==='swap'){if(k==='yes'){const old=p.gear[ev.slot];const it=makeGear(f,0,null,ev.slot,Math.min(5,(old?old.rarity:0)+1));p.gear[ev.slot]=it;markFound(it);refreshStats();sfx('lvl');msg=`Swapped. You're now wearing <b style="color:${RAR[it.rarity].c}">${esc(it.name)}</b> (${stN(it.style)}, +${it.drip} Drip).`;}else msg='You keep your piece. The stylist shrugs.';}
+  else if(ev.id==='sample'){if(k[0]==='s'){const it=ev.items[+k.slice(1)];if(p.bag.length>=BAG){toast('Your bag is full. Make room in the Closet first.','#ff7a8a');return;}it.fresh=true;p.bag.push(it);markFound(it);sfx('pick');msg=`<b style="color:${RAR[it.rarity].c}">${esc(it.name)}</b> is in your bag.`;}else msg='You leave the samples for someone else.';}
+  else if(ev.id==='lostfound'){if(k==='cash'){p.cash+=ev.cash;sfx('pick');msg=`+$${ev.cash}.`;}else{if(p.bag.length>=BAG){toast('Your bag is full. Make room in the Closet first.','#ff7a8a');return;}const it=makeLoot(f,0);it.fresh=true;p.bag.push(it);markFound(it);sfx('pick');msg=`The bag held <b style="color:${RAR[it.rarity].c}">${RAR[it.rarity].n} ${esc(it.name)}</b>. It's in your bag.`;}}
+  else{if(k==='heal'){p.hp=p.s.maxHp;msg='Fully healed.';}else{p.points++;msg='+1 Style Point.';}sfx('lvl');}
+  ev.done=msg;renderEvent();floorClearedRefresh&&floorClearedRefresh();if(pad.on)setTimeout(()=>setPadFocus($('#bNext')),30);}
+function renderDressOffer(){const el=$('#dressOffer');if(G.event){renderEvent();return;}const o=G.offer;if(!o){el.hidden=true;return;}el.hidden=false;
+  if(o.locked){const d=dressById(o.ids[0]);el.innerHTML=`<div class="secth" style="margin:0"><h3>Daily Runway dress code</h3><span class="muted" style="font-size:12px">The same rule on every floor today</span></div><div class="dcgrid"><div class="dcard" aria-pressed="true"><b class="dcn">${d.name}</b><span><span class="dcl">Rule</span> ${d.rule}</span><span><span class="dcl ok">Reward</span> ${d.reward}</span></div></div>`;return;}
   el.innerHTML=`<div class="secth" style="margin:0"><h3>Optional dress code for floor ${G.floor+1}</h3><span class="muted" style="font-size:12px">Pick one to take the risk for the reward, or skip</span></div>
   <div class="dcgrid">${o.ids.map(id=>{const d=dressById(id),on=o.pick===id;return `<button type="button" class="dcard" data-dc="${id}" aria-pressed="${on}"><b class="dcn">${d.name}</b><span><span class="dcl">Rule</span> ${d.rule}</span><span><span class="dcl ok">Reward</span> ${d.reward}</span><span class="dcs">${on?'Selected':'Select'}</span></button>`;}).join('')}
   <button type="button" class="dcard skip" data-dc="none" aria-pressed="${!o.pick}"><b class="dcn" style="color:var(--muted)">No dress code</b><span class="muted">Play the next floor normally.</span><span class="dcs">${!o.pick?'Selected':'Select'}</span></button></div>`;}
-$('#dressOffer').addEventListener('click',e=>{const b=e.target.closest('[data-dc]');if(!b||!G||!G.offer)return;G.offer.pick=b.dataset.dc==='none'?null:b.dataset.dc;renderDressOffer();if(pad.on)setPadFocus($(`[data-dc="${b.dataset.dc}"]`));});
+$('#dressOffer').addEventListener('click',e=>{const ev=e.target.closest('[data-ev]');if(ev&&G&&G.event){eventPick(ev.dataset.ev);return;}const b=e.target.closest('[data-dc]');if(!b||!G||!G.offer||G.offer.locked)return;G.offer.pick=b.dataset.dc==='none'?null:b.dataset.dc;renderDressOffer();if(pad.on)setPadFocus($(`[data-dc="${b.dataset.dc}"]`));});
 
 // ---------- pop-up boutique ----------
 function genStock(){const f=G.floor+1;G.stock=[makeGear(f,1),makeGear(f,1),makeGear(f,1.5),Math.random()<0.4?makeWeapon(f,1.5):makeGear(f,2.5)];
@@ -2870,7 +3001,7 @@ const shopDisc=()=>lbPerk(80)?0.85:1;
 const LBM=[{at:10,t:'Pocket money',d:'Start every run with $40.'},{at:25,t:'Third piece',d:'Start with a head piece in your style.'},{at:40,t:'Head start',d:'+1 Style Point at the start of every run.'},{at:60,t:'Better basics',d:'Your starting pieces are one rarity higher.'},{at:80,t:'Insider discount',d:'The Pop-up Boutique and the Tailor are 15% cheaper.'},{at:100,t:'Signature look',d:'Start every run with a random Statement Piece in your bag.'},{at:0,t:'Complete collection',d:'+10% Drip on everything you wear, always.'}];
 const lbAt=m=>m.at||TOTAL_PIECES();
 function lbPerk(at){return foundCount()>=(at||TOTAL_PIECES());}
-function startPerks(p,emp){const st=cfg.style,b=lbPerk(60)?1:0,got=[];
+function startPerks(p,emp,cls){const st=cls||cfg.style,b=lbPerk(60)?1:0,got=[];
   if(b&&!emp){p.gear.top=makeGear(1,0,st,'top',2);p.gear.kicks=makeGear(1,0,st,'kicks',1);got.push('better basics');}
   if(lbPerk(25)&&!emp){p.gear.head=makeGear(1,0,st,'head',b);got.push('a head piece');}
   if(lbPerk(10)){p.cash+=40;got.push('$40');}
@@ -2913,8 +3044,8 @@ function spikeHit(e){const p=G.p;if(!hasSp('spiked')||e.big||e.dead)return;if(G.
   if(!isBoss(e)&&!e.heavy){const d=Math.hypot(e.x-p.x,e.y-p.y)||1;e.kx+=(e.x-p.x)/d*380;e.ky+=(e.y-p.y)/d*380;}}
 
 // ---------- pattern shooters ----------
-const ZONE_UNIQUE=['bin','mallcop','papz','muse'];
-const MANAGER_NAMES=['Thrift Store Manager','Outlet Manager','Show Producer','Abyss Concierge'];
+const ZONE_UNIQUE=['bin','mallcop','papz','muse','bouncer'];
+const MANAGER_NAMES=['Thrift Store Manager','Outlet Manager','Show Producer','Abyss Concierge','Head of Security'];
 function pshot(e,a,spd,o){const b=Object.assign({x:e.x,y:e.y-e.r,vx:Math.cos(a)*spd,vy:Math.sin(a)*spd,r:5,dmg:e.dmg*0.75,life:4,c:e.col||'#ffffff',sk:PSK[e.type]||'orb'},o||{});G.ebullets.push(b);muzzle(b.x,b.y,b.c);}
 function patFire(e,a){const el=e.elite;
   switch(e.pat){
@@ -2926,6 +3057,10 @@ function patFire(e,a){const el=e.elite;
     case 'sweep':e.sweepN=e.sweepLeft=el?13:9;e.st=0;break;
     case 'burst':e.burstLeft=el?5:3;e.st=0;break;
     case 'star':{for(let i=0;i<8;i++)pshot(e,i/8*Math.PI*2,170);e.star2=0.3;break;}
+    case 'bouncer':{const p=G.p,d=Math.hypot(p.x-e.x,p.y-e.y);
+      if(d<180){e.chg=0.38;e.chgA=a;addText(e.x,e.y-e.r*3,'NOT ON THE LIST','#ff3b6b',false);burst(e.x,e.y-e.r,'#ff3b6b',10,160);}
+      else{const n=el?11:9,gap=Math.floor(rand(1,n-1)),px=-Math.sin(a),py=Math.cos(a);for(let i=0;i<n;i++){if(i===gap||(!el&&i===gap+1))continue;const o=(i-(n-1)/2)*22;G.ebullets.push({x:e.x+px*o,y:e.y-e.r+py*o,vx:Math.cos(a)*165,vy:Math.sin(a)*165,r:5.5,dmg:e.dmg*0.7,life:3.2,c:'#ff3b6b',sk:'stud'});}muzzle(e.x,e.y-e.r,'#ff3b6b');}
+      break;}
     case 'mixed':{const k=(e.mi=(e.mi||0)+1)%4;
       if(k===0){const n=el?22:18,o=Math.random()*6;for(let i=0;i<n;i++)pshot(e,o+i/n*Math.PI*2,155,{r:6});}
       else if(k===1){for(let i=0;i<9;i++)pshot(e,a+(i-4)*0.16,225,{r:5});}
@@ -2934,6 +3069,7 @@ function patFire(e,a){const el=e.elite;
       break;}
   }}
 function patternAI(e,sp,dt,d,dx,dy){const D=ENEMIES[e.type],p=G.p;let a=Math.atan2(dy-8+e.r,dx);
+  if(e.chg>0){e.chg-=dt;move(e,Math.cos(e.chgA)*460*dt,Math.sin(e.chgA)*460*dt);if(G.particles.length<PCAP())G.particles.push({x:e.x+rand(-8,8),y:e.y+rand(-4,4),vx:0,vy:-20,g:0,life:0.25,max:0.25,c:'#ff3b6b',size:2.4});return;}
   if(e.spinLeft>0){e.spinLeft-=dt;e.st=(e.st||0)-dt;if(e.st<=0){e.st=e.type==='manager'?0.09:0.12;e.spAng+=0.33;const n=(e.elite?3:2)+(e.type==='manager'?1:0);for(let k=0;k<n;k++)pshot(e,e.spAng+k*Math.PI*2/n,140);}}
   if(e.sweepLeft>0){e.st=(e.st||0)-dt;if(e.st<=0){e.st=0.08;const i=e.sweepN-e.sweepLeft;pshot(e,e.lockA-0.8+1.6*i/Math.max(1,e.sweepN-1),210);e.sweepLeft--;}}
   if(e.burstLeft>0){e.st=(e.st||0)-dt;if(e.st<=0){e.st=0.08;pshot(e,e.lockA,400,{r:4,c:'#fff3c4'});e.burstLeft--;}}
@@ -3003,6 +3139,8 @@ function showVictory(){if(state!=='play')return;state='victory';jingle('clear');
   $('#vcEyebrow').textContent=`Floor ${G.floor} · ${G.diff.name}${G.tier?' · '+TIERS[G.tier].n:''}${G.heat?' · Heat '+G.heat:''}`;
   $('#vcStats').innerHTML=`<div><b>${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}</b><span>Run time</span></div><div><b>${p.kills}</b><span>Crimes stopped</span></div><div><b>${p.peakDrip}</b><span>Peak Drip</span></div><div><b>${p.level}</b><span>Clout level</span></div><div><b>${prog.wins}</b><span>Shows closed</span></div>`;
   const u=G.finaleUnl||[];$('#vcUnlocks').hidden=!u.length;$('#vcUnlocks').innerHTML=u.length?`<div class="secth"><h3>Unlocked</h3></div>${u.map(x=>`<p class="note" style="max-width:none">${x}</p>`).join('')}`:'';
+  recordRun(true);if(G.daily){$('#vcStats').insertAdjacentHTML('beforeend',`<div><b style="color:var(--gold)">${runScore(true).toLocaleString()}</b><span>Daily score · best today ${dailyBest().toLocaleString()}</span></div>`);}
+  $('#bEncore').hidden=!!G.daily;
   showOnly('#victory');}
 // Creative Director art: painted images with transparent backgrounds, one per phase (1 black & white, 2 violet, 3 crimson).
 // Source size 1486x992; cx = horizontal centre; lens/shoulder spots are in source pixels.
@@ -3203,7 +3341,7 @@ renderRules();
 function ctrlHtml(){
   if(TOUCH)return 'Drag anywhere on the left side to move. '+(settings.auto?'You fire automatically at the nearest enemy.':'Drag on the right side to aim and fire.')+' Tap <b>DASH</b> to dodge through attacks. Closet and Styles buttons sit under the minimap. Reach the gold <b>Runway</b> to go deeper.';
   if(typeof pad!=='undefined'&&pad.on)return '<b style="color:#7be0ff">Controller:</b> left stick moves · '+(settings.auto?'auto-fire, or aim with the right stick':'right stick aims and fires (or hold RT)')+' · <kbd>A</kbd> dash · <kbd>RB</kbd> signature move · <kbd>X</kbd> closet · <kbd>Y</kbd> style trees · <kbd>Start</kbd> pause<br>Reach the gold <b>Runway</b> on each floor to go deeper.';
-  return '<kbd>WASD</kbd> move · '+(settings.auto?'auto-fire at the nearest enemy · hold <kbd>Mouse</kbd> to aim yourself':'<kbd>Arrow keys</kbd> shoot that way · or aim with the <kbd>Mouse</kbd> and hold <kbd>Left click</kbd>')+' · <kbd>Space</kbd> dash · <kbd>E</kbd>/<kbd>Right click</kbd> signature move · <kbd>C</kbd> closet · <kbd>T</kbd> style trees · <kbd>Esc</kbd> pause · <kbd>M</kbd> mute<br>Reach the gold <b>Runway</b> on each floor to go deeper.';}
+  return '<kbd>WASD</kbd> move · '+(settings.auto?'auto-fire at the nearest enemy · hold <kbd>Mouse</kbd> to aim yourself':'<kbd>Arrow keys</kbd> shoot that way · or aim with the <kbd>Mouse</kbd> and hold <kbd>Left click</kbd>')+' · <kbd>Space</kbd> dash · <kbd>E</kbd>/<kbd>Right click</kbd> signature move · <kbd>C</kbd> closet · <kbd>T</kbd> style trees · <kbd>Esc</kbd> pause · <kbd>M</kbd> mute · <kbd>H</kbd> show hitbox<br>Reach the gold <b>Runway</b> on each floor to go deeper.';}
 function syncSettings(){
   document.querySelectorAll('#segDiff button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===settings.diff)));
   document.querySelectorAll('#segFire button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===(settings.auto?'auto':'manual'))));
@@ -3251,8 +3389,11 @@ function renderStyleChips(){const unl=!!prog.emperor;if(cfg.style===EMP&&!unl)cf
 renderStyleChips();
 $('#styleChips').addEventListener('click',e=>{const b=e.target.closest('.sty');if(!b||b.disabled)return;cfg.style=b.dataset.s;saveCfg();document.querySelectorAll('.sty').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));drawMenuPreviews();});
 $('#drops').innerHTML=[['8%','#ffc94a',0],['23%','#ffd46a',1.1],['41%','#ff7abd',0.5],['57%','#ffc94a',1.8],['74%','#ff4fa3',0.9],['90%','#ffc94a',2.2]].map(([l,c,d])=>`<i style="left:${l};--c:${c};--d:${d}s"></i>`).join('');
-function updBest(){if(typeof renderStyleChips==='function'&&state==='menu'){renderStyleChips();drawMenuPreviews();}const b=store.get('dripcmd.best',0);$('#bestTxt').textContent=[b?`Best run: floor ${b}`:'',prog.wins?`Shows closed: ${prog.wins}`:'',prog.bestEndless?`Endless best: floor ${prog.bestEndless}`:''].filter(Boolean).join(' · ');if(typeof renderRules==='function')renderRules();}
+function updBest(){if(typeof renderDailyHint==='function'&&$('#dailyHint'))renderDailyHint();if(typeof renderStyleChips==='function'&&state==='menu'){renderStyleChips();drawMenuPreviews();}const b=store.get('dripcmd.best',0);$('#bestTxt').textContent=[b?`Best run: floor ${b}`:'',prog.wins?`Shows closed: ${prog.wins}`:'',prog.bestEndless?`Endless best: floor ${prog.bestEndless}`:''].filter(Boolean).join(' · ');if(typeof renderRules==='function')renderRules();}
 $('#bStart').addEventListener('click',()=>{initAudio();newRun();});
+$('#bDaily').addEventListener('click',()=>{initAudio();newRun(true);});
+$('#bHist').addEventListener('click',openHistory);$('#bHist2').addEventListener('click',openHistory);$('#bCloseHist').addEventListener('click',closeHistory);
+function renderDailyHint(){const D=dailyInfo(),dc=dressById(D.dress),dd=dailyData();$('#dailyHint').innerHTML=`Today (${D.key}): <b style="color:${STYLES[D.cls].c}">${STYLES[D.cls].name}</b> with <b>${dc.name}</b> on every floor. Same floors for everyone, Standard difficulty, no Lookbook perks.${dd.plays?` Best today: <b style="color:var(--gold)">${(dd.best||0).toLocaleString()}</b> (${dd.plays} run${dd.plays>1?'s':''}).`:''} Score: 1,000 per floor, 10 per kill, your peak Drip, +5,000 for closing the show.`;}
 drawMenuPreviews();updBest();applyVideo();syncSettingsUi();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(state==='menu')drawMenuPreviews();});
 
