@@ -555,6 +555,34 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
   .touch #bossBar{top:calc(env(safe-area-inset-top,0px) + 206px);width:calc(100vw - 24px)}
   .touch #bossBar:not([hidden]) ~ #toasts{top:auto}
 }
+/* Portrait phones: everything sits in one solid bar across the top, the boss bar tucks into its bottom edge,
+   the minimap hangs just below it on the right, and the camera centres the player in the open area underneath. */
+@media (max-width:560px) and (orientation:portrait){
+  .touch #hud{--band:calc(env(safe-area-inset-top,0px) + 96px)}
+  .touch #hud:has(#bossBar:not([hidden])){--band:calc(env(safe-area-inset-top,0px) + 122px)}
+  .touch #hud::before{content:"";position:absolute;left:0;right:0;top:0;height:var(--band);background:linear-gradient(180deg,#0c0911f7,#0c0911e6);border-bottom:1px solid var(--line);pointer-events:none}
+  .touch .hud-l{width:calc(100vw - 160px);max-height:calc(var(--band) - env(safe-area-inset-top,0px) - 14px);overflow:hidden;display:flex;flex-wrap:wrap;align-items:center;align-content:flex-start;gap:3px 8px}
+  .touch .hud-l>.who,.touch .hud-l>.bar{flex:0 0 100%}
+  .touch .hud-l>.row{display:contents}
+  .touch .hud-l .cash{order:1}
+  .touch .hud-l .hype{order:2;font-size:10px;letter-spacing:.08em}
+  .touch .hud-l .rankbox{order:3;gap:4px;flex:1 0 auto}
+  .touch .hud-l .dressb{order:4}.touch .hud-l .passb{order:5}.touch .hud-l .chalb{order:6}
+  .touch .dressb,.touch .passb,.touch .chalb{font-size:9px;padding:1px 5px;max-width:calc(50% - 4px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-sizing:border-box}
+  .touch .hud-l .chalb{max-width:100%}
+  .touch .rankbox b{font-size:15px;min-width:0}
+  .touch .rankbox .bar,.touch .rankbox small{display:none}
+  .touch .hbtn{width:34px;height:34px}
+  .touch .hbtn .hic{width:18px;height:18px}
+  .touch .hud-btns{gap:6px;margin-bottom:4px}
+  .touch .drip b{font-size:20px}
+  .touch .dripfx,.touch .floor{display:none}
+  .touch #mini{position:fixed;top:calc(var(--band) + 6px);right:10px;width:80px;height:58px;margin:0;opacity:.85}
+  .touch #bossBar{top:calc(var(--band) - 26px);left:10px;right:10px;width:auto;transform:none;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:8px;text-align:left}
+  .touch #bossBar .bn{font-size:12px;max-width:55vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .touch #bossBar .bar{height:7px}
+  .touch #achPop{top:calc(var(--band) + 6px)}
+}
 </style>
 
 <canvas id="game" aria-label="Drip Command game arena"></canvas>
@@ -875,7 +903,7 @@ const A2HS_MSG='On iPhone, Safari can\'t hide its bars. Tap <b>Share</b>, then <
 try{const ic=document.createElement('canvas');ic.width=ic.height=180;const g=ic.getContext('2d');g.fillStyle='#0c0911';g.fillRect(0,0,180,180);const gr=g.createLinearGradient(0,40,0,140);gr.addColorStop(0,'#fff6d6');gr.addColorStop(.5,'#ffc94a');gr.addColorStop(1,'#d98b12');g.fillStyle=gr;g.font='900 92px "Arial Black",Impact,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('D',66,92);g.fillStyle='#ff4fa3';g.fillText('C',118,100);const l=document.createElement('link');l.rel='apple-touch-icon';l.href=ic.toDataURL('image/png');document.head.appendChild(l);}catch(e){}
 function autoFullscreen(){if(!TOUCH||STANDALONE||!FS_API||document.fullscreenElement)return;try{const r=document.documentElement.requestFullscreen({navigationUI:'hide'});if(r&&r.catch)r.catch(()=>{});}catch(e){}}
 const V=Object.assign({master:0.8,music:0.55,sfx:0.8,shake:1,particles:'high',dmgNums:true,res:'high',cam:'normal',scan:false,fps:false},(()=>{try{return JSON.parse(localStorage.getItem('dripcmd.video'))||{};}catch(e){return {};}})());
-function resize(){DPR=V.res==='low'?1:Math.min(2,window.devicePixelRatio||1);W=window.innerWidth;H=window.innerHeight;cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);ZOOM=Math.max(W<600?0.8:0.62,Math.min(1.25*Math.max(1,Math.min(W/1920,H/1080)),Math.min(W/960,H/680)))*({close:1.2,normal:1,wide:0.82}[V.cam]||1);}
+function resize(){DPR=V.res==='low'?1:Math.min(2,window.devicePixelRatio||1);W=window.innerWidth;H=window.innerHeight;cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);ZOOM=Math.max(W<600?(TOUCH&&H>W?0.72:0.8):0.62,Math.min(1.25*Math.max(1,Math.min(W/1920,H/1080)),Math.min(W/960,H/680)))*({close:1.2,normal:1,wide:0.82}[V.cam]||1);}
 addEventListener('resize',resize);resize();
 
 // ---------- utils ----------
@@ -2386,6 +2414,7 @@ function update(dt){
   for(const b of G.bolts)b.life-=dt;G.bolts=G.bolts.filter(b=>b.life>0);
   const fb=G.boss&&G.boss.big&&G.boss.awake&&!G.boss.dead?G.boss:null;G.zoomK=(G.zoomK||1)+((fb?0.72:1)-(G.zoomK||1))*Math.min(1,dt*2);
   const ctx2=fb?p.x*0.75+fb.x*0.25:p.x;let cty=p.y-12;if(fb){const half=H/2/(ZOOM*G.zoomK)-50;cty=clamp((fb.y-fb.big.ry*1.35+p.y)/2,p.y-12-half,p.y-12+half);}
+  if(TOUCH&&W<=560&&H>W){const bossUp=!!((G.boss&&!G.boss.dead&&G.boss.aggro)||(G.mini&&!G.mini.dead&&G.mini.aggro));cty-=(bossUp?122:96)/2/(ZOOM*(G.zoomK||1));}
   G.cam.x+=(ctx2-G.cam.x)*Math.min(1,dt*8);G.cam.y+=(cty-G.cam.y)*Math.min(1,dt*8);
   G.shake=Math.max(0,G.shake-dt);
 }
@@ -2950,7 +2979,7 @@ function updHUD(){const p=G.p,s=p.s;
   {const ch=G.chal;H$('#chalBadge').hidden=!ch;if(ch){const tl=ch.type==='heels'?`wave ${Math.max(1,ch.wave)}/${ch.waves} · no dashing`:`${Math.ceil(Math.max(0,ch.t))}s left`;setT('#chalBadge',`Catwalk: ${CHALS[ch.type].n} · ${tl}`);}}
   const hy=s.hypePer>0;H$('#hypeRow').hidden=!hy;if(hy)setT('#hypeTxt',`${Math.floor(p.hype)} / ${s.hypeMax}`);
   H$('#ptBadge').hidden=p.points<=0;setT('#ptBadge',String(p.points));const nf=p.bag.reduce((a,it)=>a+(it.fresh?1:0),0);H$('#newBadge').hidden=nf<=0;setT('#newBadge',String(nf));
-  setT('#cashTxt','$'+p.cash);const dcx=G.dress?dressById(G.dress):null;H$('#dressBadge').hidden=!dcx;if(dcx)setT('#dressBadge','Dress code: '+dcx.name+(G.dress==='late'?(G.dressFailed?' · LATE':` · ${Math.floor(Math.max(0,G.dressTimer)/60)}:${String(Math.floor(Math.max(0,G.dressTimer)%60)).padStart(2,'0')}`):''));
+  setT('#cashTxt','$'+p.cash);const dcx=G.dress?dressById(G.dress):null;H$('#dressBadge').hidden=!dcx;if(dcx)setT('#dressBadge',(TOUCH&&W<=560&&H>W?'':'Dress code: ')+dcx.name+(G.dress==='late'?(G.dressFailed?' · LATE':` · ${Math.floor(Math.max(0,G.dressTimer)/60)}:${String(Math.floor(Math.max(0,G.dressTimer)%60)).padStart(2,'0')}`):''));
   {const ri=rankIdx(p.rank),R=RANKS[ri],nx=RANKS[ri+1];setS('#rankBox','--rk',R.c);setT('#rankL',R.l);setT('#rankN',R.n);setT('#rankM',`Loot ×${R.m}`);setS('#rankFill','width',pctS(nx?(p.rank-R.at)/(nx.at-R.at)*100:100));}
   {const st=s.topStyle;H$('#sigBox').hidden=!st;H$('#bSig').hidden=!TOUCH||!st;if(st){const S=SIGS[st];setT('#sigName',S.name);setS('#sigBox','--sc',STYLES[st].c);const pct=p.sigCd>0?1-p.sigCd/p.sigMax:1;setS('#sigRing','--pct',pct.toFixed(3));if(TOUCH){setS('#bSig','--sc',STYLES[st].c);setS('#bSig','--pct',pct.toFixed(3));setT('#bSig',p.sigCd>0?String(Math.ceil(p.sigCd)):'GO');}setT('#sigCdTxt',p.sigCd>0?String(Math.ceil(p.sigCd)):(pad.on?'RB':TOUCH?'GO':'E'));setT('#sigKey',pad.on?'RB':TOUCH?'Tap GO':'E / right-click');if(H$('#sigBox').title!==S.desc)H$('#sigBox').title=S.desc;}}
   const bb=(G.boss&&!G.boss.dead&&G.boss.aggro)?G.boss:(G.mini&&!G.mini.dead&&G.mini.aggro)?G.mini:null;H$('#bossBar').hidden=!bb;if(bb){setT('#bossName',bb.name||'');setS('#bossFill','background',bb.style?STYLES[bb.style].c:bb===G.mini?'#ffc94a':'');setS('#bossFill','width',pctS(Math.max(0,bb.hp/bb.maxHp*100)));}}
