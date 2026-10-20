@@ -304,7 +304,7 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
 .statgrid dt{color:var(--muted)}
 .statgrid dd{margin:0;text-align:right;font-weight:600}
 .sbars{display:grid;gap:5px}
-.sbar{display:grid;grid-template-columns:86px 52px 1fr 34px;gap:8px;align-items:center;font-size:12px}
+.sbar{display:grid;grid-template-columns:86px 58px 1fr 34px;gap:8px;align-items:center;font-size:12px}
 .sbar .t{height:6px;background:#ffffff12;position:relative}
 .sbar .t i{position:absolute;inset:0 auto 0 0;background:var(--c)}
 .sbar .v{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
@@ -468,6 +468,36 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
   .touch .hlv{font-size:30px}.touch .heat .hh{font-size:18px}
   .touch .tree.main h4{font-size:20px}
   .touch .pts,.touch .lbprog b{font-size:22px}
+}
+/* Character creator and class list stack instead of squeezing side by side. */
+@media (max-width:1000px),(max-height:520px){.setup{grid-template-columns:minmax(0,1fr)}}
+/* Controls table scrolls sideways instead of squashing to one word per line. */
+.ctab{min-width:520px}
+/* Turn Up the Heat card: on narrow screens, text on top, then the Heat number beside its effects, then the button. */
+@media (max-width:560px){
+  .heat{grid-template-columns:auto minmax(0,1fr);gap:10px 14px}
+  .heat>:first-child{grid-column:1/-1}
+  .heat>button,.heat>.btn{grid-column:1/-1;justify-self:start}
+}
+@media (max-height:520px),(max-width:560px){
+  /* Pop-up Boutique: small picture beside the details instead of a full-width square. */
+  .touch .scard{grid-template-columns:96px minmax(0,1fr);align-items:start;column-gap:12px}
+  .touch .scard canvas{grid-column:1;grid-row:1;width:96px}
+  .touch .scard .icard{grid-column:2;grid-row:1;min-width:0}
+  .touch .scard>.btn,.touch .scard>.note{grid-column:1/-1}
+  .touch .scard .upg{top:14px;left:84px;right:auto}
+  .touch .stock{grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr))}
+  .touch .sheet>.wrap>.secth:first-child .h2{font-size:22px}
+  .touch .sheet>.wrap>.secth:first-child .btn.ghost{padding:6px 10px}
+  .touch #clDetail{scroll-margin-top:64px}
+  /* Closet: smaller outfit preview so the slots and details are closer. */
+  .touch .preview canvas{width:170px;height:209px}
+  /* Long menus keep their title and Back button pinned at the top while you scroll. */
+  .touch .sheet>.wrap>.secth:first-child{position:sticky;top:0;z-index:3;margin:calc(-1*(env(safe-area-inset-top,0px) + 12px)) calc(-1*max(16px,env(safe-area-inset-right,0px))) 0 calc(-1*max(16px,env(safe-area-inset-left,0px)));padding:calc(env(safe-area-inset-top,0px) + 10px) max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));background:#0c0911f2;border-bottom:1px solid var(--line)}
+}
+@media (max-height:520px){
+  .touch .sheet>.wrap>.secth:first-child .eyebrow{display:none}
+  .touch .sheet>.wrap>.secth:first-child{padding-top:calc(env(safe-area-inset-top,0px) + 6px);padding-bottom:6px}
 }
 @media (max-width:1100px),(max-height:520px){
   .ctlcard{grid-template-columns:minmax(0,1fr)!important}
@@ -686,7 +716,7 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
         <div class="detail" id="clDetail"></div>
         <div class="row" style="justify-content:space-between"><p class="note" id="clFound" style="margin:0"></p><button type="button" class="btn ghost" id="bLookbook" style="padding:6px 12px;font-size:12px">View Lookbook</button></div>
         <div class="secth"><h3>Bag</h3><div class="legend"><span><i class="lg-new">NEW</i>New since you last looked</span><span><svg viewBox="0 0 10 10" width="14" height="14" style="background:#1f5c35;border-radius:50%;padding:2px"><path d="M5 1.5 L8.6 6 H6.2 V8.8 H3.8 V6 H1.4 Z" fill="#7ef0a0"/></svg>Upgrade: more Drip (weapons: more damage)</span></div><div class="row" style="gap:10px"><span class="muted" id="clBagCount" style="font-size:12px"></span><button type="button" class="btn ghost" id="bDonateAll" style="padding:6px 12px;font-size:12px">Donate all</button><span class="dconf" id="donateConfirm" hidden></span></div></div>
-        <div class="row" style="gap:10px"><span class="muted" style="font-size:11px;letter-spacing:.16em;text-transform:uppercase">Auto-sell</span><div class="seg" id="segSell2"></div><span class="row sellto" style="gap:8px"><span class="muted" style="font-size:11px;letter-spacing:.16em;text-transform:uppercase">Into</span><span class="seg" id="segSellTo2"></span></span></div>
+        <div class="row" style="gap:10px" hidden><span class="muted" style="font-size:11px;letter-spacing:.16em;text-transform:uppercase">Auto-sell</span><div class="seg" id="segSell2"></div><span class="row sellto" style="gap:8px"><span class="muted" style="font-size:11px;letter-spacing:.16em;text-transform:uppercase">Into</span><span class="seg" id="segSellTo2"></span></span></div>
         <p class="note" id="sellNote2" style="margin-top:-6px"></p>
         <div class="bag" id="clBag"></div>
       </div>
@@ -2660,7 +2690,7 @@ function toMenu(){state='menu';G=null;$('#hud').hidden=true;showOnly('#menu');dr
 // ---------- auto-sell ----------
 function autoSellOk(it){if(settings.sell<0||!it||it.sp||it.rarity>settings.sell)return false;if(it.slot!=='weapon'&&!G.p.gear[it.slot])return false;return !isUpgrade(it);}
 function sellHint(){return settings.sell<0?'Every drop goes to your bag.':`${SELL_OPTS.find(o=>o[0]===settings.sell)[1]} drops turn into ${settings.sellTo==='clout'?'Clout (XP, like donating)':'Cash'} the moment you walk over them. Upgrades, Statement Pieces and anything for an empty slot are always kept, and new pieces still count for the Lookbook.`;}
-function renderSellSegs(){['#segSell','#segSell2'].forEach(id=>{const el=$(id);if(el)el.innerHTML=SELL_OPTS.map(([v,n])=>`<button type="button" data-v="${v}" aria-pressed="${v===settings.sell}">${n}</button>`).join('');});['#segSellTo','#segSellTo2'].forEach(id=>{const el=$(id);if(el){el.innerHTML=[['cash','Cash'],['clout','Clout']].map(([v,n])=>`<button type="button" data-v="${v}" aria-pressed="${v===settings.sellTo}">${n}</button>`).join('');el.closest('.sellto').hidden=settings.sell<0;}});['#sellNote','#sellNote2'].forEach(id=>{const el=$(id);if(el)el.textContent=sellHint();});}
+function renderSellSegs(){['#segSell','#segSell2'].forEach(id=>{const el=$(id);if(el)el.innerHTML=SELL_OPTS.map(([v,n])=>`<button type="button" data-v="${v}" aria-pressed="${v===settings.sell}">${n}</button>`).join('');});['#segSellTo','#segSellTo2'].forEach(id=>{const el=$(id);if(el){el.innerHTML=[['cash','Cash'],['clout','Clout']].map(([v,n])=>`<button type="button" data-v="${v}" aria-pressed="${v===settings.sellTo}">${n}</button>`).join('');el.closest('.sellto').hidden=settings.sell<0;}});{const el=$('#sellNote');if(el)el.textContent=sellHint();}{const el=$('#sellNote2');if(el){const o=SELL_OPTS.find(x=>x[0]===settings.sell);el.innerHTML='<b>Auto-sell: '+(o?o[1]:'Off')+(settings.sell>=0?' → '+(settings.sellTo==='clout'?'Clout':'Cash'):'')+'.</b> '+sellHint()+' Change it in Settings (Pause → Settings).';}}}
 function setSell(v){settings.sell=clamp(+v,-1,2);store.set('dripcmd.autosell',settings.sell);renderSellSegs();}
 ['#segSellTo','#segSellTo2'].forEach(id=>$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;settings.sellTo=b.dataset.v==='clout'?'clout':'cash';store.set('dripcmd.autosellto',settings.sellTo);renderSellSegs();if(pad.on)setTimeout(()=>{const a=$(`${id} [data-v="${b.dataset.v}"]`);if(a)setPadFocus(a);},20);}));
 ['#segSell','#segSell2'].forEach(id=>$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;setSell(b.dataset.v);if(pad.on)setTimeout(()=>{const a=$(`${id} [data-v="${b.dataset.v}"]`);if(a)setPadFocus(a);},20);}));
@@ -2758,7 +2788,7 @@ $('#clSlots').addEventListener('click',e=>{const b=e.target.closest('.slot');if(
 $('#clDetail').addEventListener('pointerdown',e=>{if(e.target.id!=='clItemPrev')return;itemDrag={x:e.clientX};try{e.target.setPointerCapture(e.pointerId);}catch(_){}});
 addEventListener('pointermove',e=>{if(!itemDrag)return;itemRot+=(e.clientX-itemDrag.x)*0.02;itemDrag.x=e.clientX;});
 addEventListener('pointerup',()=>{itemDrag=null;});addEventListener('pointercancel',()=>{itemDrag=null;});
-$('#clBag').addEventListener('click',e=>{const b=e.target.closest('.bi');if(!b)return;sel={from:'bag',id:+b.dataset.id};const it=G.p.bag.find(x=>x.id===sel.id);if(it)it.fresh=false;renderCloset();});
+$('#clBag').addEventListener('click',e=>{const b=e.target.closest('.bi');if(!b)return;sel={from:'bag',id:+b.dataset.id};const it=G.p.bag.find(x=>x.id===sel.id);if(it)it.fresh=false;renderCloset();if(TOUCH){const d=$('#clDetail');if(d)d.scrollIntoView({behavior:'smooth',block:'start'});}});
 function donateValue(it){return 5+it.rarity*8+Math.round((it.drip||20)/4);}
 $('#bDonateAll').addEventListener('click',()=>{if(!G)return;const p=G.p;const list=p.bag.filter(it=>!it.locked);if(!list.length)return;const xp=list.reduce((a,it)=>a+donateValue(it),0),ups=list.filter(isUpgrade).length,hi=list.filter(it=>it.rarity>=4||it.sp).length;
   const el=$('#donateConfirm');el.hidden=false;$('#bDonateAll').hidden=true;
