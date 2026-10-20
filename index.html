@@ -490,6 +490,9 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
   .touch .sheet>.wrap>.secth:first-child .h2{font-size:22px}
   .touch .sheet>.wrap>.secth:first-child .btn.ghost{padding:6px 10px}
   .touch #clDetail{scroll-margin-top:64px}
+  /* Safari pins sticky headers below a scroller's top padding, leaving a gap. Move that spacing onto the content instead. */
+  .touch .sheet{padding-top:0}
+  .touch .sheet>.wrap{padding-top:calc(env(safe-area-inset-top,0px) + 12px)}
   /* Closet: smaller outfit preview so the slots and details are closer. */
   .touch .preview canvas{width:170px;height:209px}
   /* Long menus keep their title and Back button pinned at the top while you scroll. */
