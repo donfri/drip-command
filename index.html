@@ -1027,7 +1027,7 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.
 
 // ---------- version & save safety ----------
 // BUILD format: YYYY.MM.DD.N (the day of the update, then that day's update number). Bump it on every published change.
-const BUILD='2026.10.21.11';
+const BUILD='2026.10.21.12';
 // After "Update now" the page loads as ?dcv=<build> to skip stale caches; tidy that off the address bar.
 try{const u=new URL(location.href);if(u.searchParams.has('dcv')){u.searchParams.delete('dcv');history.replaceState(history.state,'',u.toString());}}catch(e){}
 // SAVE_VER only goes up when the shape of saved data changes. Each step gets a MIGRATIONS entry that upgrades old data in place.
@@ -1472,6 +1472,7 @@ $('#menuVer').textContent=VER_TXT;
 // ---------- changelog (click the version number) ----------
 // Newest first. Keep entries short: half-sentence bullets.
 const CHANGELOG=[
+  {v:'2026.10.21.12',d:'Oct 21',items:['Controller aiming is smoother: the sticks no longer snap to straight up, down, left or right, so angles near the diagonals are easy to hit']},
   {v:'2026.10.21.11',d:'Oct 21',items:['PlayStation controllers are recognised: button prompts show \u2715 \u25CB \u25A1 \u25B3, L1, R1, R2 and Options instead of Xbox names']},
   {v:'2026.10.21.10',d:'Oct 21',items:['Millennium Bug arcs stun normal enemies for 0.75s, at most once per enemy every 1.5s (no more freezing the whole room)','Arcs slow bosses, rivals and Floor Managers instead of stunning them','Bosses can be stunned for at most 1.2s in a row, then ignore stuns for 2s']},
   {v:'2026.10.21.5',d:'Oct 21',items:['Colorblind filters now work in Firefox (arena recoloured on the GPU, menus and HUD filtered per layer)']},
@@ -1549,7 +1550,8 @@ function pollPad(dt){const gps=navigator.getGamepads?navigator.getGamepads():[];
   if(!gp){if(pad.on){pad.on=false;pad.ps=false;pad.id='';syncPadLabels();syncSettings();}return;}
   if(gp.id!==pad.id){pad.id=gp.id;pad.ps=PS_RE.test(gp.id||'')&&!/xbox|xinput|045e|microsoft/i.test(gp.id||'');syncPadLabels();if(pad.on)syncSettings();}
   if(!pad.on){pad.on=true;pad.prev=gp.buttons.map(b=>b.pressed);toast(`${pad.ps?'PlayStation controller':'Controller'} connected. <b>${PB('A')}</b> selects, <b>${PB('B')}</b> goes back.`,'#7be0ff');syncSettings();if(state!=='play')focusFirst();return;}
-  const dz=v=>Math.abs(v)<0.2?0:v;pad.lx=dz(gp.axes[0]||0);pad.ly=dz(gp.axes[1]||0);pad.rx=dz(gp.axes[2]||0);pad.ry=dz(gp.axes[3]||0);pad.rt=gp.buttons[7]?gp.buttons[7].value:0;
+  // Circular dead zone: ignore the stick only when it's near the centre, and keep its exact angle otherwise (a per-axis dead zone snapped aim to straight up/down/left/right).
+  const dz=(x,y)=>Math.hypot(x,y)<0.2?[0,0]:[x,y];[pad.lx,pad.ly]=dz(gp.axes[0]||0,gp.axes[1]||0);[pad.rx,pad.ry]=dz(gp.axes[2]||0,gp.axes[3]||0);pad.rt=gp.buttons[7]?gp.buttons[7].value:0;
   const btn=i=>!!(gp.buttons[i]&&gp.buttons[i].pressed),hit=i=>btn(i)&&!pad.prev[i];
   if(gp.buttons.some((b,i)=>b.pressed&&!pad.prev[i]))initAudio();
   if(state==='story'){if(gp.buttons.some((b,i)=>b.pressed&&!pad.prev[i]))storyAdvance();pad.prev=gp.buttons.map(b=>b.pressed);return;}
