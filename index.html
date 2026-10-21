@@ -1027,7 +1027,7 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.
 
 // ---------- version & save safety ----------
 // BUILD format: YYYY.MM.DD.N (the day of the update, then that day's update number). Bump it on every published change.
-const BUILD='2026.10.21.9';
+const BUILD='2026.10.21.10';
 // After "Update now" the page loads as ?dcv=<build> to skip stale caches; tidy that off the address bar.
 try{const u=new URL(location.href);if(u.searchParams.has('dcv')){u.searchParams.delete('dcv');history.replaceState(history.state,'',u.toString());}}catch(e){}
 // SAVE_VER only goes up when the shape of saved data changes. Each step gets a MIGRATIONS entry that upgrades old data in place.
@@ -1472,6 +1472,7 @@ $('#menuVer').textContent=VER_TXT;
 // ---------- changelog (click the version number) ----------
 // Newest first. Keep entries short: half-sentence bullets.
 const CHANGELOG=[
+  {v:'2026.10.21.10',d:'Oct 21',items:['Millennium Bug arcs stun normal enemies for 0.75s, at most once per enemy every 1.5s (no more freezing the whole room)','Arcs slow bosses, rivals and Floor Managers instead of stunning them','Bosses can be stunned for at most 1.2s in a row, then ignore stuns for 2s']},
   {v:'2026.10.21.5',d:'Oct 21',items:['Colorblind filters now work in Firefox (arena recoloured on the GPU, menus and HUD filtered per layer)']},
   {v:'2026.10.21.4',d:'Oct 21',items:['Check for update button at the bottom of Settings','Update now loads the newest version without touching your saves']},
   {v:'2026.10.21.3',d:'Oct 21',items:['Heat is gentler: +6% enemy health and +3% damage per level','Heat 6 and up take more Clout to earn']},
