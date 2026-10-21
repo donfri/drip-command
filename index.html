@@ -109,6 +109,29 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
 .btn:hover{filter:brightness(1.08)}
 .btn.ghost{background:transparent;color:var(--fg);outline:1px solid var(--line);outline-offset:-1px;clip-path:none;font-family:var(--ui);font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.08em;padding:10px 16px}
 .btn.ghost:hover{outline-color:var(--gold)}
+.btn.danger{background:#ff4d6a;color:#1a0408}
+.btn.ghost.danger{background:transparent;color:#ff6b80;outline-color:#ff4d6a99}
+.btn.ghost.danger:hover{outline-color:#ff4d6a;background:#ff4d6a14}
+.savecard{grid-column:1/-1}
+.savecard .row .btn.ghost{padding:8px 12px;font-size:12px}
+.savebox{display:grid;gap:8px}
+.savebox textarea{box-sizing:border-box;width:100%;min-height:92px;resize:vertical;background:#0c0911;border:1px solid var(--line);color:var(--fg);font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;padding:8px;word-break:break-all;user-select:text;-webkit-user-select:text}
+.savebox textarea:focus{outline:2px solid var(--gold);outline-offset:1px}
+.bklist{display:grid;gap:6px}
+.bkrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;background:var(--panel2);border:1px solid var(--line);font-size:13px}
+.bkrow small{display:block;color:var(--muted);font-size:11px}
+.dangerzone{border-top:1px solid #ff4d6a40;padding-top:12px;display:grid;gap:8px}
+.dangerzone .sh{color:#ff6b80}
+.vertag{font-size:11px;letter-spacing:.1em;color:var(--muted);opacity:.8;font-variant-numeric:tabular-nums}
+.vertag b{color:var(--gold);font-weight:600}
+#setVer{text-align:center;padding:4px 0 8px}
+.cmodal{position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:16px;background:#07040bdd;backdrop-filter:blur(3px)}
+.cmodal[hidden]{display:none}
+.cmodal .cbox{max-width:440px;width:100%;background:var(--panel);border:1px solid #ff4d6a;box-shadow:0 0 0 1px #ff4d6a33,0 20px 60px #000a;padding:20px;display:grid;gap:12px}
+.cmodal h3{font-family:var(--display);font-weight:400;font-size:26px;line-height:1;margin:0;color:#ff6b80}
+.cmodal p{margin:0;font-size:14px;line-height:1.5}
+.cmodal ul{margin:0;padding-left:18px;font-size:13px;line-height:1.55;color:var(--muted)}
+.cmodal .row{justify-content:flex-end}
 .btn[disabled],.btn[aria-disabled="true"]{opacity:.4;cursor:not-allowed}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 
@@ -672,6 +695,7 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
       <div class="ctlbtns" style="display:grid;gap:6px;justify-items:end">
         <div class="row"><button class="btn ghost" id="bLegend" type="button">Enemies</button><button class="btn ghost" id="bLookbook2" type="button">Lookbook</button><button class="btn ghost" id="bAch" type="button">Achievements <span class="badge" id="achBadge" style="font-size:10px"></span></button><button class="btn ghost" id="bHist" type="button">History</button><button class="btn ghost" id="bSettings" type="button">Settings</button><button class="btn" id="bStart" type="button" data-padfirst>Deploy</button></div>
         <span class="best" id="bestTxt"></span>
+        <span class="vertag" id="menuVer"></span>
       </div>
     </div>
   </div>
@@ -760,6 +784,37 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
           <tr><td>Mute</td><td><kbd>M</kbd></td><td>Settings menu</td></tr>
         </tbody></table></div>
       </section>
+      <section class="card savecard"><h3 class="sh">Save data</h3>
+        <p class="note">Your progress is saved in this browser, separately for each place you play (this page, the GitHub test site, a home-screen copy, a downloaded file). Updates to the game never erase it. To move progress to another place, or keep a copy somewhere safe, export it here and import it there.</p>
+        <div class="row"><button class="btn ghost" id="bSaveExport" type="button">Export save</button><button class="btn ghost" id="bSaveImport" type="button">Import save</button></div>
+        <div class="savebox" id="saveExportBox" hidden>
+          <p class="note">Your save code. Copy it, or download it as a file, and keep it somewhere safe.</p>
+          <textarea id="saveCode" readonly spellcheck="false" aria-label="Save code"></textarea>
+          <div class="row"><button class="btn ghost sm" id="bSaveCopy" type="button">Copy code</button><button class="btn ghost sm" id="bSaveDl" type="button">Download file</button><span class="note" id="saveCopyMsg"></span></div>
+        </div>
+        <div class="savebox" id="saveImportBox" hidden>
+          <p class="note">Paste a save code, or load a save file. This replaces the progress in this browser (a backup is kept first, below).</p>
+          <textarea id="saveIn" spellcheck="false" aria-label="Paste a save code"></textarea>
+          <input type="file" id="saveFile" accept=".txt,.json,text/plain" hidden>
+          <div class="row"><button class="btn ghost sm" id="bSaveFile" type="button">Load file</button><button class="btn sm" id="bSaveLoad" type="button">Import</button><span class="note" id="saveInMsg"></span></div>
+        </div>
+        <h3 class="sh" style="margin-top:4px">Automatic backups</h3>
+        <p class="note">The game keeps your last 3 snapshots: one each time a new version first loads, and one before any import or reset.</p>
+        <div class="bklist" id="bkList"></div>
+        <div class="dangerzone">
+          <h3 class="sh">Danger zone</h3>
+          <p class="note" id="resetNote">Wipes your stats and progress. Your look and your settings stay.</p>
+          <div class="row"><button class="btn ghost danger" id="bResetStats" type="button">Reset stats</button></div>
+        </div>
+      </section>
+    </div>
+    <p class="vertag" id="setVer"></p>
+  </div>
+  <div class="cmodal" id="confirmBox" hidden role="dialog" aria-modal="true" aria-labelledby="cfTitle">
+    <div class="cbox">
+      <h3 id="cfTitle"></h3>
+      <div id="cfBody"></div>
+      <div class="row"><button class="btn ghost" id="cfNo" type="button" data-padfirst>Cancel</button><button class="btn danger" id="cfYes" type="button"></button></div>
     </div>
   </div>
 </div>
@@ -923,6 +978,36 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 function rr(g,x,y,w,h,r){g.beginPath();if(g.roundRect)g.roundRect(x,y,w,h,r);else g.rect(x,y,w,h);}
 function circ(g,x,y,r){g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fill();}
 const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+
+// ---------- version & save safety ----------
+// BUILD format: YYYY.MM.DD.N (the day of the update, then that day's update number). Bump it on every published change.
+const BUILD='2026.10.21.1';
+// SAVE_VER only goes up when the shape of saved data changes. Each step gets a MIGRATIONS entry that upgrades old data in place.
+// Rules: never rename or delete a dripcmd.* key; read every saved value with a default; new fields must be optional.
+const SAVE_VER=1;
+const SAVE_PREFIX='dripcmd.';
+const SAVE_META=['dripcmd.backups','dripcmd.build'];// bookkeeping keys, never part of a snapshot
+const STAT_KEYS=['dripcmd.best','dripcmd.prog','dripcmd.tier','dripcmd.mode','dripcmd.found','dripcmd.history','dripcmd.daily','dripcmd.ach'];
+const BACKUP_MAX=3;
+const MIGRATIONS={
+  1:()=>{}// v1: first numbered save format; everything before it already loads as-is.
+};
+function saveKeys(){const out=[];try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(SAVE_PREFIX)&&!SAVE_META.includes(k))out.push(k);}}catch(e){}return out.sort();}
+function saveSnapshot(){const d={};try{for(const k of saveKeys())d[k]=localStorage.getItem(k);}catch(e){}return d;}
+function hasProgress(snap){return STAT_KEYS.some(k=>snap[k]!=null);}
+function getBackups(){const b=store.get('dripcmd.backups',[]);return Array.isArray(b)?b.filter(x=>x&&x.data&&typeof x.data==='object'):[];}
+function pushBackup(reason){const snap=saveSnapshot();if(!Object.keys(snap).length)return false;let list=[{at:Date.now(),build:BUILD,reason,data:snap}].concat(getBackups()).slice(0,BACKUP_MAX);
+  while(list.length){try{localStorage.setItem('dripcmd.backups',JSON.stringify(list));return true;}catch(e){list=list.slice(0,list.length-1);}}return false;}
+function writeSnapshot(snap){// replaces the save with a snapshot; only ever called after the player confirms
+  for(const k of saveKeys())try{localStorage.removeItem(k);}catch(e){}
+  for(const k in snap)if(k.startsWith(SAVE_PREFIX)&&!SAVE_META.includes(k)&&typeof snap[k]==='string')try{localStorage.setItem(k,snap[k]);}catch(e){}}
+(function saveBoot(){try{
+  const last=store.get('dripcmd.build',null);
+  if(last!==BUILD){const snap=saveSnapshot();if(hasProgress(snap))pushBackup(last?`Before update to v${BUILD} (was v${last})`:`Before update to v${BUILD}`);store.set('dripcmd.build',BUILD);}
+  const sv=+store.get('dripcmd.savever',0)||0;
+  if(sv<SAVE_VER){for(let v=sv+1;v<=SAVE_VER;v++){try{MIGRATIONS[v]&&MIGRATIONS[v]();}catch(e){}}store.set('dripcmd.savever',SAVE_VER);}
+}catch(e){}})();
+
 
 // ---------- data ----------
 const T=40;
@@ -1279,7 +1364,7 @@ document.addEventListener('fullscreenchange',()=>{$('#bFull').textContent=docume
 
 // ---------- settings screen ----------
 let settingsFrom='menu';
-function openSettings(){if(state!=='menu'&&state!=='paused')return;settingsFrom=state;state='settings';showOnly('#settings');syncSettingsUi();applyMix();}
+function openSettings(){if(state!=='menu'&&state!=='paused')return;settingsFrom=state;state='settings';closeConfirm();$('#saveExportBox').hidden=true;$('#saveImportBox').hidden=true;showOnly('#settings');syncSettingsUi();applyMix();}
 function closeSettings(){if(state!=='settings')return;state=settingsFrom;showOnly(settingsFrom==='menu'?'#menu':'#pause');applyMix();}
 function segSet(id,val){document.querySelectorAll(`#${id} button`).forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===val)));}
 function syncSettingsUi(){
@@ -1288,21 +1373,62 @@ function syncSettingsUi(){
   segSet('segFire2',settings.auto?'auto':'manual');segSet('segDiff2',settings.diff);
   $('#diffNote').textContent=G?`This run is on ${G.diff.name}. A new difficulty applies to your next run.`:DIFF[settings.diff].hint;
   $('#padStatus').innerHTML=pad.on?'<b style="color:#7be0ff">Controller connected.</b> D-pad or left stick moves between buttons, A selects, B goes back.':'No controller detected. Plug one in or connect it over Bluetooth, then press any button.';
-  $('#bFull').textContent=document.fullscreenElement?'Exit fullscreen':'Enter fullscreen';updNowPlaying();if(typeof renderSellSegs==='function')renderSellSegs();}
+  $('#bFull').textContent=document.fullscreenElement?'Exit fullscreen':'Enter fullscreen';updNowPlaying();if(typeof renderSellSegs==='function')renderSellSegs();renderSaveUi();}
 [['sMaster','master'],['sMusic','music'],['sSfx','sfx'],['sShake','shake']].forEach(([id,k])=>$('#'+id).addEventListener('input',e=>{V[k]=+e.target.value/100;saveV();applyMix();syncSettingsUi();if(k==='sfx')sfx('pick');}));
 const SEGS={segMute:v=>setMute(v==='on'),segRes:v=>{V.res=v;applyVideo();},segCam:v=>{V.cam=v;applyVideo();},segPart:v=>{V.particles=v;},segDmg:v=>{V.dmgNums=v==='on';},segScan:v=>{V.scan=v==='on';applyVideo();},segFps:v=>{V.fps=v==='on';applyVideo();},segHit:v=>{V.hitbox=v==='on';},segCb:v=>{V.cb=v;applyCb();},
   segFire2:v=>{settings.auto=v==='auto';store.set('dripcmd.auto',settings.auto);},segDiff2:v=>{settings.diff=v;store.set('dripcmd.diff',v);}};
 for(const id in SEGS)$('#'+id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;SEGS[id](b.dataset.v);saveV();syncSettings();syncSettingsUi();});
 $('#bFull').addEventListener('click',toggleFullscreen);
+
+// ---------- save data: export, import, backups, reset ----------
+const VER_TXT=`v${BUILD}`;
+function inRun(){return settingsFrom==='paused';}
+function fmtWhen(t){try{return new Date(t).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}catch(e){return '';}}
+function saveSummary(snap){const P=k=>{try{return snap[k]!=null?JSON.parse(snap[k]):null;}catch(e){return null;}};const pr=P('dripcmd.prog')||{},a=P('dripcmd.ach')||{},f=P('dripcmd.found');
+  const bits=[];const b=P('dripcmd.best');if(b)bits.push(`best floor ${b}`);if(pr.wins)bits.push(`${pr.wins} show${pr.wins===1?'':'s'} closed`);if(Array.isArray(f)&&f.length)bits.push(`${f.length} pieces found`);if(a.got&&Object.keys(a.got).length)bits.push(`${Object.keys(a.got).length} achievements`);return bits.join(' · ')||'no progress yet';}
+function encodeSave(){const o={game:'dripcmd',build:BUILD,savever:SAVE_VER,at:Date.now(),data:saveSnapshot()};return 'DRIPCMD1:'+btoa(unescape(encodeURIComponent(JSON.stringify(o))));}
+function decodeSave(txt){const t=String(txt||'').replace(/\s+/g,'');if(!t.startsWith('DRIPCMD1:'))throw new Error('That isn\'t a Drip Command save code.');
+  let o;try{o=JSON.parse(decodeURIComponent(escape(atob(t.slice(9)))));}catch(e){throw new Error('That save code is damaged or incomplete.');}
+  if(!o||o.game!=='dripcmd'||!o.data||typeof o.data!=='object')throw new Error('That save code is damaged or incomplete.');
+  const d={};for(const k in o.data)if(k.startsWith(SAVE_PREFIX)&&!SAVE_META.includes(k)&&typeof o.data[k]==='string')d[k]=o.data[k];if(!Object.keys(d).length)throw new Error('That save code is empty.');o.data=d;return o;}
+let cfAction=null;
+function confirmOpen(){const m=$('#confirmBox');return !!m&&!m.hidden;}
+function openConfirm(title,bodyHtml,yesLabel,action){$('#cfTitle').textContent=title;$('#cfBody').innerHTML=bodyHtml;$('#cfYes').textContent=yesLabel;cfAction=action;$('#confirmBox').hidden=false;sfx('pick');setTimeout(()=>{const n=$('#cfNo');if(pad.on)setPadFocus(n);else try{n.focus({preventScroll:true});}catch(_){}},20);}
+function closeConfirm(){const m=$('#confirmBox');if(!m||m.hidden)return;m.hidden=true;cfAction=null;if(pad.on)setTimeout(()=>{const r=$('#bResetStats');if(r&&r.offsetParent&&!r.disabled)setPadFocus(r);else focusFirst();},20);}
+$('#cfNo').addEventListener('click',closeConfirm);
+$('#confirmBox').addEventListener('click',e=>{if(e.target===$('#confirmBox'))closeConfirm();});
+$('#cfYes').addEventListener('click',()=>{const a=cfAction;cfAction=null;$('#confirmBox').hidden=true;if(a)a();});
+function reloadGame(){try{location.reload();}catch(e){}}
+function renderSaveUi(){
+  $('#setVer').innerHTML=`Drip Command <b>${VER_TXT}</b> · save format ${SAVE_VER}`;
+  const run=inRun();['#bSaveImport','#bSaveLoad','#bResetStats'].forEach(id=>{const b=$(id);if(b)b.disabled=run;});
+  $('#resetNote').textContent=run?'Quit your current run and come back here from the title screen to reset or import.':'Wipes your stats and progress. Your look and your settings stay.';
+  const list=getBackups();$('#bkList').innerHTML=list.length?list.map((b,i)=>`<div class="bkrow"><div>${esc(fmtWhen(b.at))} · ${esc(b.reason||'Backup')}<small>${esc(saveSummary(b.data))}</small></div><button class="btn ghost sm" type="button" data-bk="${i}"${run?' disabled':''}>Restore</button></div>`).join(''):'<p class="note">No backups yet. The first one is made when the next update loads.</p>';}
+$('#bkList').addEventListener('click',e=>{const b=e.target.closest('button[data-bk]');if(!b||b.disabled)return;const bk=getBackups()[+b.dataset.bk];if(!bk)return;
+  openConfirm('Restore backup?',`<p>Go back to the snapshot from <b>${esc(fmtWhen(bk.at))}</b> (${esc(saveSummary(bk.data))}).</p><p class="muted" style="font-size:13px">Your current progress is backed up first, so you can switch back.</p>`,'Restore',()=>{pushBackup('Before restoring a backup');writeSnapshot(bk.data);store.set('dripcmd.build',BUILD);reloadGame();});});
+$('#bSaveExport').addEventListener('click',()=>{const box=$('#saveExportBox');box.hidden=!box.hidden;$('#saveImportBox').hidden=true;if(!box.hidden){$('#saveCode').value=encodeSave();$('#saveCopyMsg').textContent='';}});
+$('#bSaveCopy').addEventListener('click',()=>{const ta=$('#saveCode');const done=ok=>{$('#saveCopyMsg').textContent=ok?'Copied.':'Select the code above and copy it.';};
+  const fallback=()=>{try{ta.focus();ta.select();done(document.execCommand('copy'));}catch(e){done(false);}};
+  try{if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(ta.value).then(()=>done(true),fallback);else fallback();}catch(e){fallback();}});
+$('#bSaveDl').addEventListener('click',()=>{const fname=`dripcommand-save-${BUILD}.txt`,msg=t=>{$('#saveCopyMsg').textContent=t;};
+  try{const blob=new Blob([$('#saveCode').value],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`dripcommand-save-${BUILD}.txt`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);$('#saveCopyMsg').textContent='Download started. If nothing happened, copy the code instead.';}catch(e){$('#saveCopyMsg').textContent='Download isn\'t allowed here. Copy the code instead.';}});
+$('#bSaveImport').addEventListener('click',()=>{const box=$('#saveImportBox');box.hidden=!box.hidden;$('#saveExportBox').hidden=true;if(!box.hidden){$('#saveIn').value='';$('#saveInMsg').textContent='';}});
+$('#bSaveFile').addEventListener('click',()=>$('#saveFile').click());
+$('#saveFile').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$('#saveIn').value=String(r.result||'');$('#saveInMsg').textContent='File loaded. Press Import.';};r.readAsText(f);e.target.value='';});
+$('#bSaveLoad').addEventListener('click',()=>{let o;try{o=decodeSave($('#saveIn').value);}catch(err){$('#saveInMsg').textContent=err.message;return;}$('#saveInMsg').textContent='';
+  openConfirm('Import this save?',`<p>Replace the progress in this browser with the save from <b>${esc(fmtWhen(o.at))}</b>${o.build?` (game v${esc(o.build)})`:''}.</p><ul><li>It has: ${esc(saveSummary(o.data))}</li><li>Here now: ${esc(saveSummary(saveSnapshot()))}</li></ul><p class="muted" style="font-size:13px">Your current progress is backed up first.</p>`,'Import',()=>{pushBackup('Before import');writeSnapshot(o.data);store.set('dripcmd.build',BUILD);reloadGame();});});
+$('#bResetStats').addEventListener('click',()=>{if(inRun())return;
+  openConfirm('Reset all stats?',`<p>This wipes:</p><ul><li>Best floor, shows closed and Endless best</li><li>Spotlight tiers, Endless mode and the hidden style</li><li>Lookbook finds and collection rewards</li><li>Achievements and lifetime counters</li><li>Run history and today's Daily Runway score</li></ul><p>Your look, name and settings stay. A backup is kept under Automatic backups in case you change your mind.</p>`,'Yes, reset',()=>{pushBackup('Before stats reset');for(const k of STAT_KEYS)try{localStorage.removeItem(k);}catch(e){}reloadGame();});});
+$('#menuVer').textContent=VER_TXT;
 $('#bCloseSettings').addEventListener('click',closeSettings);
 $('#bSettings').addEventListener('click',()=>{initAudio();openSettings();});$('#bSettings2').addEventListener('click',openSettings);
 
 // ---------- gamepad ----------
 const pad={on:false,prev:[],lx:0,ly:0,rx:0,ry:0,rt:0,navT:0,held:false};
 function currentSheet(){return [...document.querySelectorAll('.sheet')].find(s=>!s.hidden)||null;}
-function focusables(){const sh=currentSheet();if(!sh)return [];return [...sh.querySelectorAll('button,input[type=range]')].filter(el=>el.offsetParent!==null&&!el.disabled);}
+function focusables(){let sh=currentSheet();if(!sh)return [];const md=sh.querySelector('.cmodal:not([hidden])');if(md)sh=md;return [...sh.querySelectorAll('button,input[type=range]')].filter(el=>el.offsetParent!==null&&!el.disabled);}
 function setPadFocus(el){document.querySelectorAll('.padfocus').forEach(x=>x.classList.remove('padfocus'));if(!el)return;el.classList.add('padfocus');try{el.focus({preventScroll:true});}catch(_){}el.scrollIntoView({block:'nearest',inline:'nearest'});}
-function focusFirst(){const sh=currentSheet();if(!sh)return;const f=sh.querySelector('[data-padfirst]');setPadFocus(f&&f.offsetParent!==null?f:focusables()[0]);}
+function focusFirst(){let sh=currentSheet();if(!sh)return;const md=sh.querySelector('.cmodal:not([hidden])');if(md)sh=md;const f=sh.querySelector('[data-padfirst]');setPadFocus(f&&f.offsetParent!==null?f:focusables()[0]);}
 function keyOf(el){if(el.id)return '#'+el.id;for(const a of ['data-id','data-slot','data-t','data-act','data-v','data-s','data-g','data-skin','data-lb','data-hs','data-hc','data-ec','data-dc','data-buy','data-tl'])if(el.hasAttribute(a))return `[${a}="${el.getAttribute(a)}"]`;return null;}
 function padNav(dir){const cur=document.activeElement;const list=focusables();if(!list.length)return;
   if(!cur||!list.includes(cur)){focusFirst();return;}
@@ -1312,7 +1438,7 @@ function padNav(dir){const cur=document.activeElement;const list=focusables();if
     let pri,sec;if(dir==='up'){pri=-dy;sec=dx;}else if(dir==='down'){pri=dy;sec=dx;}else if(dir==='left'){pri=-dx;sec=dy;}else{pri=dx;sec=dy;}
     if(pri<=4)continue;const sc=pri+Math.abs(sec)*2.2;if(sc<bs){bs=sc;best=el;}}
   if(best)setPadFocus(best);}
-function padBack(){if(state==='history'){closeHistory();return;}if(state==='achieve'){closeAch();return;}if(state==='shop'){closeShop();return;}if(state==='lookbook'){closeLookbook();return;}if(state==='legend'){closeLegend();return;}if(state==='closet'||state==='talents')backFromSheet();else if(state==='paused'){state='play';showOnly(null);}else if(state==='settings')closeSettings();}
+function padBack(){if(state==='history'){closeHistory();return;}if(state==='achieve'){closeAch();return;}if(state==='shop'){closeShop();return;}if(state==='lookbook'){closeLookbook();return;}if(state==='legend'){closeLegend();return;}if(state==='closet'||state==='talents')backFromSheet();else if(state==='paused'){state='play';showOnly(null);}else if(state==='settings'){if(confirmOpen())closeConfirm();else closeSettings();}}
 function pollPad(dt){const gps=navigator.getGamepads?navigator.getGamepads():[];let gp=null;for(const g of gps||[])if(g&&g.connected){gp=g;break;}
   if(!gp){if(pad.on){pad.on=false;syncSettings();}return;}
   if(!pad.on){pad.on=true;pad.prev=gp.buttons.map(b=>b.pressed);toast('Controller connected. <b>A</b> selects, <b>B</b> goes back.','#7be0ff');syncSettings();if(state!=='play')focusFirst();return;}
@@ -3049,7 +3175,7 @@ requestAnimationFrame(frame);
 
 // ---------- input ----------
 addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(state==='story'){e.preventDefault();if(!e.repeat&&k!=='m')storyAdvance();if(k==='m')setMute(!muted);return;}if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k)&&state==='play')e.preventDefault();
-  if(e.target&&e.target.tagName==='INPUT')return;keys[k]=true;
+  if(e.target&&(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'))return;keys[k]=true;
   if(k===' '&&state==='play')dashPressed=true;
   if(k==='e'&&state==='play')sigPressed=true;
   if(k==='m')setMute(!muted);
@@ -3058,7 +3184,7 @@ addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(state==='story'){e
   else if(state==='closet'&&(k==='c'||k==='escape'))backFromSheet();
   else if(state==='talents'&&(k==='t'||k==='escape'))backFromSheet();
   else if(state==='paused'&&(k==='escape'||k==='p')){state='play';showOnly(null);}
-  else if(state==='settings'&&k==='escape')closeSettings();
+  else if(state==='settings'&&k==='escape'){if(confirmOpen())closeConfirm();else closeSettings();}
   else if(state==='lookbook'&&k==='escape')closeLookbook();
   else if(state==='legend'&&k==='escape')closeLegend();
   else if(state==='achieve'&&k==='escape')closeAch();
