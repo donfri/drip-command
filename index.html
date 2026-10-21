@@ -1027,7 +1027,7 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.
 
 // ---------- version & save safety ----------
 // BUILD format: YYYY.MM.DD.N (the day of the update, then that day's update number). Bump it on every published change.
-const BUILD='2026.10.21.4';
+const BUILD='2026.10.21.5';
 // After "Update now" the page loads as ?dcv=<build> to skip stale caches; tidy that off the address bar.
 try{const u=new URL(location.href);if(u.searchParams.has('dcv')){u.searchParams.delete('dcv');history.replaceState(history.state,'',u.toString());}}catch(e){}
 // SAVE_VER only goes up when the shape of saved data changes. Each step gets a MIGRATIONS entry that upgrades old data in place.
@@ -1374,8 +1374,8 @@ function applyCb(){let svg=document.getElementById('cbDefs');if(!svg){svg=docume
   de.style.filter=on&&!gl?`url(#cb-${V.cb})`:'';de.dataset.cb=on&&gl?V.cb:'';
   if(CBG.el){CBG.el.hidden=!(on&&gl);CBG.m=on?cbMat(V.cb):null;}if(on&&gl&&G)cbPost();}
 // ---- colorblind GPU pass for the game canvas: copies each rendered frame through the same colour matrix ----
-// Safari and every iPhone/iPad browser (Apple WebKit) ignore the SVG filter on the game canvas, so only they get the GPU pass; Chrome/Firefox/Edge keep the fast SVG filter.
-const CB_GPU=/Apple/.test(navigator.vendor||'')||/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)||/[?&]cbgpu\b/.test(location.search);
+// Safari and every iPhone/iPad browser (Apple WebKit) ignore the SVG filter on the game canvas, and Firefox fails to apply it when it sits on the whole page, so they get the GPU pass (menus/HUD filtered per layer). Chrome/Edge keep the fast whole-page SVG filter.
+const CB_GPU=/Apple/.test(navigator.vendor||'')||/\bGecko\/\d|Firefox\//.test(navigator.userAgent)||/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)||/[?&]cbgpu\b/.test(location.search);
 const CBG={el:null,gl:null,tex:null,uM:null,m:null,failed:false};
 function cbMat(k){const a=CB_M[k].trim().split(/\s+/).map(Number);// rows of 5 → GLSL column-major 3x3
   return new Float32Array([a[0],a[5],a[10], a[1],a[6],a[11], a[2],a[7],a[12]]);}
@@ -1472,6 +1472,7 @@ $('#menuVer').textContent=VER_TXT;
 // ---------- changelog (click the version number) ----------
 // Newest first. Keep entries short: half-sentence bullets.
 const CHANGELOG=[
+  {v:'2026.10.21.5',d:'Oct 21',items:['Colorblind filters now work in Firefox (arena recoloured on the GPU, menus and HUD filtered per layer)']},
   {v:'2026.10.21.4',d:'Oct 21',items:['Check for update button at the bottom of Settings','Update now loads the newest version without touching your saves']},
   {v:'2026.10.21.3',d:'Oct 21',items:['Heat is gentler: +6% enemy health and +3% damage per level','Heat 6 and up take more Clout to earn']},
   {v:'2026.10.21.2',d:'Oct 21',items:['Character polish: outlines, shading, style-colour rim light (Settings toggle)','Gun hand grips the weapon; arm follows your aim','Spiky hair fits the head','Long hair falls behind the shoulders','Compact two-column Settings','Title-screen controls as a key grid','This changelog']},
