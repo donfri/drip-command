@@ -1027,7 +1027,7 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.
 
 // ---------- version & save safety ----------
 // BUILD format: YYYY.MM.DD.N (the day of the update, then that day's update number). Bump it on every published change.
-const BUILD='2026.10.21.5';
+const BUILD='2026.10.21.9';
 // After "Update now" the page loads as ?dcv=<build> to skip stale caches; tidy that off the address bar.
 try{const u=new URL(location.href);if(u.searchParams.has('dcv')){u.searchParams.delete('dcv');history.replaceState(history.state,'',u.toString());}}catch(e){}
 // SAVE_VER only goes up when the shape of saved data changes. Each step gets a MIGRATIONS entry that upgrades old data in place.
@@ -1144,7 +1144,7 @@ const TREES={
     {id:'dialup',name:'Dial-Up',max:2,tier:0,desc:'Hits arc lightning to 1 more enemy per rank.',fx:(s,r)=>{s.chain+=r}},
     {id:'tips',name:'Frosted Tips',max:2,tier:1,desc:'Shots home in on enemies.',fx:(s,r,k)=>{s.homing+=3*r*k}},
     {id:'clips',name:'Butterfly Shield',max:2,tier:1,desc:'A chrome shield blocks one hit, then recharges (faster per rank).',fx:(s,r,k)=>{s.shieldCd=Math.max(3,(11-3*r)/k)}},
-    {id:'bug',name:'Millennium Bug',max:1,tier:2,desc:'Signature: +2 lightning arcs, and arcs glitch enemies in place.',fx:(s)=>{s.chain+=2;s.chainStun=true}},
+    {id:'bug',name:'Millennium Bug',max:1,tier:2,desc:'Signature: +2 lightning arcs, and arcs glitch enemies in place (once per enemy every 1.5s; bosses are slowed instead).',fx:(s)=>{s.chain+=2;s.chainStun=true}},
   ],
   punk:[
     {id:'pins',name:'Safety Pins',max:3,tier:0,desc:'Shots knock enemies back harder per rank.',fx:(s,r)=>{s.knock+=70*r}},
@@ -2555,7 +2555,9 @@ function toast(html,c){const el=document.createElement('div');el.className='toas
 function hurtEnemy(e,d,crit,c){if(e.dead)return;if(e.dormant)wake(e);if(e.awkT&&e.awkT>G.time)d*=1.4;if(!G.bigHit||d>G.bigHit.d)G.bigHit={d,name:enemyName(e),floor:G.floor};e.hp-=d;e.aggro=true;e.flash=0.08;if(isBoss(e)||e.type==='manager')bossHitFx(e,crit,c);if(V.dmgNums)addText(e.x,e.y-e.r*2.2,Math.round(d),crit?'#ffc94a':c||'#fff',crit);sfx('hit');if(e.hp<=0)killEnemy(e);}
 function wake(e){e.dormant=false;e.aggro=true;addText(e.x,e.y-30,'KNOCKOFF!','#ff5a5a',true);}
 function explode(x,y,r,d,exclude,c){G.rings.push({x,y,r,life:0.28,max:0.28,c});sfx('boom');for(const e of G.enemies){if(e.dead||e===exclude)continue;if(e.big?inBody(e,x,y,r):Math.hypot(e.x-x,e.y-y)<r+e.r)hurtEnemy(e,d,false,c);}}
-function chainFrom(from,d,n,stun){let cur=from;const hit=new Set([from]);for(let i=0;i<n;i++){let best=null,bd=175;for(const e of G.enemies){if(e.dead||hit.has(e)||e.dormant)continue;const dd=Math.hypot(e.x-cur.x,e.y-cur.y);if(dd<bd){bd=dd;best=e;}}if(!best)break;G.bolts.push({x1:cur.x,y1:cur.y-cur.r,x2:best.x,y2:best.y-best.r,life:0.16});hit.add(best);hurtEnemy(best,d,false,'#5ff0ff');if(stun)best.stun=Math.max(best.stun,0.45);cur=best;}if(n>0)sfx('zap');}
+function chainFrom(from,d,n,stun){let cur=from;const hit=new Set([from]);for(let i=0;i<n;i++){let best=null,bd=175;for(const e of G.enemies){if(e.dead||hit.has(e)||e.dormant)continue;const dd=Math.hypot(e.x-cur.x,e.y-cur.y);if(dd<bd){bd=dd;best=e;}}if(!best)break;G.bolts.push({x1:cur.x,y1:cur.y-cur.r,x2:best.x,y2:best.y-best.r,life:0.16});hit.add(best);hurtEnemy(best,d,false,'#5ff0ff');if(stun)glitch(best);cur=best;}if(n>0)sfx('zap');}
+// Millennium Bug: each enemy can be glitched by arcs once per 1.5s. Bosses, rivals and Floor Managers get a 30% slow instead of a stun.
+function glitch(e){if(e.dead||e.big||(e.glitchT||0)>G.time)return;e.glitchT=G.time+1.5;if(isBoss(e)||e.type==='manager'){e.slowT=Math.max(e.slowT||0,0.6);e.slowAmt=Math.max(e.slowAmt||0,0.3);}else e.stun=Math.max(e.stun,0.75);}
 function killEnemy(e){if(e.dead)return;e.dead=true;if(isBoss(e)||e.type==='manager'){(G.bossLog=G.bossLog||[]).push({name:enemyName(e),floor:G.floor});}if(isBoss(e)||e.type==='manager')bossDeathFx(e);const p=G.p,s=p.s;p.kills++;G.floorKills++;addRank((isBoss(e)?40:e.elite?14:(e.type==='swarm'||e.type==='bat'?3:5))*(1+(s.applause||0)));gainXp(Math.round(e.xp*(1+(rankMult()-1)*0.5)*(G.dress==='glass'?1.5:G.dress==='over'?1.6:1)));sfx('kill');
   if(isBoss(e)){for(let i=0;i<5;i++)dropCash(e.x+rand(-40,40),e.y+rand(-30,30),(6+G.floor*2)*cashMult());}else if(Math.random()<0.35)dropCash(e.x,e.y,(1+G.floor*0.7)*(e.elite?3:1)*cashMult());
   burst(e.x,e.y-e.r,isBoss(e)?(STYLES[e.style]?STYLES[e.style].c:'#ffc94a'):'#e8e2d0',isBoss(e)?60:12,isBoss(e)?260:140);
@@ -2709,7 +2711,11 @@ function update(dt){
     if(e.poisonT>0){e.poisonT-=dt;e.hp-=e.poisonDps*dt;e.poisonTick+=dt;if(e.poisonTick>0.5){e.poisonTick=0;if(V.dmgNums)addText(e.x,e.y-e.r*2,Math.round(e.poisonDps*0.5),'#8fd46b',false);}if(e.hp<=0){killEnemy(e);continue;}if(e.poisonT<=0)e.poisonDps=0;}
     if(e.slowT>0)e.slowT-=dt;
     if(e.kx||e.ky){move(e,e.kx*dt,e.ky*dt);const f=Math.max(0,1-9*dt);e.kx*=f;e.ky*=f;if(Math.abs(e.kx)+Math.abs(e.ky)<2){e.kx=0;e.ky=0;}}
-    if(e.stun>0){e.stun-=dt;if(!e.big)continue;}
+    if(e.stun>0){const tough=isBoss(e)||e.type==='manager';
+      // Bosses, rivals, Floor Managers: max 1.2s of stun in a row, then 2s stun immunity
+      if(tough){if((e.stunImm||0)>G.time)e.stun=0;else{e.stunT0=e.stunT0||G.time;if(G.time-e.stunT0>=1.2)e.stun=0;}}
+      if(e.stun>0){e.stun-=dt;if(tough&&e.stun<=0){e.stunImm=G.time+2;e.stunT0=0;}if(!e.big)continue;}
+      else if(tough&&e.stunT0){e.stunImm=G.time+2;e.stunT0=0;}}
     const pdx=p.x-e.x,pdy=p.y-e.y,pd=Math.hypot(pdx,pdy);let dx=pdx,dy=pdy,d=pd;
     if(pd<110&&!e.big&&!e.dormant&&s.sp.has('rope')){e.slowT=Math.max(e.slowT,0.2);e.slowAmt=Math.max(e.slowAmt||0,0.4);}
     if(G.decoy&&!isBoss(e)){const qx=G.decoy.x-e.x,qy=G.decoy.y-e.y,qd=Math.hypot(qx,qy);if(qd<520){dx=qx;dy=qy;d=qd||0.01;}}
