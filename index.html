@@ -125,6 +125,8 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
 .vertag{font-size:11px;letter-spacing:.1em;color:var(--muted);opacity:.8;font-variant-numeric:tabular-nums}
 .vertag b{color:var(--gold);font-weight:600}
 #setVer{text-align:center;padding:4px 0 8px}
+.updrow{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;padding:0 0 10px}
+.updmsg{font-size:12px;color:var(--muted);text-align:center}.updmsg b{color:var(--gold);font-weight:600}.updmsg:empty{display:none}
 .cmodal{position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:16px;background:#07040bdd;backdrop-filter:blur(3px)}
 .cmodal[hidden]{display:none}
 .cmodal .cbox{max-width:440px;width:100%;background:var(--panel);border:1px solid #ff4d6a;box-shadow:0 0 0 1px #ff4d6a33,0 20px 60px #000a;padding:20px;display:grid;gap:12px}
@@ -810,6 +812,7 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
       </section>
     </div>
     <p class="vertag" id="setVer"></p>
+    <div class="updrow"><button class="btn ghost sm" id="bUpdate" type="button">Check for update</button><span class="updmsg" id="updMsg" role="status" aria-live="polite"></span></div>
   </div>
   <div class="cmodal" id="confirmBox" hidden role="dialog" aria-modal="true" aria-labelledby="cfTitle">
     <div class="cbox">
@@ -1024,7 +1027,9 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.
 
 // ---------- version & save safety ----------
 // BUILD format: YYYY.MM.DD.N (the day of the update, then that day's update number). Bump it on every published change.
-const BUILD='2026.10.21.3';
+const BUILD='2026.10.21.4';
+// After "Update now" the page loads as ?dcv=<build> to skip stale caches; tidy that off the address bar.
+try{const u=new URL(location.href);if(u.searchParams.has('dcv')){u.searchParams.delete('dcv');history.replaceState(history.state,'',u.toString());}}catch(e){}
 // SAVE_VER only goes up when the shape of saved data changes. Each step gets a MIGRATIONS entry that upgrades old data in place.
 // Rules: never rename or delete a dripcmd.* key; read every saved value with a default; new fields must be optional.
 const SAVE_VER=1;
@@ -1443,6 +1448,7 @@ $('#confirmBox').addEventListener('click',e=>{if(e.target===$('#confirmBox'))clo
 $('#cfYes').addEventListener('click',()=>{const a=cfAction;cfAction=null;$('#confirmBox').hidden=true;if(a)a();});
 function reloadGame(){try{location.reload();}catch(e){}}
 function renderSaveUi(){
+  updUi();
   $('#setVer').innerHTML=`Drip Command <button type="button" class="verbtn" data-chlog title="What's new"><b>${VER_TXT}</b></button> · save format ${SAVE_VER}`;
   const run=inRun();['#bSaveImport','#bSaveLoad','#bResetStats'].forEach(id=>{const b=$(id);if(b)b.disabled=run;});
   $('#resetNote').textContent=run?'Quit your current run and come back here from the title screen to reset or import.':'Wipes your stats and progress. Your look and your settings stay.';
@@ -1466,6 +1472,7 @@ $('#menuVer').textContent=VER_TXT;
 // ---------- changelog (click the version number) ----------
 // Newest first. Keep entries short: half-sentence bullets.
 const CHANGELOG=[
+  {v:'2026.10.21.4',d:'Oct 21',items:['Check for update button at the bottom of Settings','Update now loads the newest version without touching your saves']},
   {v:'2026.10.21.3',d:'Oct 21',items:['Heat is gentler: +6% enemy health and +3% damage per level','Heat 6 and up take more Clout to earn']},
   {v:'2026.10.21.2',d:'Oct 21',items:['Character polish: outlines, shading, style-colour rim light (Settings toggle)','Gun hand grips the weapon; arm follows your aim','Spiky hair fits the head','Long hair falls behind the shoulders','Compact two-column Settings','Title-screen controls as a key grid','This changelog']},
   {v:'2026.10.21.1',d:'Oct 21',items:['Version number in menu and Settings','Save backups, export/import, reset stats','Colorblind filters fixed on Safari/iPhone/iPad','Boss title card clears faster','Clout cap raised to 18; extra Clout banks Heat','Donating pays Cash at max Clout','Wear nothing button; emptied slots stay empty']},
@@ -1484,6 +1491,33 @@ function closeChlog(){const m=$('#chlogBox');if(!m||m.hidden)return;m.hidden=tru
 document.addEventListener('click',e=>{const b=e.target.closest('#menuVer,[data-chlog]');if(b)openChlog();});
 addEventListener('keydown',e=>{if(chlogOpen()&&(e.key==='Escape'||e.key==='Esc')){e.preventDefault();e.stopImmediatePropagation();closeChlog();}},true);
 
+
+// ---------- check for update (bottom of Settings) ----------
+// Asks the server for a fresh copy of this page, reads its BUILD and compares. "Update now" reloads past every cache. Saves are never touched.
+var UPD={busy:false,next:null,blind:false};// var, not const: Settings can render before this line runs
+function cmpBuild(a,b){const A=String(a).split('.').map(Number),B=String(b).split('.').map(Number);for(let i=0;i<4;i++){const d=(A[i]||0)-(B[i]||0);if(d)return d;}return 0;}
+function updUi(){const b=$('#bUpdate');if(!b||!UPD)return;const run=inRun();
+  if(UPD.busy){b.textContent='Checking…';b.disabled=true;return;}
+  if(UPD.next||UPD.blind){b.textContent=UPD.blind?'Reload anyway':'Update now';b.disabled=run;if(run)$('#updMsg').innerHTML=(UPD.next?`New version <b>v${esc(UPD.next)}</b> is out. `:'')+'Quit your run first, then update from the title screen.';else if(UPD.next)$('#updMsg').innerHTML=`New version <b>v${esc(UPD.next)}</b> is out. Your saves stay as they are.`;}
+  else{b.textContent='Check for update';b.disabled=false;}}
+function updMsg(h){$('#updMsg').innerHTML=h;}
+async function checkUpdate(){
+  if(UPD.busy)return;
+  if(UPD.next||UPD.blind){if(inRun())return;updMsg('Loading the newest version…');
+    try{if(UPD.next){const u=new URL(location.href);u.hash='';u.searchParams.set('dcv',UPD.next);location.replace(u.toString());}else location.reload();}catch(e){reloadGame();}return;}
+  if(location.protocol==='file:'){updMsg("This is a downloaded copy, so it can't update itself. Download the game again to get the newest version.");return;}
+  UPD.busy=true;updMsg('');updUi();
+  let found=null;
+  try{const u=new URL(location.href);u.hash='';
+    const ctl=typeof AbortController==='function'?new AbortController():null;const t=setTimeout(()=>{try{ctl&&ctl.abort();}catch(_){}},10000);
+    const r=await fetch(u.toString(),{cache:'reload',credentials:'same-origin',signal:ctl?ctl.signal:undefined});clearTimeout(t);
+    if(r.ok){const m=(await r.text()).match(/const BUILD='(\d{4}\.\d+\.\d+\.\d+)'/);if(m)found=m[1];}}catch(e){}
+  UPD.busy=false;
+  if(!found){UPD.blind=true;updMsg("Couldn't check right now (offline, or this copy can't look itself up). <b>Reload anyway</b> loads the newest copy if there is one.");}
+  else if(cmpBuild(found,BUILD)>0){UPD.next=found;updMsg(`New version <b>v${esc(found)}</b> is out. Your saves stay as they are.`);try{sfx('pick');}catch(_){}}
+  else updMsg(`You're on the latest version (<b>${VER_TXT}</b>).`);
+  updUi();}
+$('#bUpdate').addEventListener('click',checkUpdate);
 $('#bCloseSettings').addEventListener('click',closeSettings);
 $('#bSettings').addEventListener('click',()=>{initAudio();openSettings();});$('#bSettings2').addEventListener('click',openSettings);
 
