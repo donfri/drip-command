@@ -1024,7 +1024,7 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.
 
 // ---------- version & save safety ----------
 // BUILD format: YYYY.MM.DD.N (the day of the update, then that day's update number). Bump it on every published change.
-const BUILD='2026.10.21.2';
+const BUILD='2026.10.21.3';
 // SAVE_VER only goes up when the shape of saved data changes. Each step gets a MIGRATIONS entry that upgrades old data in place.
 // Rules: never rename or delete a dripcmd.* key; read every saved value with a default; new fields must be optional.
 const SAVE_VER=1;
@@ -1466,6 +1466,7 @@ $('#menuVer').textContent=VER_TXT;
 // ---------- changelog (click the version number) ----------
 // Newest first. Keep entries short: half-sentence bullets.
 const CHANGELOG=[
+  {v:'2026.10.21.3',d:'Oct 21',items:['Heat is gentler: +6% enemy health and +3% damage per level','Heat 6 and up take more Clout to earn']},
   {v:'2026.10.21.2',d:'Oct 21',items:['Character polish: outlines, shading, style-colour rim light (Settings toggle)','Gun hand grips the weapon; arm follows your aim','Spiky hair fits the head','Long hair falls behind the shoulders','Compact two-column Settings','Title-screen controls as a key grid','This changelog']},
   {v:'2026.10.21.1',d:'Oct 21',items:['Version number in menu and Settings','Save backups, export/import, reset stats','Colorblind filters fixed on Safari/iPhone/iPad','Boss title card clears faster','Clout cap raised to 18; extra Clout banks Heat','Donating pays Cash at max Clout','Wear nothing button; emptied slots stay empty']},
   {v:null,d:'Oct 20',items:['Phone layout overhaul: compact HUD and menus','Boss bar moved to the top','Home-screen app support; auto fullscreen on Android','Set names in Closet comparisons','Death recap, run history, Daily Runway','The After-Party and between-floor events','Colorblind filters, hitbox toggle, bag locks','The Emperor hidden style, classes, Poser fit, sets','New weapons and Statement Pieces','First playable build']}
@@ -2538,9 +2539,11 @@ function killEnemy(e){if(e.dead)return;e.dead=true;if(isBoss(e)||e.type==='manag
 }
 function dropItem(x,y,it){G.pickups.push({type:'item',x,y,item:it,t:Math.random()*5});}
 const LVL_CAP=18; // max Clout level; past it, each level's worth of Clout (same cost as level 18) banks an optional Heat level (p.heatTok)
+// Heat level n costs the level-18 amount (1,192) for Heat 1-5, then +20% more per level after that (Heat 6 = 1,430, Heat 10 = 2,384).
+const heatCost=n=>Math.round((40+LVL_CAP*28+LVL_CAP*LVL_CAP*2)*(1+0.2*Math.max(0,n-5)));
 function donatePay(list){const v=list.reduce((a,it)=>a+donateValue(it),0);gainXp(v);return v;}function donateTxt(list){return `+${list.reduce((a,it)=>a+donateValue(it),0)} Clout`;}
 function gainXp(n){const p=G.p;if(G.heat)n=Math.round(n*(1+0.05*G.heat));p.xp+=n;while(p.xp>=p.xpNext){p.xp-=p.xpNext;
-  if(p.level>=LVL_CAP){p.heatTok=(p.heatTok||0)+1;sfx('lvl');toast(`<b>Heat level ready</b> (${p.heatTok} banked). Turn up the Heat in Style Trees (T) for a tougher run, or keep it.`,'#ff7a3c');if(state==='play')G.rings.push({x:p.x,y:p.y,r:90,life:0.5,max:0.5,c:'#ff7a3c'});continue;}
+  if(p.level>=LVL_CAP){p.heatTok=(p.heatTok||0)+1;p.xpNext=heatCost((G.heat||0)+p.heatTok+1);sfx('lvl');toast(`<b>Heat level ready</b> (${p.heatTok} banked). Turn up the Heat in Style Trees (T) for a tougher run, or keep it.`,'#ff7a3c');if(state==='play')G.rings.push({x:p.x,y:p.y,r:90,life:0.5,max:0.5,c:'#ff7a3c'});continue;}
   p.level++;p.points++;p.xpNext=Math.round(40+p.level*28+p.level*p.level*2);refreshStats();if(!(G.dress==='nolatte'&&state==='play'))p.hp=Math.min(p.s.maxHp,p.hp+p.s.maxHp*0.2);sfx('lvl');
   toast(p.level>=LVL_CAP?`Max Clout! Level <b>${p.level}</b>. +1 Style Point (T), the last one from leveling. From here, Clout earns optional Heat levels.`:`Clout up! Level <b>${p.level}</b>. +1 Style Point (T).`,'#7be0ff');if(state==='play'){G.rings.push({x:p.x,y:p.y,r:90,life:0.5,max:0.5,c:'#7be0ff'});}}}
 // Names for the death recap and run history.
@@ -3534,7 +3537,7 @@ function tierDesc(n){if(!n)return 'No extra rules.';const rules=[`enemies have +
 settings.tier=clamp(+store.get('dripcmd.tier',0)||0,0,prog.tierMax);
 settings.mode=prog.endless&&store.get('dripcmd.mode','runway')==='endless'?'endless':'runway';
 const curTier=()=>(G&&G.tier)||0;
-const HEAT={hp:0.10,dmg:0.05,cash:0.05,rar:0.12,xp:0.05};
+const HEAT={hp:0.06,dmg:0.03,cash:0.05,rar:0.12,xp:0.05};
 const curHeat=()=>(G&&G.heat)||0;
 const tierHp=()=>(1+0.15*curTier())*(1+HEAT.hp*curHeat());
 const tierDmg=()=>(1+0.10*curTier())*(1+HEAT.dmg*curHeat());
