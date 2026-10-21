@@ -281,7 +281,9 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
 .ach em{display:block;font-style:normal;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#7a6e8c;margin-top:5px}
 .ach.got{border-color:#ffc94a77;box-shadow:inset 0 0 0 1px #ffc94a33;background:linear-gradient(135deg,#ffc94a12,transparent 60%),var(--panel)}
 .ach.got>i{background:radial-gradient(circle at 35% 30%,#ffe7a6,#ffc94a 45%,#b8740c);border-color:#ffe7a6;color:#3b1d05}
-.ach.got b{color:var(--fg)}.ach.got em{color:var(--gold)}
+.ach.got b{color:var(--fg)}
+.ach.cls{border-left:3px solid var(--ac)}
+.ach .acl{display:block;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ac);margin-bottom:2px}.ach.got em{color:var(--gold)}
 .achpr{display:grid;gap:3px;margin-top:6px}.achpr .bar{height:6px}.achpr em{margin-top:0}
 #achPop{position:fixed;right:14px;top:46%;z-index:30;display:grid;gap:8px;justify-items:end;pointer-events:none;width:min(320px,calc(100vw - 28px))}
 .achpop{display:grid;grid-template-columns:38px minmax(0,1fr);gap:10px;align-items:center;background:#140d1cf2;border:1px solid #ffc94a88;border-left:3px solid var(--pink);padding:9px 12px;box-shadow:0 8px 24px #0009;animation:achin .35s cubic-bezier(.2,1.4,.4,1);transition:opacity .4s,transform .4s;width:100%;box-sizing:border-box}
@@ -969,22 +971,22 @@ for(const st in EXTRA_NAMES)for(const sl in EXTRA_NAMES[st])NAMES[st][sl].push(.
 const SUFFIX={goth:['the Crypt','Sorrow','Midnight','the Last Candle'],hipster:['Obscurity','the Vinyl Era','Small Batches','Before It Was Cool'],hype:['the Drop','the Queue','Resale','the Collab'],y2k:['the Millennium','Dial-Up','Frosted Chrome','the Mall'],punk:['Anarchy','the Pit','Feedback','the Basement Show'],cottage:['the Meadow','Slow Mornings','Wild Thyme','the Orchard']};
 const WEAPONS={
   blaster:{name:'Pocket Blaster',dmg:11,rate:4,speed:560,spread:0.04,count:1,pierce:0,size:4},
-  smg:{name:'Drip SMG',dmg:6,rate:9.5,speed:600,spread:0.14,count:1,pierce:0,size:3.2},
-  scatter:{name:'Scatter Cannon',dmg:7,rate:1.5,speed:520,spread:0.42,count:6,pierce:0,size:3.5,life:0.5},
+  smg:{name:'Drip SMG',dmg:5,rate:9.5,speed:600,spread:0.14,count:1,pierce:0,size:3.2,rapid:true},
+  scatter:{name:'Scatter Cannon',dmg:7,rate:1.5,speed:520,spread:0.34,count:6,pierce:0,size:3.5,life:0.5,daze:0.2,note:'each blast briefly stuns what it hits (0.2s; rivals and Floor Managers only flinch)'},
   rail:{name:'Rail Pistol',dmg:34,rate:1.4,speed:980,spread:0,count:1,pierce:2,size:3},
-  glitter:{name:'Glitter Launcher',dmg:20,rate:1.2,speed:420,spread:0.05,count:1,pierce:0,size:6,boom:58},
+  glitter:{name:'Glitter Launcher',dmg:24,rate:1.2,speed:420,spread:0.05,count:1,pierce:0,size:6,boom:70},
   torch:{name:'Hairspray Torch',dmg:3,rate:13,speed:340,spread:0.2,count:1,pierce:2,size:5,life:0.34,flame:true,note:'short-range flame that burns through 2 enemies'},
-  tape:{name:'Measuring Tape',dmg:28,rate:2.2,speed:0,spread:0,count:1,pierce:0,size:4,tape:{r:130,arc:1.9,dur:0.16},note:'swings in a wide arc in front of you (about 130 px), hitting every enemy it sweeps through once'},
-  sewing:{name:'Sewing Machine Gun',dmg:4,rate:12,speed:640,spread:0.035,count:1,pierce:0,size:2.6,stitch:0.25,note:'stitches enemies, slowing them by 25%'},
-  heel:{name:'Heel Boomerang',dmg:16,rate:1.6,speed:520,spread:0,count:1,pierce:99,size:6,life:3,boomer:true,note:'flies out and comes back, hitting on both passes'},
+  tape:{name:'Measuring Tape',dmg:25,rate:2.2,speed:0,spread:0,count:1,pierce:0,size:4,tape:{r:130,arc:1.9,dur:0.16},note:'swings in a wide arc in front of you (about 130 px), hitting every enemy it sweeps through once'},
+  sewing:{name:'Sewing Machine Gun',dmg:3.5,rate:12,speed:640,spread:0.035,count:1,pierce:0,size:2.6,stitch:0.2,rapid:true,note:'stitches enemies, slowing them by 20%'},
+  heel:{name:'Heel Boomerang',dmg:14,rate:1.6,speed:520,spread:0,count:1,pierce:99,size:6,life:3,boomer:true,note:'flies out and comes back, hitting on both passes'},
 };
 const TREES={
   goth:[
-    {id:'lace',name:'Black Lace',max:3,tier:0,desc:'+8% damage per rank.',fx:(s,r,k)=>{s.dmg*=1+0.08*r*k}},
+    {id:'lace',name:'Black Lace',max:3,tier:0,desc:'+6% damage per rank.',fx:(s,r,k)=>{s.dmg*=1+0.06*r*k}},
     {id:'coffin',name:'Velvet Coffin',max:2,tier:0,desc:'Shots pierce 1 more enemy per rank.',fx:(s,r)=>{s.pierce+=r}},
     {id:'moon',name:'Blood Moon',max:3,tier:1,desc:'Heal for 2% of damage dealt per rank.',fx:(s,r,k)=>{s.lifesteal+=0.02*r*k}},
-    {id:'veil',name:'Mourning Veil',max:2,tier:1,desc:'Kills release a shadow nova that hits nearby enemies.',fx:(s,r,k)=>{s.nova+=0.6*r*k}},
-    {id:'night',name:'Eternal Night',max:1,tier:2,desc:'Signature: +30% damage, +1 pierce, bigger shadow bolts.',fx:(s,r,k)=>{s.dmg*=1+0.3*k;s.pierce+=1;s.size*=1.35;s.eternal=true}},
+    {id:'veil',name:'Mourning Veil',max:2,tier:1,desc:'Kills release a shadow nova that hits nearby enemies.',fx:(s,r,k)=>{s.nova+=0.35*r*k}},
+    {id:'night',name:'Eternal Night',max:1,tier:2,desc:'Signature: +20% damage, +1 pierce, bigger shadow bolts.',fx:(s,r,k)=>{s.dmg*=1+0.2*k;s.pierce+=1;s.size*=1.35;s.eternal=true}},
   ],
   hipster:[
     {id:'first',name:'Before It Was Cool',max:3,tier:0,desc:'Your first hit on each enemy deals +40% per rank.',fx:(s,r,k)=>{s.firstHit+=0.4*r*k}},
@@ -995,13 +997,13 @@ const TREES={
   ],
   hype:[
     {id:'limited',name:'Limited Drop',max:3,tier:0,desc:'+8% fire rate per rank.',fx:(s,r,k)=>{s.rate*=1+0.08*r*k}},
-    {id:'train',name:'Hype Train',max:3,tier:0,desc:'Kills build Hype. Each stack gives +0.5% damage and fire rate per rank (half with the Drip SMG).',fx:(s,r,k)=>{s.hypePer+=0.005*r*k}},
+    {id:'train',name:'Hype Train',max:3,tier:0,desc:'Kills build Hype. Each stack gives +0.4% damage and fire rate per rank (half with the rapid-fire Drip SMG and Sewing Machine Gun).',fx:(s,r,k)=>{s.hypePer+=0.004*r*k}},
     {id:'sold',name:'Sold Out',max:2,tier:1,desc:'+5 max Hype stacks per rank.',fx:(s,r)=>{s.hypeMax+=5*r}},
     {id:'collab',name:'Collab',max:2,tier:1,desc:'+8% move speed per rank.',fx:(s,r,k)=>{s.speed*=1+0.08*r*k}},
-    {id:'grail',name:'Grail Status',max:1,tier:2,desc:'Signature: at max Hype, every shot fires three ways (the two side shots deal 40% damage).',fx:(s)=>{s.spread3=true}},
+    {id:'grail',name:'Grail Status',max:1,tier:2,desc:'Signature: at max Hype, every shot fires three ways (the two side shots deal 30% damage, 25% with the Drip SMG or Sewing Machine Gun).',fx:(s)=>{s.spread3=true}},
   ],
   y2k:[
-    {id:'chrome',name:'Chrome Finish',max:3,tier:0,desc:'+5% damage and +10% shot speed per rank.',fx:(s,r,k)=>{s.dmg*=1+0.05*r*k;s.projSpeed*=1+0.1*r}},
+    {id:'chrome',name:'Chrome Finish',max:3,tier:0,desc:'+8% damage and +10% shot speed per rank.',fx:(s,r,k)=>{s.dmg*=1+0.08*r*k;s.projSpeed*=1+0.1*r}},
     {id:'dialup',name:'Dial-Up',max:2,tier:0,desc:'Hits arc lightning to 1 more enemy per rank.',fx:(s,r)=>{s.chain+=r}},
     {id:'tips',name:'Frosted Tips',max:2,tier:1,desc:'Shots home in on enemies.',fx:(s,r,k)=>{s.homing+=3*r*k}},
     {id:'clips',name:'Butterfly Shield',max:2,tier:1,desc:'A chrome shield blocks one hit, then recharges (faster per rank).',fx:(s,r,k)=>{s.shieldCd=Math.max(3,(11-3*r)/k)}},
@@ -1010,16 +1012,16 @@ const TREES={
   punk:[
     {id:'pins',name:'Safety Pins',max:3,tier:0,desc:'Shots knock enemies back harder per rank.',fx:(s,r)=>{s.knock+=70*r}},
     {id:'studs',name:'Studded',max:3,tier:0,desc:'Hits explode for 20% splash damage per rank.',fx:(s,r,k)=>{s.explodeR=Math.max(s.explodeR,42);s.explodeDmg+=0.2*r*k}},
-    {id:'mosh',name:'Mosh Pit',max:2,tier:1,desc:'+30% damage per rank while under half HP.',fx:(s,r,k)=>{s.lowHp+=0.3*r*k}},
+    {id:'mosh',name:'Mosh Pit',max:2,tier:1,desc:'+10% damage per rank, and +30% more per rank while under half HP.',fx:(s,r,k)=>{s.dmg*=1+0.1*r*k;s.lowHp+=0.3*r*k}},
     {id:'anarchy',name:'Anarchy',max:2,tier:1,desc:'Your dash damages enemies and recharges 20% faster per rank.',fx:(s,r,k)=>{s.dashDmg+=1.5*r*k;s.dashCdMult*=1-0.2*r}},
     {id:'dive',name:'Stage Dive',max:1,tier:2,desc:'Signature: explosions are 50% bigger and hit 40% harder.',fx:(s,r,k)=>{s.explodeR=Math.max(s.explodeR,42)*1.5;s.explodeDmg+=0.4*k}},
   ],
   cottage:[
-    {id:'wild',name:'Wildflower',max:3,tier:0,desc:'Hits poison for 15% of damage per second, per rank.',fx:(s,r,k)=>{s.poison+=0.15*r*k}},
+    {id:'wild',name:'Wildflower',max:3,tier:0,desc:'Hits poison for 20% of damage per second, per rank.',fx:(s,r,k)=>{s.poison+=0.2*r*k}},
     {id:'sour',name:'Sourdough Starter',max:3,tier:0,desc:'Regenerate 0.6 HP per second per rank.',fx:(s,r,k)=>{s.regen+=0.6*r*k}},
     {id:'grow',name:'Overgrowth',max:2,tier:1,desc:'Hits slow enemies by 20% per rank.',fx:(s,r)=>{s.slow+=0.2*r}},
     {id:'linen',name:'Linen Layers',max:2,tier:1,desc:'+25 max HP per rank.',fx:(s,r)=>{s.maxHp+=25*r}},
-    {id:'fairy',name:'Fairy Ring',max:1,tier:2,desc:'Signature: stronger poison, and poisoned enemies spread it when they die.',fx:(s)=>{s.poison+=0.15;s.poisonSpread=true}},
+    {id:'fairy',name:'Fairy Ring',max:1,tier:2,desc:'Signature: stronger poison, and poisoned enemies spread it when they die.',fx:(s)=>{s.poison+=0.2;s.poisonSpread=true}},
   ],
 };
 TREES.emperor=[
@@ -2220,15 +2222,15 @@ function damagePlayer(d,src){const p=G.p;if(p.invuln>0||p.dashT>0||p.veilT>0||p.
 function refreshStats(){const p=G.p,old=p.s?p.s.maxHp:100,oldSets=p.s?p.s.sets:{};p.s=computeStats(p);
   for(const S of SETS){const n=p.s.sets[S.id]||0,was=(oldSets&&oldSets[S.id])||0;if(n>was&&state!=='menu'){if(n>=3)toast(`<b style="color:${STYLES[S.st].c}">SET COMPLETE: ${S.n}.</b> ${S.d3}.`,STYLES[S.st].c);else if(n===2)toast(`<b style="color:${STYLES[S.st].c}">${S.n}</b> set, 2 of 3: ${S.d2}. Find the last piece for: ${S.d3}.`,STYLES[S.st].c);}}if(p.s.maxHp>old)p.hp+=p.s.maxHp-old;p.hp=Math.min(p.hp,p.s.maxHp);p.hype=Math.min(p.hype,p.s.hypeMax);
   if(p.s.shieldCd>0&&!p.shieldUp&&p.shieldT<=0)p.shieldT=p.s.shieldCd;if(p.s.shieldCd<=0)p.shieldUp=false;p.peakDrip=Math.max(p.peakDrip,p.s.drip);}
-function fire(ang){const p=G.p,s=p.s,Wd=WEAPONS[p.weapon.kind]||WEAPONS.blaster;const hb=1+p.hype*s.hypePer*(p.weapon.kind==='smg'?0.5:1);const base=Wd.dmg*p.weapon.mult*s.dmg*hb*(p.veilT>0?1.5:1)*(1+0.02*rankIdx(p.rank));
+function fire(ang){const p=G.p,s=p.s,Wd=WEAPONS[p.weapon.kind]||WEAPONS.blaster;const hb=1+p.hype*s.hypePer*(Wd.rapid?0.5:1);const base=Wd.dmg*p.weapon.mult*s.dmg*hb*(p.veilT>0?1.5:1)*(1+0.02*rankIdx(p.rank));
   if(Wd.tape){const T=Wd.tape,crit=Math.random()<s.crit,dir=(p.tapeDir=-(p.tapeDir||1));if(!G.sweeps)G.sweeps=[];
     G.sweeps.push({a:ang,a0:ang-dir*T.arc/2,a1:ang+dir*T.arc/2,t:0,dur:T.dur,r:T.r*Math.sqrt(s.size),dmg:base*(crit?s.critMult:1),crit,hit:new Set(),c:s.eternal?'#b784ff':s.topStyle?STYLES[s.topStyle].c:'#ffe08a'});
     p.fireCd=1/(Wd.rate*s.rate*hb*(s.sp.has('strut')&&p.moving?1.3:1));sfx('dash');return;}
   const angs=[];if(Wd.count>1){for(let i=0;i<Wd.count;i++)angs.push(ang+(i/(Wd.count-1)-0.5)*Wd.spread*2+rand(-0.04,0.04));}else angs.push(ang+rand(-Wd.spread,Wd.spread));
   const nMain=angs.length;if(s.spread3&&p.hype>=s.hypeMax-0.01){const extra=[];for(const a of angs){extra.push(a-0.22,a+0.22);}angs.push(...extra);}
   const col=s.eternal?'#b784ff':s.topStyle?STYLES[s.topStyle].c:'#ffe08a';
-  for(let ai=0;ai<angs.length;ai++){const a=angs[ai],sk=ai<nMain?1:0.4,crit=Math.random()<s.crit;const nb={x:p.x+Math.cos(a)*16,y:p.y-8+Math.sin(a)*16,vx:Math.cos(a)*Wd.speed*s.projSpeed,vy:Math.sin(a)*Wd.speed*s.projSpeed,r:Wd.size*s.size,dmg:base*sk*(crit?s.critMult:1),crit,pierce:Wd.pierce+s.pierce,ric:s.ricochet,life:Wd.life||1.1,hit:new Set(),boom:Wd.boom||0,c:col};
-    if(Wd.flame){nb.kind='flame';nb.r0=nb.r;nb.l0=nb.life;}else if(Wd.boomer){nb.kind='heel';nb.boomer={t:0,ret:false};nb.spin=0;}else if(Wd.tape)nb.tape=true;if(Wd.stitch)nb.stitch=Wd.stitch;
+  for(let ai=0;ai<angs.length;ai++){const a=angs[ai],sk=ai<nMain?1:(Wd.rapid?0.25:0.3),crit=Math.random()<s.crit;const nb={x:p.x+Math.cos(a)*16,y:p.y-8+Math.sin(a)*16,vx:Math.cos(a)*Wd.speed*s.projSpeed,vy:Math.sin(a)*Wd.speed*s.projSpeed,r:Wd.size*s.size,dmg:base*sk*(crit?s.critMult:1),crit,pierce:Wd.pierce+s.pierce,ric:s.ricochet,life:Wd.life||1.1,hit:new Set(),boom:Wd.boom||0,c:col};
+    if(Wd.flame){nb.kind='flame';nb.r0=nb.r;nb.l0=nb.life;}else if(Wd.boomer){nb.kind='heel';nb.boomer={t:0,ret:false};nb.spin=0;}else if(Wd.tape)nb.tape=true;if(Wd.stitch)nb.stitch=Wd.stitch;if(Wd.daze)nb.daze=Wd.daze;
     if(s.fitName==='Poser'&&!nb.boomer){if(Math.random()<POSER_FX.stray){const na=Math.atan2(nb.vy,nb.vx)+rand(-POSER_FX.strayAng,POSER_FX.strayAng),sp=Math.hypot(nb.vx,nb.vy);nb.vx=Math.cos(na)*sp;nb.vy=Math.sin(na)*sp;}
       const sp=Math.hypot(nb.vx,nb.vy)||1;nb.wob={t:0,ux:nb.vx/sp,uy:nb.vy/sp,amp:rand(...POSER_FX.amp)*(Math.random()<0.5?-1:1),f:rand(...POSER_FX.freq)};}
     G.bullets.push(nb);}
@@ -2243,6 +2245,7 @@ function onHit(b,e){const p=G.p,s=p.s;b.hit.add(e);let d=b.dmg;
   if(s.poison>0){e.poisonT=3;e.poisonDps=Math.max(e.poisonDps,d*s.poison);}
   if(s.slow>0){e.slowT=1.6;e.slowAmt=Math.min(0.7,s.slow);}
   if(b.crit&&s.stunCrit&&!e.big)e.stun=Math.max(e.stun,0.6);
+  if(b.daze&&!e.big)e.stun=Math.max(e.stun,(isBoss(e)||e.type==='manager')?b.daze*0.4:b.daze);
   if(b.stitch&&!e.big){e.slowT=Math.max(e.slowT||0,1.2);e.slowAmt=Math.max(e.slowAmt||0,b.stitch);}
   if(s.sp.has('mood')&&!b.child&&Math.random()<0.2){switch(ri(0,3)){case 0:e.poisonT=3;e.poisonDps=Math.max(e.poisonDps||0,d*0.3);break;case 1:e.slowT=1.6;e.slowAmt=Math.max(e.slowAmt||0,0.4);break;case 2:if(!e.big)e.stun=Math.max(e.stun,0.5);break;default:chainFrom(e,d*0.5,2,false);}}
   if(s.explodeR>0)explode(e.x,e.y,s.explodeR,d*s.explodeDmg,e,'#ff2e88');
@@ -2576,6 +2579,8 @@ function storyAdvance(){const S=G&&G.story;if(state!=='story'||!S)return;
   if(performance.now()-S.open<450)return; // ignore keys already mid-press when it popped up
   if(S.shown<S.full.length){S.shown=S.full.length;clearInterval(storyT);$('#stBody').textContent=S.full;$('#story').classList.add('done');S.open=performance.now()-250;return;}
   clearInterval(storyT);G.story=null;$('#story').hidden=true;state='play';dashPressed=false;sigPressed=false;mouse.down=false;
+  // the intro already named the boss: sweep the matching title card off screen fast instead of replaying it over the fight
+  if(G.card){const k=G.card;k.t=Math.max(k.t,0.28,k.dur*0.5+0.01);k.dur=k.t+0.25;}
 }
 function showCard(tag,name,title,c,dur){G.card={tag,name,title,c,t:0,dur:dur||2.6};}
 function bossFxTick(dt){if(G.flashT>0)G.flashT-=dt;if(G.card){G.card.t+=dt;if(G.card.t>=G.card.dur)G.card=null;}
@@ -3606,7 +3611,7 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(state=
 
 
 // ---------- achievements (saved under dripcmd.ach; old saves start empty, then get retro credit below) ----------
-const ACH_GROUPS=[['runway','The Runway'],['crimes','Fashion Crimes'],['style','Style'],['wardrobe','Wardrobe'],['rooms','Special Rooms']];
+const ACH_GROUPS=[['runway','The Runway'],['crimes','Fashion Crimes'],['style','Style'],['wardrobe','Wardrobe'],['rooms','Special Rooms'],['arsenal','Arsenal'],['classes','Classes']];
 const ACH=[ // ids are save keys; some keep their first names (e.g. kills100) so earlier unlocks stay put
   {id:'floor1',g:'runway',n:'Doors Open',d:'Clear floor 6.'},
   {id:'rival',g:'runway',n:'Out-Dripped',d:'Defeat a rival without getting hit during the fight.'},
@@ -3642,11 +3647,32 @@ const ACH=[ // ids are save keys; some keep their first names (e.g. kills100) so
   {id:'vault',g:'rooms',n:'Couture Access',d:'Open three Couture Vaults in one run.'},
   {id:'chals3',g:'rooms',n:'Triple Threat',d:'Win all three kinds of Catwalk Challenge in one run.'},
   {id:'ontime',g:'rooms',n:'Right on Time',d:'Finish a Late for the Show floor with at least a minute to spare.'},
+  // Arsenal (added Oct 21, 2026). A kill counts for the weapon you have equipped when the enemy goes down.
+  {id:'w_blaster',g:'arsenal',n:'Old Reliable',d:'Defeat a rival on Brutal with the Pocket Blaster equipped.'},
+  {id:'w_smg',g:'arsenal',n:'Spray and Slay',d:'Stop 2,500 fashion crimes with the Drip SMG, across any runs.',goal:2500,val:()=>achData.st.wk.smg||0},
+  {id:'w_scatter',g:'arsenal',n:'Point Blank',d:'Take out 5 enemies with a single Scatter Cannon blast.'},
+  {id:'w_rail',g:'arsenal',n:'Clean Line',d:'Take out 3 enemies with a single Rail Pistol shot.'},
+  {id:'w_glitter',g:'arsenal',n:'Glitter Bomb',d:'Take out 6 enemies with a single Glitter Launcher shot.'},
+  {id:'w_torch',g:'arsenal',n:'Too Hot to Handle',d:'Defeat a Floor Manager on Brutal with the Hairspray Torch equipped.'},
+  {id:'w_tape',g:'arsenal',n:'Measure Twice',d:'Hit 8 enemies with a single Measuring Tape swing.'},
+  {id:'w_sewing',g:'arsenal',n:'Hemmed In',d:'Have 10 enemies stitched by the Sewing Machine Gun at the same time.'},
+  {id:'w_heel',g:'arsenal',n:'Catch!',d:'Take out 3 enemies on the way back from a single Heel Boomerang throw.'},
+  {id:'w_all',g:'arsenal',n:'Full Arsenal',d:'Stop 100 fashion crimes with every weapon, across any runs.',goal:9,val:()=>Object.keys(WEAPONS).filter(k=>(achData.st.wk[k]||0)>=100).length},
+  {id:'w_grail',g:'arsenal',n:'Grail Gun',d:'Close the show on Standard or Brutal with a Grail weapon equipped.'},
+  // Classes (added Oct 21, 2026): one Signature-move feat per class, plus a win with every class. c = the class it belongs to (colours the card).
+  {id:'c_goth',g:'classes',c:'goth',n:'Fade to Black',d:'As Goth, take out 10 enemies during a single Shadow Veil.'},
+  {id:'c_hipster',g:'classes',c:'hipster',n:'Like It Never Happened',d:'As Hipster, get back half your max HP with a single Rewind during a rival or finale fight.'},
+  {id:'c_hype',g:'classes',c:'hype',n:'Sold Out',d:'As Hypebeast, take out 8 enemies with a single Stampede.'},
+  {id:'c_y2k',g:'classes',c:'y2k',n:'Delete Key',d:'As Y2K, wipe out 40 enemy bullets with a single Y2K Bug.'},
+  {id:'c_punk',g:'classes',c:'punk',n:'Mosh Pit',d:'As Punk, take out 6 enemies with a single Stage Dive landing.'},
+  {id:'c_cottage',g:'classes',c:'cottage',n:'Garden Party',d:'As Cottagecore, take out 12 enemies standing on a single Picnic blanket.'},
+  {id:'c_emperor',g:'classes',c:'emperor',hidden:true,n:'Deafening Silence',d:'As The Emperor, take out 10 enemies frozen by a single Nobody Says a Word.'},
+  {id:'c_all',g:'classes',n:'Every Look Walked',d:'Close the show on Standard or Brutal with every class, including the hidden one (any runs).',goal:7,val:()=>achData.st.clsWins.length},
 ];
 const achById=id=>ACH.find(a=>a.id===id);
 const achGoal=a=>a.goal===0?TOTAL_PIECES():a.goal;
-const achData=(()=>{const d=store.get('dripcmd.ach',{})||{};const st=Object.assign({kills:0,elites:0,managers:0,mimics:0,dress:0,runs:0,rivals:[],rivalsB:[],sigs:[],chals:[]},d.st||{});
-  ['rivals','rivalsB','sigs','chals'].forEach(k=>{if(!Array.isArray(st[k]))st[k]=[];});return {got:(d.got&&typeof d.got==='object')?d.got:{},st};})();
+const achData=(()=>{const d=store.get('dripcmd.ach',{})||{};const st=Object.assign({kills:0,elites:0,managers:0,mimics:0,dress:0,runs:0,rivals:[],rivalsB:[],sigs:[],chals:[],clsWins:[]},d.st||{});
+  ['rivals','rivalsB','sigs','chals','clsWins'].forEach(k=>{if(!Array.isArray(st[k]))st[k]=[];});if(!st.wk||typeof st.wk!=='object'||Array.isArray(st.wk))st.wk={};return {got:(d.got&&typeof d.got==='object')?d.got:{},st};})();
 let achDirty=false;
 function achSave(){achDirty=false;store.set('dripcmd.ach',achData);}
 function achFound(){try{return new Set(store.get('dripcmd.found',[])).size;}catch(e){return 0;}}
@@ -3677,6 +3703,7 @@ function achTick(){if(!G||!G.p||!['play','between','closet','talents','shop'].in
   if(!achData.got.sigtal&&SK.filter(k=>TREES[k].some(t=>t.tier===2&&(p.talents[k][t.id]||0)>0)).length>=2)achUnlock('sigtal');
   if(achData.st.sigs.filter(k=>SK.includes(k)).length>=6)achUnlock('sigs6');
   if(G.achChals&&G.achChals.size>=3)achUnlock('chals3');
+  if(!achData.got.w_sewing&&state==='play'&&G.enemies.filter(e=>!e.dead&&(e.achStitch||0)>G.time).length>=10)achUnlock('w_sewing');
   achCheckGoals();if(achDirty)achSave();}
 setInterval(achTick,500);
 // hooks: wrap existing game functions so their own code stays untouched
@@ -3684,24 +3711,46 @@ setInterval(achTick,500);
 {const _bf=buildFloor;buildFloor=function(){_bf.apply(this,arguments);if(G){G.achHit=false;G.achBossHit=false;}};}
 {const _ke=killEnemy;killEnemy=function(e){const was=e.dead;_ke.apply(this,arguments);if(was||!e.dead)return;const st=achData.st;st.kills++;achDirty=true;
   if(e.elite)st.elites++;if(e.type==='manager')st.managers++;if(e.type==='mimic')st.mimics++;
-  if(e.type==='rival'&&e.style){if(!G.achBossHit)achUnlock('rival');achAdd('rivals',e.style);if(G.diff===DIFF.brutal)achAdd('rivalsB',e.style);}};}
+  G.achKillN=(G.achKillN||0)+1;const wk=G.p&&G.p.weapon&&G.p.weapon.kind;if(wk)st.wk[wk]=(st.wk[wk]||0)+1;
+  if(G.diff===DIFF.brutal){if(wk==='blaster'&&e.type==='rival'&&e.style)achUnlock('w_blaster');if(wk==='torch'&&e.type==='manager')achUnlock('w_torch');}
+  if(e.type==='rival'&&e.style){if(!G.achBossHit)achUnlock('rival');achAdd('rivals',e.style);if(G.diff===DIFF.brutal)achAdd('rivalsB',e.style);}
+  const pl=G.p;if(pl&&pl.veilT>0&&G.achVeil!=null){G.achVeil++;if(G.achVeil>=10)achUnlock('c_goth');}
+  for(const k of G.picnics||[])if(Math.hypot(e.x-k.x,e.y-k.y)<k.r){k.achN=(k.achN||0)+1;if(k.achN>=12)achUnlock('c_cottage');break;}
+  if(e.awkT&&e.awkT>G.time&&G.achAwk!=null){G.achAwk++;if(G.achAwk>=10)achUnlock('c_emperor');}};}
 {const _dp=damagePlayer;damagePlayer=function(){if(!G)return _dp.apply(this,arguments);const hp=G.p.hp,sec=G.secondUsed,boss=bossFight();_dp.apply(this,arguments);if(!G)return;
   if(G.p.hp<hp||(!sec&&G.secondUsed)){G.achHit=true;if(boss)G.achBossHit=true;for(const sp of G.specials)if(sp.kind==='show'&&sp.state==='locked')sp.achHit=true;}
   if(!sec&&G.secondUsed&&boss)achUnlock('second');};}
 {const _ar=addRank;addRank=function(n){if(n===2.5&&G)G.achGraze=(G.achGraze||0)+1;return _ar.apply(this,arguments);};}
-{const _us=useSignature;useSignature=function(){const p=G&&G.p;const cd=p?p.sigCd:0,st=p&&p.s?p.s.topStyle:null;_us.apply(this,arguments);if(p&&st&&p.sigCd>cd){achAdd('sigs',st);if(G.achSigs)G.achSigs.add(st);}};}
+{const _us=useSignature;useSignature=function(){const p=G&&G.p;const cd=p?p.sigCd:0,st=p&&p.s?p.s.topStyle:null;
+  const hp0=p?p.hp:0,boss=bossFight(),n0=G?G.bullets.length:0,live=G&&st==='y2k'?G.ebullets.filter(b=>!b.dead):null;
+  _us.apply(this,arguments);if(!(p&&st&&p.sigCd>cd))return;achAdd('sigs',st);if(G.achSigs)G.achSigs.add(st);
+  // Classes: start counting for this use of the move
+  if(st==='goth')G.achVeil=0;
+  if(st==='emperor')G.achAwk=0;
+  if(st==='hipster'&&boss&&p.hp-hp0>=p.s.maxHp*0.5)achUnlock('c_hipster');
+  if(st==='hype'){const grp={k:'sig_hype',n:0};for(let i=n0;i<G.bullets.length;i++)G.bullets[i].achG=grp;}
+  if(live&&live.filter(b=>b.dead).length>=40)achUnlock('c_y2k');};}
+// Stage Dive: kills from the landing explosion all happen in the frame the dive ends
+{const _usg=updateSig;updateSig=function(){const dv=G&&G.p&&G.p.dive,k0=G?(G.achKillN||0):0;_usg.apply(this,arguments);if(dv&&G&&G.p&&!G.p.dive&&(G.achKillN||0)-k0>=6)achUnlock('c_punk');};}
 {const _fc=floorCleared;floorCleared=function(){const f=G.floor,hit=G.achHit,dc=G.dress,failed=G.dressFailed,left=G.dressTimer;_fc.apply(this,arguments);
   if(f>=6)achUnlock('floor1');if(f>=6&&!hit)achUnlock('flawless');
   if(dc&&!(dc==='late'&&failed)){achData.st.dress++;achDirty=true;}if(dc==='late'&&!failed&&left>=60)achUnlock('ontime');achTick();};}
 {const _ce=chalEnd;chalEnd=function(win){const c=G&&G.chal,type=c&&!c.done?c.type:null;_ce.apply(this,arguments);if(win&&type){achAdd('chals',type);if(G.achChals)G.achChals.add(type);}};}
 {const _sr=showroomReward;showroomReward=function(sp){_sr.apply(this,arguments);if(sp&&!sp.achHit)achUnlock('showroom');};}
 {const _fd=finaleDown;finaleDown=function(){_fd.apply(this,arguments);const br=G.diff===DIFF.brutal,t=curTier();
-  if(G.diff!==DIFF.chill)achUnlock('finale');if(br&&t>=3)achUnlock('brutal');if(br&&t>=5)achUnlock('spot5');if((G.heat||0)>=5)achUnlock('heat5');};}
+  if(G.diff!==DIFF.chill){achUnlock('finale');achAdd('clsWins',clsOf());achCheckGoals();achSave();}if(G.diff!==DIFF.chill&&G.p.weapon&&G.p.weapon.rarity>=5)achUnlock('w_grail');if(br&&t>=3)achUnlock('brutal');if(br&&t>=5)achUnlock('spot5');if((G.heat||0)>=5)achUnlock('heat5');};}
 {const _mf=markFound;markFound=function(){_mf.apply(this,arguments);achCheckGoals();};}
 {const _die=die;die=function(){_die.apply(this,arguments);achSave();const n=G&&G.achNew;if(n)$('#deadStats').insertAdjacentHTML('beforeend',`<div><b style="color:var(--gold)">${n}</b><span>Achievement${n>1?'s':''}</span></div>`);};}
 {const _sv=showVictory;showVictory=function(){_sv.apply(this,arguments);const n=G&&G.achNew;if(state==='victory'&&n)$('#vcStats').insertAdjacentHTML('beforeend',`<div><b style="color:var(--gold)">${n}</b><span>Achievement${n>1?'s':''}</span></div>`);};}
+// Arsenal hooks: bullets from one trigger pull share a group, so kills from one shot (including its explosion, splash and lightning) add up
+{const _fi=fire;fire=function(){const n0=G?G.bullets.length:0;_fi.apply(this,arguments);if(!G)return;const k=G.p.weapon&&G.p.weapon.kind;if(!k)return;const grp={k,n:0};for(let i=n0;i<G.bullets.length;i++)G.bullets[i].achG=grp;};}
+{const _oh=onHit;onHit=function(b,e){const k0=G.achKillN||0;_oh.apply(this,arguments);const dk=(G.achKillN||0)-k0;
+  if(b.stitch&&!e.dead)e.achStitch=G.time+1.2;
+  if(dk>0&&b.achG){const g=b.achG;g.n+=dk;if(g.k==='scatter'&&g.n>=5)achUnlock('w_scatter');if(g.k==='rail'&&g.n>=3)achUnlock('w_rail');if(g.k==='glitter'&&g.n>=6)achUnlock('w_glitter');if(g.k==='sig_hype'&&g.n>=8)achUnlock('c_hype');}
+  if(dk>0&&b.boomer&&b.boomer.ret){b.achRet=(b.achRet||0)+dk;if(b.achRet>=3)achUnlock('w_heel');}};}
+{const _us2=updSweeps;updSweeps=function(){_us2.apply(this,arguments);if(G&&G.sweeps&&!achData.got.w_tape)for(const w of G.sweeps)if(w.hit&&w.hit.size>=8)achUnlock('w_tape');};}
 // retro credit for progress made before achievements existed (no pop-ups)
-(function achRetro(){if(store.get('dripcmd.best',0)>=7)achUnlock('floor1',true);if(prog.bestEndless>=36)achUnlock('endless20',true);achCheckGoals(true);})();
+(function achRetro(){if(store.get('dripcmd.best',0)>=7)achUnlock('floor1',true);try{const h=store.get('dripcmd.history',[]);if(Array.isArray(h))for(const r of h)if(r&&r.won&&r.diff&&r.diff!=='Chill'&&STYLES[r.cls])achAdd('clsWins',r.cls);}catch(e){}if(prog.bestEndless>=36)achUnlock('endless20',true);achCheckGoals(true);if(achDirty)achSave();})();
 // Achievements screen
 let achFrom='menu';
 function openAch(){if(state!=='menu'&&state!=='paused')return;achFrom=state;state='achieve';showOnly('#achieve');renderAch();applyMix();}
@@ -3712,7 +3761,9 @@ function renderAch(){const got=ACH.filter(a=>achData.got[a.id]).length;
   $('#achBody').innerHTML=ACH_GROUPS.map(([g,label])=>{const list=ACH.filter(a=>a.g===g),n=list.filter(a=>achData.got[a.id]).length;
     return `<div class="secth"><h3>${label}</h3><span class="muted" style="font-size:12px">${n} / ${list.length}</span></div><div class="achgrid">`+list.map(a=>{const t=achData.got[a.id];
       let pr='';if(a.val&&!t){const goal=achGoal(a),v=Math.min(goal,a.val());pr=`<div class="achpr"><div class="bar xp"><i style="width:${goal?v/goal*100:0}%"></i></div><em>${v.toLocaleString()} / ${goal.toLocaleString()}</em></div>`;}
-      return `<div class="ach${t?' got':''}"><i>${ACH_ICON}</i><div><b>${esc(a.n)}</b><span>${esc(a.d)}</span>${t?`<em>Unlocked ${achDate(t)}</em>`:pr}</div></div>`;}).join('')+'</div>';}).join('')+
+      const veil=a.hidden&&!t&&!prog.emperor,S=a.c&&STYLES[a.c],nm=veil?'???':a.n,ds=veil?'Belongs to a hidden style. Unlock it to see this one.':a.d;
+      const tag=S?`<small class="acl">${veil?'Hidden style':esc(S.name)+' · '+esc(SIGS[a.c].name)}</small>`:'';
+      return `<div class="ach${t?' got':''}${S?' cls':''}"${S?` style="--ac:${veil?'#5a5466':S.c}"`:''}><i>${ACH_ICON}</i><div>${tag}<b>${esc(nm)}</b><span>${esc(ds)}</span>${t?`<em>Unlocked ${achDate(t)}</em>`:pr}</div></div>`;}).join('')+'</div>';}).join('')+
     `<p class="note">Lifetime: ${achData.st.runs.toLocaleString()} run${achData.st.runs===1?'':'s'} started · ${achData.st.kills.toLocaleString()} crimes stopped · ${achData.st.elites.toLocaleString()} elites · ${achData.st.dress} dress codes worn.</p>`;}
 function updAchBtn(){const n=ACH.filter(a=>achData.got[a.id]).length;const b=$('#achBadge');if(b)b.textContent=`${n}/${ACH.length}`;}
 $('#bAch').addEventListener('click',()=>{initAudio();openAch();});$('#bAch2').addEventListener('click',openAch);$('#bCloseAch').addEventListener('click',closeAch);
