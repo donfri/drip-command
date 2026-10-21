@@ -16,6 +16,10 @@ html,body{height:100%}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{background:var(--ink);color:var(--fg);font-family:var(--ui);font-size:15px;overflow:hidden;user-select:none;-webkit-user-select:none}
 #game{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;background:var(--ink)}
+#cbGl{position:fixed;inset:0;width:100%;height:100%;display:block;pointer-events:none}#cbGl[hidden]{display:none}
+html[data-cb="protan"] body>*:not(#game):not(#cbGl):not(#cbDefs){filter:url(#cb-protan)}
+html[data-cb="deutan"] body>*:not(#game):not(#cbGl):not(#cbDefs){filter:url(#cb-deutan)}
+html[data-cb="tritan"] body>*:not(#game):not(#cbGl):not(#cbDefs){filter:url(#cb-tritan)}
 button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bottom-width:2px;padding:0 5px;border-radius:4px;color:var(--muted);background:var(--panel)}
@@ -1231,7 +1235,43 @@ const CB_M={protan:'1.0000 0.0000 0.0000 0 0  0.4789 0.4769 0.0442 0 0  0.5973 -
   tritan:'0.7412 -0.4072 0.6660 0 0  0.0751 0.5852 0.3397 0 0  0.0000 0.0000 1.0000 0 0  0 0 0 1 0'};
 function applyCb(){let svg=document.getElementById('cbDefs');if(!svg){svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.id='cbDefs';svg.setAttribute('aria-hidden','true');svg.style.cssText='position:absolute;width:0;height:0;overflow:hidden';
     svg.innerHTML=Object.entries(CB_M).map(([k,m])=>`<filter id="cb-${k}" color-interpolation-filters="linearRGB"><feColorMatrix type="matrix" values="${m}"/></filter>`).join('');document.body.appendChild(svg);}
-  document.documentElement.style.filter=V.cb&&V.cb!=='off'?`url(#cb-${V.cb})`:'';}
+  const on=V.cb&&V.cb!=='off',gl=on&&CB_GPU&&cbGlInit();const de=document.documentElement;
+  // Game arena: recoloured on the GPU (works in every browser, including Safari/iPhone). Menus and HUD: SVG filter per layer.
+  // If WebGL isn't available, fall back to filtering the whole page like before.
+  de.style.filter=on&&!gl?`url(#cb-${V.cb})`:'';de.dataset.cb=on&&gl?V.cb:'';
+  if(CBG.el){CBG.el.hidden=!(on&&gl);CBG.m=on?cbMat(V.cb):null;}if(on&&gl&&G)cbPost();}
+// ---- colorblind GPU pass for the game canvas: copies each rendered frame through the same colour matrix ----
+// Safari and every iPhone/iPad browser (Apple WebKit) ignore the SVG filter on the game canvas, so only they get the GPU pass; Chrome/Firefox/Edge keep the fast SVG filter.
+const CB_GPU=/Apple/.test(navigator.vendor||'')||/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)||/[?&]cbgpu\b/.test(location.search);
+const CBG={el:null,gl:null,tex:null,uM:null,m:null,failed:false};
+function cbMat(k){const a=CB_M[k].trim().split(/\s+/).map(Number);// rows of 5 → GLSL column-major 3x3
+  return new Float32Array([a[0],a[5],a[10], a[1],a[6],a[11], a[2],a[7],a[12]]);}
+function cbGlInit(){if(CBG.gl)return true;if(CBG.failed)return false;
+  try{const el=document.createElement('canvas');el.id='cbGl';el.setAttribute('aria-hidden','true');el.hidden=true;
+    const gl=el.getContext('webgl',{alpha:false,antialias:false,depth:false,stencil:false,premultipliedAlpha:false,preserveDrawingBuffer:false})||el.getContext('experimental-webgl');
+    if(!gl)throw 0;
+    const sh=(t,src)=>{const o=gl.createShader(t);gl.shaderSource(o,src);gl.compileShader(o);if(!gl.getShaderParameter(o,gl.COMPILE_STATUS))throw 0;return o;};
+    const pr=gl.createProgram();
+    gl.attachShader(pr,sh(gl.VERTEX_SHADER,'attribute vec2 p;varying vec2 v;void main(){v=p*0.5+0.5;gl_Position=vec4(p,0.0,1.0);}'));
+    gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,'precision mediump float;varying vec2 v;uniform sampler2D t;uniform mat3 m;'+
+      'vec3 toL(vec3 c){return mix(c/12.92,pow((c+0.055)/1.055,vec3(2.4)),step(0.04045,c));}'+
+      'vec3 toS(vec3 c){c=clamp(c,0.0,1.0);return mix(c*12.92,1.055*pow(c,vec3(1.0/2.4))-0.055,step(0.0031308,c));}'+
+      'void main(){vec4 c=texture2D(t,v);gl_FragColor=vec4(toS(m*toL(c.rgb)),1.0);}'));
+    gl.linkProgram(pr);if(!gl.getProgramParameter(pr,gl.LINK_STATUS))throw 0;gl.useProgram(pr);
+    const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+    const ap=gl.getAttribLocation(pr,'p');gl.enableVertexAttribArray(ap);gl.vertexAttribPointer(ap,2,gl.FLOAT,false,0,0);
+    const tex=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tex);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.uniform1i(gl.getUniformLocation(pr,'t'),0);
+    el.addEventListener('webglcontextlost',e=>{e.preventDefault();CBG.gl=null;CBG.failed=true;el.hidden=true;applyCb();});
+    cv.after(el);Object.assign(CBG,{el,gl,tex,uM:gl.getUniformLocation(pr,'m')});return true;
+  }catch(e){CBG.failed=true;return false;}}
+function cbPost(){const gl=CBG.gl;if(!gl||!V.cb||V.cb==='off')return;const el=CBG.el;
+  if(el.width!==cv.width||el.height!==cv.height){el.width=cv.width;el.height=cv.height;}
+  try{gl.viewport(0,0,el.width,el.height);gl.uniformMatrix3fv(CBG.uM,false,CBG.m||(CBG.m=cbMat(V.cb)));
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,cv);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);}
+  catch(e){CBG.gl=null;CBG.failed=true;el.hidden=true;applyCb();}}
 function applyVideo(){resize();$('#scan').hidden=!V.scan;$('#fps').hidden=!V.fps;applyCb();}
 let fpsAcc=0,fpsN=0;function tickFps(dt){if(!V.fps)return;fpsAcc+=dt;fpsN++;if(fpsAcc>=0.5){$('#fps').textContent=Math.round(fpsN/fpsAcc)+' FPS';fpsAcc=0;fpsN=0;}}
 function toggleFullscreen(){if(!FS_API&&IOS&&!STANDALONE){toast(A2HS_MSG,'#ffc94a');return;}try{if(document.fullscreenElement){document.exitFullscreen();}else{const r=document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();if(r&&r.catch)r.catch(()=>toast("Fullscreen isn't available in this window. It works in the downloaded file or a desktop build.",'#ff7a8a'));else if(!r)toast("Fullscreen isn't available in this window.",'#ff7a8a');}}catch(e){toast("Fullscreen isn't available in this window.",'#ff7a8a');}}
@@ -3004,7 +3044,7 @@ let lastState='';
 function frame(ts){requestAnimationFrame(frame);const dt=Math.min(0.05,(ts-last)/1000||0);last=ts;
   pollPad(dt);tickFps(dt);if(state==='menu')drawMenuPreviews(ts/1000);if(AC){M.want=musicWant();if(state!==lastState){lastState=state;applyMix();}musicTick();}
   if(state==='play'&&G){let d2=dt;if(G.slowmo>0){G.slowmo-=dt;d2=dt*0.3;}update(d2);}
-  if(G){render();updHUD();if(state==='closet'){G.time+=dt;if(!itemDrag)itemRot+=dt*0.9;drawPreview();drawItemPreview();}}}
+  if(G){render();cbPost();updHUD();if(state==='closet'){G.time+=dt;if(!itemDrag)itemRot+=dt*0.9;drawPreview();drawItemPreview();}}}
 requestAnimationFrame(frame);
 
 // ---------- input ----------
