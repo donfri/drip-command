@@ -690,12 +690,12 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
         <div class="opt"><span class="ol">Daily Runway</span><button class="btn ghost sm" id="bDaily" type="button" style="justify-self:start">Play today's runway</button><span class="oh" id="dailyHint"></span></div>
       </div>
     </div>
-    <div class="card ctlcard" style="grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px">
+    <div class="card ctlcard">
       <div class="controls" id="controlsTxt"></div>
       <div class="ctlbtns" style="display:grid;gap:6px;justify-items:end">
         <div class="row"><button class="btn ghost" id="bLegend" type="button">Enemies</button><button class="btn ghost" id="bLookbook2" type="button">Lookbook</button><button class="btn ghost" id="bAch" type="button">Achievements <span class="badge" id="achBadge" style="font-size:10px"></span></button><button class="btn ghost" id="bHist" type="button">History</button><button class="btn ghost" id="bSettings" type="button">Settings</button><button class="btn" id="bStart" type="button" data-padfirst>Deploy</button></div>
         <span class="best" id="bestTxt"></span>
-        <span class="vertag" id="menuVer"></span>
+        <button type="button" class="vertag verbtn" id="menuVer" title="What's new"></button>
       </div>
     </div>
   </div>
@@ -956,6 +956,33 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
 #settings .ctab kbd{font-size:10px;padding:0 4px}
 #settings .h2{font-size:clamp(24px,3vw,32px)}
 @media (max-width:460px){#settings .srow{grid-template-columns:minmax(0,1fr) 38px;gap:4px 8px}}
+/* Title-screen controls card: key grid on top, menu buttons and Deploy underneath. */
+.ctlcard{grid-template-columns:minmax(0,1fr);gap:14px}
+.ctlcard .ctlbtns{border-top:1px solid var(--line);padding-top:14px}
+.ctlbtns .row{justify-content:flex-end}
+.controls:has(.ctlkeys){line-height:1.4;color:var(--fg)}
+.ctlkeys{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:8px 18px}
+.ck{display:flex;align-items:center;gap:10px;font-size:14px;min-width:0}
+.ck .kk{flex:none;width:104px;display:flex;justify-content:flex-end;align-items:center;gap:3px}
+.ck kbd{white-space:nowrap;font-size:12px;padding:1px 7px;color:var(--fg);border-color:#4a3d5c}
+.ck i{font-style:normal;color:var(--muted);font-size:12px}
+.ctlhead{margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#7be0ff}
+.ctlgoal{margin:10px 0 0;font-size:13px;color:var(--muted)}.ctlgoal b{color:var(--gold)}
+@media (max-width:1100px),(max-height:520px){.ctlbtns .row{justify-content:flex-start}}
+@media (max-width:460px){.ck .kk{width:96px}}
+/* Changelog popup (opened from the version number). */
+.verbtn{background:none;border:0;padding:0;font:inherit;color:inherit;letter-spacing:inherit;cursor:pointer;text-decoration:underline dotted #ffffff40;text-underline-offset:3px}
+.verbtn:hover{color:var(--gold);text-decoration-color:var(--gold)}
+.chlog .cbox{max-width:480px;border-color:var(--gold);box-shadow:0 0 0 1px #ffc94a33,0 20px 60px #000a;max-height:min(80vh,640px);grid-template-rows:auto minmax(0,1fr)}
+.chlog h3{color:var(--gold)}
+.chhead{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.chbody{overflow:auto;display:grid;gap:12px;padding-right:4px}
+.chbody section{display:grid;gap:4px}
+.chv{margin:0;font-weight:700;font-size:13px;letter-spacing:.08em;color:var(--fg);display:flex;gap:10px;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:4px}
+.chv span{font-weight:500;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.chbody ul{margin:0;padding-left:18px;font-size:13px;line-height:1.5;color:var(--muted)}
+.chbody section:first-child ul{color:var(--fg)}
+.chbody li::marker{color:var(--pink)}
 </style>
 <div id="story" hidden role="dialog" aria-modal="true" aria-labelledby="stName">
   <div class="stbox">
@@ -997,7 +1024,7 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.
 
 // ---------- version & save safety ----------
 // BUILD format: YYYY.MM.DD.N (the day of the update, then that day's update number). Bump it on every published change.
-const BUILD='2026.10.21.1';
+const BUILD='2026.10.21.2';
 // SAVE_VER only goes up when the shape of saved data changes. Each step gets a MIGRATIONS entry that upgrades old data in place.
 // Rules: never rename or delete a dripcmd.* key; read every saved value with a default; new fields must be optional.
 const SAVE_VER=1;
@@ -1416,7 +1443,7 @@ $('#confirmBox').addEventListener('click',e=>{if(e.target===$('#confirmBox'))clo
 $('#cfYes').addEventListener('click',()=>{const a=cfAction;cfAction=null;$('#confirmBox').hidden=true;if(a)a();});
 function reloadGame(){try{location.reload();}catch(e){}}
 function renderSaveUi(){
-  $('#setVer').innerHTML=`Drip Command <b>${VER_TXT}</b> · save format ${SAVE_VER}`;
+  $('#setVer').innerHTML=`Drip Command <button type="button" class="verbtn" data-chlog title="What's new"><b>${VER_TXT}</b></button> · save format ${SAVE_VER}`;
   const run=inRun();['#bSaveImport','#bSaveLoad','#bResetStats'].forEach(id=>{const b=$(id);if(b)b.disabled=run;});
   $('#resetNote').textContent=run?'Quit your current run and come back here from the title screen to reset or import.':'Wipes your stats and progress. Your look and your settings stay.';
   const list=getBackups();$('#bkList').innerHTML=list.length?list.map((b,i)=>`<div class="bkrow"><div>${esc(fmtWhen(b.at))} · ${esc(b.reason||'Backup')}<small>${esc(saveSummary(b.data))}</small></div><button class="btn ghost sm" type="button" data-bk="${i}"${run?' disabled':''}>Restore</button></div>`).join(''):'<p class="note">No backups yet. The first one is made when the next update loads.</p>';}
@@ -1436,6 +1463,26 @@ $('#bSaveLoad').addEventListener('click',()=>{let o;try{o=decodeSave($('#saveIn'
 $('#bResetStats').addEventListener('click',()=>{if(inRun())return;
   openConfirm('Reset all stats?',`<p>This wipes:</p><ul><li>Best floor, shows closed and Endless best</li><li>Spotlight tiers, Endless mode and the hidden style</li><li>Lookbook finds and collection rewards</li><li>Achievements and lifetime counters</li><li>Run history and today's Daily Runway score</li></ul><p>Your look, name and settings stay. A backup is kept under Automatic backups in case you change your mind.</p>`,'Yes, reset',()=>{pushBackup('Before stats reset');for(const k of STAT_KEYS)try{localStorage.removeItem(k);}catch(e){}reloadGame();});});
 $('#menuVer').textContent=VER_TXT;
+// ---------- changelog (click the version number) ----------
+// Newest first. Keep entries short: half-sentence bullets.
+const CHANGELOG=[
+  {v:'2026.10.21.2',d:'Oct 21',items:['Character polish: outlines, shading, style-colour rim light (Settings toggle)','Gun hand grips the weapon; arm follows your aim','Spiky hair fits the head','Long hair falls behind the shoulders','Compact two-column Settings','Title-screen controls as a key grid','This changelog']},
+  {v:'2026.10.21.1',d:'Oct 21',items:['Version number in menu and Settings','Save backups, export/import, reset stats','Colorblind filters fixed on Safari/iPhone/iPad','Boss title card clears faster','Clout cap raised to 18; extra Clout banks Heat','Donating pays Cash at max Clout','Wear nothing button; emptied slots stay empty']},
+  {v:null,d:'Oct 20',items:['Phone layout overhaul: compact HUD and menus','Boss bar moved to the top','Home-screen app support; auto fullscreen on Android','Set names in Closet comparisons','Death recap, run history, Daily Runway','The After-Party and between-floor events','Colorblind filters, hitbox toggle, bag locks','The Emperor hidden style, classes, Poser fit, sets','New weapons and Statement Pieces','First playable build']}
+];
+function chlogOpen(){const m=$('#chlogBox');return !!m&&!m.hidden;}
+function openChlog(){let m=$('#chlogBox');
+  if(!m){m=document.createElement('div');m.className='cmodal chlog';m.id='chlogBox';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');m.setAttribute('aria-labelledby','chTitle');
+    m.innerHTML='<div class="cbox"><div class="chhead"><h3 id="chTitle">What\'s new</h3><button class="btn ghost sm" id="chClose" type="button" data-padfirst>Close <kbd>Esc</kbd></button></div><div class="chbody">'+
+      CHANGELOG.map(r=>`<section><p class="chv">${r.v?'v'+esc(r.v):'Earlier builds'}<span>${esc(r.d)}</span></p><ul>${r.items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></section>`).join('')+'</div></div>';
+    m.addEventListener('click',e=>{if(e.target===m)closeChlog();});m.querySelector('#chClose').addEventListener('click',closeChlog);}
+  const host=(typeof currentSheet==='function'&&currentSheet())||document.body;if(m.parentNode!==host)host.appendChild(m);
+  m.hidden=false;try{sfx('pick');}catch(_){}
+  setTimeout(()=>{const n=$('#chClose');if(pad.on)setPadFocus(n);else try{n.focus({preventScroll:true});}catch(_){}},20);}
+function closeChlog(){const m=$('#chlogBox');if(!m||m.hidden)return;m.hidden=true;if(pad.on)setTimeout(()=>{try{focusFirst();}catch(_){}},20);}
+document.addEventListener('click',e=>{const b=e.target.closest('#menuVer,[data-chlog]');if(b)openChlog();});
+addEventListener('keydown',e=>{if(chlogOpen()&&(e.key==='Escape'||e.key==='Esc')){e.preventDefault();e.stopImmediatePropagation();closeChlog();}},true);
+
 $('#bCloseSettings').addEventListener('click',closeSettings);
 $('#bSettings').addEventListener('click',()=>{initAudio();openSettings();});$('#bSettings2').addEventListener('click',openSettings);
 
@@ -1454,7 +1501,7 @@ function padNav(dir){const cur=document.activeElement;const list=focusables();if
     let pri,sec;if(dir==='up'){pri=-dy;sec=dx;}else if(dir==='down'){pri=dy;sec=dx;}else if(dir==='left'){pri=-dx;sec=dy;}else{pri=dx;sec=dy;}
     if(pri<=4)continue;const sc=pri+Math.abs(sec)*2.2;if(sc<bs){bs=sc;best=el;}}
   if(best)setPadFocus(best);}
-function padBack(){if(state==='history'){closeHistory();return;}if(state==='achieve'){closeAch();return;}if(state==='shop'){closeShop();return;}if(state==='lookbook'){closeLookbook();return;}if(state==='legend'){closeLegend();return;}if(state==='closet'||state==='talents')backFromSheet();else if(state==='paused'){state='play';showOnly(null);}else if(state==='settings'){if(confirmOpen())closeConfirm();else closeSettings();}}
+function padBack(){if(chlogOpen()){closeChlog();return;}if(state==='history'){closeHistory();return;}if(state==='achieve'){closeAch();return;}if(state==='shop'){closeShop();return;}if(state==='lookbook'){closeLookbook();return;}if(state==='legend'){closeLegend();return;}if(state==='closet'||state==='talents')backFromSheet();else if(state==='paused'){state='play';showOnly(null);}else if(state==='settings'){if(confirmOpen())closeConfirm();else closeSettings();}}
 function pollPad(dt){const gps=navigator.getGamepads?navigator.getGamepads():[];let gp=null;for(const g of gps||[])if(g&&g.connected){gp=g;break;}
   if(!gp){if(pad.on){pad.on=false;syncSettings();}return;}
   if(!pad.on){pad.on=true;pad.prev=gp.buttons.map(b=>b.pressed);toast('Controller connected. <b>A</b> selects, <b>B</b> goes back.','#7be0ff');syncSettings();if(state!=='play')focusFirst();return;}
@@ -3837,8 +3884,17 @@ renderRules();
 // ---------- menu ----------
 function ctrlHtml(){
   if(TOUCH)return 'Drag anywhere on the left side to move. '+(settings.auto?'You fire automatically at the nearest enemy.':'Drag on the right side to aim and fire.')+' Tap <b>DASH</b> to dodge through attacks and <b>GO</b> for your signature move. Closet, Style Trees and Pause are the icons at the top right. Reach the gold <b>Runway</b> to go deeper.';
-  if(typeof pad!=='undefined'&&pad.on)return '<b style="color:#7be0ff">Controller:</b> left stick moves · '+(settings.auto?'auto-fire, or aim with the right stick':'right stick aims and fires (or hold RT)')+' · <kbd>A</kbd> dash · <kbd>RB</kbd> signature move · <kbd>X</kbd> closet · <kbd>Y</kbd> style trees · <kbd>Start</kbd> pause<br>Reach the gold <b>Runway</b> on each floor to go deeper.';
-  return '<kbd>WASD</kbd> move · '+(settings.auto?'auto-fire at the nearest enemy · hold <kbd>Mouse</kbd> to aim yourself':'<kbd>Arrow keys</kbd> shoot that way · or aim with the <kbd>Mouse</kbd> and hold <kbd>Left click</kbd>')+' · <kbd>Space</kbd> dash · <kbd>E</kbd>/<kbd>Right click</kbd> signature move · <kbd>C</kbd> closet · <kbd>T</kbd> style trees · <kbd>Esc</kbd> pause · <kbd>M</kbd> mute · <kbd>H</kbd> show hitbox<br>Reach the gold <b>Runway</b> on each floor to go deeper.';}
+  // Keyboard and controller: a tidy grid of key + action, easy to scan on a big screen.
+  const K=k=>k.map(x=>x==='/'||x==='+'?`<i>${x}</i>`:`<kbd>${x}</kbd>`).join(''),row=(k,t)=>`<span class="ck"><span class="kk">${K(k)}</span><span>${t}</span></span>`;
+  const goal='<p class="ctlgoal">'+(settings.auto?'Auto-fire is on: you shoot the nearest enemy. ':'')+'Reach the gold <b>Runway</b> on each floor to go deeper.</p>';
+  if(typeof pad!=='undefined'&&pad.on)return '<p class="ctlhead">Controller</p><div class="ctlkeys">'+[
+    row(['L stick'],'Move'),settings.auto?row(['R stick'],'Aim (fires on its own)'):row(['R stick','/','RT'],'Aim and fire'),row(['A'],'Dash'),row(['RB'],'Signature move'),
+    row(['X'],'Closet'),row(['Y'],'Style trees'),row(['Start'],'Pause')].join('')+'</div>'+goal;
+  return '<div class="ctlkeys">'+[
+    row(['WASD'],'Move'),
+    ...(settings.auto?[row(['Mouse'],'Hold to aim')]:[row(['Arrows'],'Shoot that way'),row(['Mouse','+','Click'],'Aim and fire')]),
+    row(['Space'],'Dash'),row(['E','/','R-click'],'Signature move'),row(['C'],'Closet'),row(['T'],'Style trees'),
+    row(['Esc'],'Pause'),row(['M'],'Mute'),row(['H'],'Show hitbox')].join('')+'</div>'+goal;}
 function syncSettings(){
   document.querySelectorAll('#segDiff button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===settings.diff)));
   document.querySelectorAll('#segFire button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===(settings.auto?'auto':'manual'))));
