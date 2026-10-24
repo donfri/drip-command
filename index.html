@@ -838,8 +838,7 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
         <div class="secth" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3>Wearing</h3><button type="button" class="btn ghost" id="bWearNothing" style="padding:5px 10px;font-size:11px" title="Take everything off and keep every slot empty: new drops go to your bag">Wear nothing</button></div>
         <div class="slots" id="clSlots"></div>
         <div class="detail" id="clDetail"></div>
-        <div class="row" style="justify-content:space-between"><p class="note" id="clFound" style="margin:0"></p><button type="button" class="btn ghost" id="bLookbook" style="padding:6px 12px;font-size:12px">View Lookbook</button></div>
-        <div class="secth"><h3>Bag</h3><div class="legend"><span><i class="lg-new">NEW</i>New since you last looked</span><span><svg viewBox="0 0 10 10" width="14" height="14" style="background:#1f5c35;border-radius:50%;padding:2px"><path d="M5 1.5 L8.6 6 H6.2 V8.8 H3.8 V6 H1.4 Z" fill="#7ef0a0"/></svg>Upgrade: more Drip (weapons: more damage)</span></div><div class="row" style="gap:10px"><span class="muted" id="clBagCount" style="font-size:12px"></span><button type="button" class="btn ghost" id="bSellAll" style="padding:6px 12px;font-size:12px">Sell all</button><button type="button" class="btn ghost" id="bDonateAll" style="padding:6px 12px;font-size:12px">Donate all</button><span class="dconf" id="donateConfirm" hidden></span></div></div>
+          <div class="secth"><h3>Bag</h3><div class="legend"><span><i class="lg-new">NEW</i>New since you last looked</span><span><svg viewBox="0 0 10 10" width="14" height="14" style="background:#1f5c35;border-radius:50%;padding:2px"><path d="M5 1.5 L8.6 6 H6.2 V8.8 H3.8 V6 H1.4 Z" fill="#7ef0a0"/></svg>Upgrade: worth more Drip than what you have on</span></div><div class="row" style="gap:10px"><span class="muted" id="clBagCount" style="font-size:12px"></span><button type="button" class="btn ghost" id="bSellAll" style="padding:6px 12px;font-size:12px">Sell all</button><button type="button" class="btn ghost" id="bDonateAll" style="padding:6px 12px;font-size:12px">Donate all</button><span class="dconf" id="donateConfirm" hidden></span></div></div>
         <div class="row" style="gap:10px" hidden><span class="muted" style="font-size:11px;letter-spacing:.16em;text-transform:uppercase">Auto-sell</span><div class="seg" id="segSell2"></div><span class="row sellto" style="gap:8px"><span class="muted" style="font-size:11px;letter-spacing:.16em;text-transform:uppercase">Into</span><span class="seg" id="segSellTo2"></span></span></div>
         <p class="note" id="sellNote2" style="margin-top:-6px"></p>
         <div class="bag" id="clBag"></div>
@@ -871,7 +870,7 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
       <div class="row"><button class="btn" id="bResume" type="button" data-padfirst>Resume</button><button class="btn ghost" id="bSettings2" type="button">Settings</button><button class="btn ghost" id="bFire" type="button">Firing: Auto</button><button class="btn ghost" id="bMute" type="button">Sound: on</button><button class="btn ghost" id="bQuit" type="button">Quit run</button></div></div>
     <p class="note" id="pauseDiff"></p>
     <div class="controls" id="controlsTxt2"></div>
-    <div class="row"><button class="btn ghost" id="bLegend2" type="button">Enemy legend</button><button class="btn ghost" id="bAch2" type="button">Achievements</button></div>
+    <div class="row"><button class="btn ghost" id="bLegend2" type="button">Enemy legend</button><button class="btn ghost" id="bAch2" type="button">Achievements</button><button class="btn ghost" id="bLookbook" type="button">Lookbook</button></div>
   </div>
 </div>
 
@@ -1037,7 +1036,7 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.
 
 // ---------- version & save safety ----------
 // BUILD format: YYYY.MM.DD.N (the day of the update, then that day's update number). Bump it on every published change.
-const BUILD='2026.10.24.9';
+const BUILD='2026.10.24.11';
 // After "Update now" the page loads as ?dcv=<build> to skip stale caches; tidy that off the address bar.
 try{const u=new URL(location.href);if(u.searchParams.has('dcv')){u.searchParams.delete('dcv');history.replaceState(history.state,'',u.toString());}}catch(e){}
 // SAVE_VER only goes up when the shape of saved data changes. Each step gets a MIGRATIONS entry that upgrades old data in place.
@@ -1084,6 +1083,10 @@ const BASE_PAL={top:'#4b5a3a',trim:'#8c9a6a',bot:'#3c4830',kick:'#26241f'};
 // The Emperor: the hidden 7th style. It has no clothing of its own: in an Emperor run, every empty slot is "New Clothes".
 // It is kept out of SK on purpose, so loot, the Lookbook, rivals and collection rewards still only use the six clothing styles.
 const EMP='emperor';
+// Emperor only: landing hits on a boss, rival, Floor Manager or the Creative Director builds Runway rank (n every `every` seconds of hitting).
+const EMP_BOSS_RANK={every:0.5,n:2};
+// Hype Train: landing hits on a boss, rival, Floor Manager or the Creative Director keeps Hype from draining and adds 1 stack every `every` seconds of hitting, up to `cap` of max Hype (kills fill the rest).
+const HYPE_BOSS={every:0.75,cap:0.5};
 STYLES.emperor={name:'The Emperor',dmg:'Nerve damage',c:'#ffd76a',pal:{top:'#e9d9a8',trim:'#fff3c4',bot:'#cdbb88',kick:'#8a7440'},blurb:'Starts with nothing on. Every empty slot gives Drip that grows with your Runway rank, but you take more damage and get no HP from it.',hidden:true};
 const RAR=[{n:'Thrifted',c:'#b5aec0'},{n:'Fresh',c:'#6fe08a'},{n:'Clean',c:'#5cb8ff'},{n:'Hard',c:'#b77bff'},{n:'Iconic',c:'#ffc94a'},{n:'Grail',c:'#ff4fa3'}];
 const NAMES={
@@ -1289,7 +1292,10 @@ function computeStats(p){
   return s;
 }
 const baseDmg=p=>WEAPONS[p.weapon.kind].dmg*p.weapon.mult*p.s.dmg;
-function weaponDps(w,s){const d=WEAPONS[w.kind]||WEAPONS.blaster;let m=1;for(const a of w.aff){if(a.k==='dmg')m*=1+a.v/100;if(a.k==='rate')m*=1+a.v/100;}return d.dmg*w.mult*d.count*d.rate*(d.boomer?2:1)*s.dmg*s.rate*m*(1+s.crit*(s.critMult-1));}
+function weaponDps(w,s){const d=WEAPONS[w.kind]||WEAPONS.blaster;return d.dmg*w.mult*d.count*d.rate*(d.boomer?2:1)*s.dmg*s.rate*(1+s.crit*(s.critMult-1));} // weapon bonuses are already inside s.dmg/s.rate (computeStats), so they aren't multiplied in again here
+// Behind the scenes, "power" = damage per second x toughness. Players never see it: it's turned into Drip-worth (dripWorth) so Drip stays the one word for power.
+function toughness(s){return Math.sqrt(Math.max(1,(s.maxHp+s.regen*20)/(s.dmgTaken||1))/100);}
+function powerOf(w,s){return w?weaponDps(w,s)*toughness(s):0;}
 
 // ---------- audio ----------
 let AC=null,muted=store.get('dripcmd.muted',false);const lastS={};
@@ -1482,6 +1488,8 @@ $('#menuVer').textContent=VER_TXT;
 // ---------- changelog (click the version number) ----------
 // Newest first. Keep entries short: half-sentence bullets.
 const CHANGELOG=[
+  {v:'2026.10.24.11',d:'Oct 24',items:['Hype Train: landing hits on bosses, rivals, Floor Managers and the Creative Director keeps Hype from draining and adds 1 stack every 0.75s, up to half your max Hype (kills fill the rest)','Emperor: landing hits on bosses, rivals, Floor Managers and the Creative Director adds 2 Runway rank every 0.5s, so New Clothes keep their Drip in long fights']},
+  {v:'2026.10.24.10',d:'Oct 24',items:['One upgrade rule for clothes and guns: ▲ now means the piece is "worth more Drip" than what you have on','Pickups say "▲ worth +40 Drip"; comparisons lead with Drip-worth (like wearing that much more Drip)','Weapon DPS no longer counts a weapon\'s own damage and fire-rate bonuses twice','Closet: Lookbook count line and button removed; the Lookbook is now in the pause menu, next to Achievements','Comparisons show one Drip line: Drip-worth, then where it comes from (Drip 33 → 100 (+67), bonuses +37)']},
   {v:'2026.10.24.9',d:'Oct 24',items:['Release notes filled in for every version (2026.10.21.6–.9 and 2026.10.24.7 were missing)']},
   {v:'2026.10.24.8',d:'Oct 24',items:['Between-floors screen now updates your unspent Style Points after you spend them']},
   {v:'2026.10.24.7',d:'Oct 24',items:['Measuring Tape can hit the Creative Director: reach is measured from the edge of the boss, not its centre','While the Creative Director is awake the tape reaches twice as far (130 → 260 px); other floors unchanged']},
@@ -2585,7 +2593,7 @@ function burst(x,y,c,n,spd){for(let i=0;i<n;i++){if(G.particles.length>PCAP())br
 function toast(html,c){const el=document.createElement('div');el.className='toast';el.style.setProperty('--tc',c||'#ffc94a');el.innerHTML=html;const box=$('#toasts');box.appendChild(el);while(box.children.length>4)box.firstChild.remove();setTimeout(()=>el.remove(),3600);}
 
 // ---------- combat ----------
-function hurtEnemy(e,d,crit,c){if(e.dead)return;if(e.slowT>0&&G.p.s.slowVuln)d*=1+G.p.s.slowVuln;if(e.dormant)wake(e);if(e.awkT&&e.awkT>G.time)d*=1.4;if(!G.bigHit||d>G.bigHit.d)G.bigHit={d,name:enemyName(e),floor:G.floor};e.hp-=d;e.aggro=true;e.flash=0.08;if(isBoss(e)||e.type==='manager')bossHitFx(e,crit,c);if(V.dmgNums)addText(e.x,e.y-e.r*2.2,Math.round(d),crit?'#ffc94a':c||'#fff',crit);sfx('hit');if(e.hp<=0)killEnemy(e);}
+function hurtEnemy(e,d,crit,c){if(e.dead)return;if(e.slowT>0&&G.p.s.slowVuln)d*=1+G.p.s.slowVuln;if(e.dormant)wake(e);if(e.awkT&&e.awkT>G.time)d*=1.4;if(!G.bigHit||d>G.bigHit.d)G.bigHit={d,name:enemyName(e),floor:G.floor};e.hp-=d;e.aggro=true;e.flash=0.08;if(isBoss(e)||e.type==='manager'){bossHitFx(e,crit,c);const p=G.p;if(p.cls===EMP&&G.time-(p.empHitT??-9)>=EMP_BOSS_RANK.every){p.empHitT=G.time;addRank(EMP_BOSS_RANK.n);}if(p.s.hypePer>0){p.hypeT=Math.max(p.hypeT,2.6);const hc=p.s.hypeMax*HYPE_BOSS.cap;if(p.hype<hc&&G.time-(p.hypeHitT??-9)>=HYPE_BOSS.every){p.hypeHitT=G.time;p.hype=Math.min(hc,p.hype+1);}}}if(V.dmgNums)addText(e.x,e.y-e.r*2.2,Math.round(d),crit?'#ffc94a':c||'#fff',crit);sfx('hit');if(e.hp<=0)killEnemy(e);}
 function wake(e){e.dormant=false;e.aggro=true;addText(e.x,e.y-30,'KNOCKOFF!','#ff5a5a',true);}
 function explode(x,y,r,d,exclude,c){G.rings.push({x,y,r,life:0.28,max:0.28,c});sfx('boom');for(const e of G.enemies){if(e.dead||e===exclude)continue;if(e.big?inBody(e,x,y,r):Math.hypot(e.x-x,e.y-y)<r+e.r)hurtEnemy(e,d,false,c);}}
 function chainFrom(from,d,n,stun){let cur=from;const hit=new Set([from]);for(let i=0;i<n;i++){let best=null,bd=175;for(const e of G.enemies){if(e.dead||hit.has(e)||e.dormant)continue;const dd=Math.hypot(e.x-cur.x,e.y-cur.y);if(dd<bd){bd=dd;best=e;}}if(!best)break;G.bolts.push({x1:cur.x,y1:cur.y-cur.r,x2:best.x,y2:best.y-best.r,life:0.16});hit.add(best);hurtEnemy(best,d,false,'#5ff0ff');if(stun)glitch(best);cur=best;}if(n>0)sfx('zap');}
@@ -2843,7 +2851,7 @@ function update(dt){
       const sub=it.slot==='weapon'?'Weapon':`${stN(it.style)} ${SLOT_NAME[it.slot]} · +${it.drip} Drip`;
       {const S=setOf(it);if(S)setTimeout(()=>toast(`<b style="color:${SET_C}">◆ SET PIECE: ${esc(S.n)}.</b> ${S.parts.map(x=>x[1]).join(', ')}. 2 worn: ${esc(S.d2)}. All 3: ${esc(S.d3)}.`,SET_C),450);}
       if(it.sp)setTimeout(()=>toast(`<b style="color:#ff4fa3">★ STATEMENT PIECE: ${esc(STMT[it.sp].n)}.</b> ${esc(STMT[it.sp].d)} ${auto?'You are wearing it.':'Wear it to use it (Closet, C).'}`,'#ff4fa3'),250);
-      toast(`${isNew?'<b style="color:#7be0ff">NEW PIECE</b> ':''}<b style="color:${RAR[it.rarity].c}">${RAR[it.rarity].n} ${esc(it.name)}</b> <span class="muted">${sub}${auto?' · equipped':''}</span>${!auto&&upg?` <b style="color:#7ef0a0">▲ ${it.slot==='weapon'?'Upgrade':'Drip upgrade'}</b>`:''}`,RAR[it.rarity].c);}
+      toast(`${isNew?'<b style="color:#7be0ff">NEW PIECE</b> ':''}<b style="color:${RAR[it.rarity].c}">${RAR[it.rarity].n} ${esc(it.name)}</b> <span class="muted">${sub}${auto?' · equipped':''}</span>${!auto&&upg?` <b style="color:#7ef0a0">▲ worth ${dwTxt(dripWorth(it))}</b>`:''}`,RAR[it.rarity].c);}
     else if(k.type==='latte'){if(p.hp>=s.maxHp||G.dress==='nolatte')continue;k.dead=true;p.hp=Math.min(s.maxHp,p.hp+s.maxHp*0.25);sfx('pick');addText(p.x,p.y-40,'+HP','#7ef0a0',true);toast('Iced oat latte. <b>+25% HP</b>','#7ef0a0');}
     else if(k.type==='chest'){k.dead=true;sfx('pick');const n=(Math.random()<0.35?2:1)+(G.dress==='mono'?1:0);for(let i=0;i<n;i++)dropItem(k.x+rand(-26,26),k.y+rand(-20,20),makeLoot(G.floor,1));burst(k.x,k.y,'#ffc94a',20,160);addText(k.x,k.y-24,'WARDROBE CRATE','#ffc94a',true);}
   }
@@ -3159,8 +3167,8 @@ $('#bCloseLegend').addEventListener('click',closeLegend);
 $('#bLegend').addEventListener('click',()=>{initAudio();openLegend();});$('#bLegend2').addEventListener('click',openLegend);
 let lbFrom='menu',lbStyle='goth';const lbCw={};
 function cwList(style,slot,base){return slot==='acc'?METALS:(base==='Milkmaid Braids'?HAIRNAT:(slot==='head'&&HAIR_BASES.includes(base)?HAIRDYE:COLORWAYS[style]));}
-function openLookbook(){if(!['menu','closet'].includes(state))return;lbFrom=state;state='lookbook';showOnly('#lookbook');renderLookbook();}
-function closeLookbook(){if(state!=='lookbook')return;state=lbFrom;showOnly(lbFrom==='menu'?'#menu':'#closet');if(lbFrom==='closet')renderCloset();}
+function openLookbook(){if(!['menu','closet','paused'].includes(state))return;lbFrom=state;state='lookbook';showOnly('#lookbook');renderLookbook();}
+function closeLookbook(){if(state!=='lookbook')return;state=lbFrom;showOnly(lbFrom==='menu'?'#menu':lbFrom==='paused'?'#pause':'#closet');if(lbFrom==='closet')renderCloset();}
 function renderLookbook(){const found=new Set(store.get('dripcmd.found',[]));const tot=TOTAL_PIECES();
   const fc=found.size;$('#lbMiles').innerHTML=LBM.map(m=>{const at=lbAt(m),got=fc>=at;return `<div class="mile${got?' got':''}"><b>${got?'✓ ':''}${at}</b><span>${esc(m.t)}</span><small>${esc(m.d)}</small></div>`;}).join('');
   $('#lbCount').textContent=found.size;$('#lbOf').textContent=`of ${tot} pieces found`;$('#lbFill').style.width=(found.size/tot*100)+'%';
@@ -3204,8 +3212,14 @@ function setSell(v){settings.sell=clamp(+v,-1,2);store.set('dripcmd.autosell',se
 let sel=null; // {from:'bag'|'slot', id, slot}
 const stN=st=>STYLES[st]?`<span class="stn" style="color:${STYLES[st].c}">${STYLES[st].name}</span>`:'';
 function metaLine(it){return it.slot==='weapon'?`${RAR[it.rarity].n} · ×${it.mult} power`:`${RAR[it.rarity].n} · ${stN(it.style)} · ${it.drip} Drip`;}
-function isUpgrade(it){if(!G||!it)return false;const p=G.p,ns=statsWith(it.slot,it);
-  if(it.slot==='weapon')return weaponDps(it,ns)>weaponDps(p.weapon,p.s)*1.005;return ns.drip>p.s.drip||ns.dmg>p.s.dmg*1.005;}
+function powerGain(it){if(!G||!it)return 0;const p=G.p,ns=statsWith(it.slot,it),a=powerOf(p.weapon,p.s),b=powerOf(it.slot==='weapon'?it:p.weapon,ns);return a>0?b/a-1:0;}
+// Drip-worth: how much extra Drip you'd need to wear to get the same boost. Extra Drip x scales damage by (1 + x/(dripK + your Drip)) and adds hpPerDrip x max HP,
+// so we solve for the x that matches the swap's power gain. A plain piece (no bonuses) then comes out at exactly its real Drip change.
+function dripWorth(it){if(!G||!it)return 0;const p=G.p,s=p.s,g=powerGain(it),D=BAL.dripK+s.drip,E=Math.max(1,s.maxHp+s.regen*20),h=BAL.hpPerDrip*(p.minimal?0.5:1);
+  const f=x=>(1+x/D)*Math.sqrt(Math.max(1e-6,1+h*x/E));let lo=-D*0.999,hi=D*(Math.max(0,g)+1)+10;for(let i=0;i<60;i++){const m=(lo+hi)/2;if(f(m)<1+g)lo=m;else hi=m;}
+  const x=(lo+hi)/2,dd=it.slot==='weapon'?0:statsWith(it.slot,it).drip-s.drip;return Math.abs(x-dd)<1.5?dd:Math.round(x);}
+function isUpgrade(it){return powerGain(it)>0.005&&dripWorth(it)>=1;}
+const dwTxt=n=>`${n>0?'+':n<0?'−':'±'}${Math.abs(n)} Drip`;
 function sellValue(it){return Math.max(1,Math.round(shopP(G?G.floor:1)*(0.12+0.12*it.rarity)));}
 function statsWith(slot,item){const p=G.p;const c={gear:{...p.gear},weapon:p.weapon,talents:p.talents,level:p.level,mono:p.mono,minimal:p.minimal,emperor:p.emperor,cls:p.cls,rank:p.rank,floor:p.floor||G.floor};if(slot==='weapon')c.weapon=item;else c.gear[slot]=item;return computeStats(c);}
 function drawPreview(){const c=$('#clPrev'),g=c.getContext('2d');g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,c.width,c.height);const p=G.p;
@@ -3241,10 +3255,10 @@ function renderCloset(){
   $('#clBars').innerHTML=`<p class="fitnext">${fitNext(s)}</p>`+setsHtml(p)+BK.map(k=>`<div class="sbar" style="--c:${STYLES[k].c}" title="${s.cnt[k]} ${STYLES[k].name} piece${s.cnt[k]===1?'':'s'} worn · ${s.sd[k]} ${STYLES[k].name} Drip powers its talents"><span style="color:${STYLES[k].c};font-weight:700">${STYLES[k].name}</span><span class="pips">${'●'.repeat(s.cnt[k])}${'○'.repeat(5-s.cnt[k])}</span><span class="t"><i style="width:${s.sd[k]/maxSd*100}%"></i></span><span class="v">${s.sd[k]}</span></div>`).join('');
   $('#clSlots').innerHTML=[...SLOTS,'weapon'].map(sl=>{const it=sl==='weapon'?p.weapon:p.gear[sl];const on=sel&&sel.from==='slot'&&sel.slot===sl;
     return `<button type="button" class="slot${it&&setOf(it)?' set':''}" data-slot="${sl}" aria-pressed="${on}"><span class="sl">${SLOT_NAME[sl]}</span>${it?`<span class="sn" style="color:${RAR[it.rarity].c}">${it.sp?'<span class="spstar">★</span>':''}${esc(it.name)}</span><span class="sm">${metaLine(it)}</span>${setTag(it)}`:(p.emperor&&sl!=='weapon'?`<span class="sn empty" style="color:#ffd76a">♛ New Clothes</span><span class="sm">Invisible · +${s.newClothes} Drip at rank ${RANKS[s.rankI].l}</span>`:`<span class="sn empty">Standard issue</span><span class="sm">${p.keepOff&&p.keepOff[sl]?'Kept empty · drops go to bag':'Nothing equipped'}</span>`)}</button>`;}).join('');
-  $('#clBagCount').textContent=`${p.bag.length} / ${BAG}`;{const dv=p.bag.filter(it=>!it.locked);$('#bDonateAll').hidden=!dv.length||!$('#donateConfirm').hidden;$('#bDonateAll').textContent=dv.length?`Donate all (${donateTxt(dv)})${dv.length<p.bag.length?' · skips 🔒':''}`:'Donate all';$('#bSellAll').hidden=$('#bDonateAll').hidden;$('#bSellAll').textContent=dv.length?`Sell all (+$${dv.reduce((a,it)=>a+sellValue(it),0)})${dv.length<p.bag.length?' · skips 🔒':''}`:'Sell all';}$('#clFound').textContent=`Lookbook: ${foundCount()} of ${TOTAL_PIECES()} pieces found. Pieces also drop in up to 10 colorways, and tops and bottoms in ${Object.keys(MODS).length} wear effects.`;
+  $('#clBagCount').textContent=`${p.bag.length} / ${BAG}`;{const dv=p.bag.filter(it=>!it.locked);$('#bDonateAll').hidden=!dv.length||!$('#donateConfirm').hidden;$('#bDonateAll').textContent=dv.length?`Donate all (${donateTxt(dv)})${dv.length<p.bag.length?' · skips 🔒':''}`:'Donate all';$('#bSellAll').hidden=$('#bDonateAll').hidden;$('#bSellAll').textContent=dv.length?`Sell all (+$${dv.reduce((a,it)=>a+sellValue(it),0)})${dv.length<p.bag.length?' · skips 🔒':''}`:'Sell all';}
   $('#clBag').innerHTML=p.bag.length?p.bag.map(it=>{const on=sel&&sel.from==='bag'&&sel.id===it.id;const sc=it.slot==='weapon'?'#d8d8e0':(it.cw?it.cw.c:STYLES[it.style].c);
     const up=isUpgrade(it);
-    return `<button type="button" class="bi${it.fresh?' fresh':''}${up?' has-upg':''}${it.sp?' stmt':''}${setOf(it)?' set':''}" data-id="${it.id}" aria-pressed="${on}" style="--rc:${RAR[it.rarity].c};--sc:${sc}" title="${up?(it.slot==='weapon'?'Upgrade: more damage per second':'Upgrade: raises your Drip'):''}">${it.fresh?'<span class="newtag">NEW</span>':''}${setTag(it)}${up?'<span class="upg" aria-label="Upgrade"><svg viewBox="0 0 10 10"><path d="M5 1.5 L8.6 6 H6.2 V8.8 H3.8 V6 H1.4 Z" fill="#7ef0a0"/></svg></span>':''}<span class="bn"><span class="bsw"></span>${it.locked?'<span class="lockic" title="Locked">🔒</span>':''}${it.sp?'<span class="spstar">★</span>':''}${esc(it.name)}</span><span class="bm">${it.slot==='weapon'?'Weapon · ×'+it.mult:stN(it.style)+' '+SLOT_NAME[it.slot]+' · '+it.drip+' Drip'}</span></button>`;}).join(''):'<p class="note" style="grid-column:1/-1">Empty. Loot drops from enemies, Wardrobe Crates and Knockoff Mimics.</p>';
+    return `<button type="button" class="bi${it.fresh?' fresh':''}${up?' has-upg':''}${it.sp?' stmt':''}${setOf(it)?' set':''}" data-id="${it.id}" aria-pressed="${on}" style="--rc:${RAR[it.rarity].c};--sc:${sc}" title="${up?`Upgrade: worth ${dwTxt(dripWorth(it))}`:''}">${it.fresh?'<span class="newtag">NEW</span>':''}${setTag(it)}${up?'<span class="upg" aria-label="Upgrade"><svg viewBox="0 0 10 10"><path d="M5 1.5 L8.6 6 H6.2 V8.8 H3.8 V6 H1.4 Z" fill="#7ef0a0"/></svg></span>':''}<span class="bn"><span class="bsw"></span>${it.locked?'<span class="lockic" title="Locked">🔒</span>':''}${it.sp?'<span class="spstar">★</span>':''}${esc(it.name)}</span><span class="bm">${it.slot==='weapon'?'Weapon · ×'+it.mult:stN(it.style)+' '+SLOT_NAME[it.slot]+' · '+it.drip+' Drip'}</span></button>`;}).join(''):'<p class="note" style="grid-column:1/-1">Empty. Loot drops from enemies, Wardrobe Crates and Knockoff Mimics.</p>';
   renderSellSegs();renderDetail();
 }
 function itemCard(it){const sub=it.slot==='weapon'?`${RAR[it.rarity].n} weapon · ×${it.mult} power`:`${RAR[it.rarity].n} · ${stN(it.style)} ${SLOT_NAME[it.slot]} · ${it.drip} Drip`;
@@ -3264,8 +3278,12 @@ function renderDetail(){const p=G.p,el=$('#clDetail');
   showItem={it,slot,trying:sel.from==='bag'};
   let html=itemCard(it);
   if(sel.from==='bag'){const cur=slot==='weapon'?p.weapon:p.gear[slot];const ns=statsWith(slot,it),os=p.s;
-    html+=`<dl class="cmp"><dt>Replaces</dt><dd>${cur?`${setOf(cur)?`<span class="setdia" title="${esc(setOf(cur).n)} set">◆</span> `:''}<span style="color:${RAR[cur.rarity].c}">${esc(cur.name)}</span>${setOf(cur)?` <span class="setnm">${esc(setOf(cur).n)} set</span>`:''}`:'nothing'}</dd>`+
-      (slot==='weapon'?`<dt>Weapon DPS</dt><dd>${diff(weaponDps(p.weapon,os),weaponDps(it,ns),v=>Math.round(v))}</dd>`:`<dt>Drip</dt><dd>${diff(os.drip,ns.drip,v=>v)} ${dripDelta(ns.drip-os.drip)}</dd><dt>Fit</dt><dd>${fitChange(os,ns)}</dd>${sigChange(os,ns)}`)+
+    const pg=powerGain(it),dw=dripWorth(it),dwc=pg>0.005&&dw>=1?'up':pg<-0.005&&dw<=-1?'down':'';
+    // One Drip line: the headline Drip-worth, then where it comes from (real Drip change + whatever the bonuses or gun add).
+    const dd=ns.drip-os.drip,ex=dw-dd,sg=n=>`<span class="${n>0?'up':n<0?'down':''}">${n>0?'+':n<0?'−':'±'}${Math.abs(n)}</span>`;
+    const why=slot==='weapon'?`all from the gun · your Drip stays ${os.drip}`:`Drip ${os.drip} → ${ns.drip} (${sg(dd)})${Math.abs(ex)>=1?`, bonuses ${sg(ex)}`:''}`;
+    html+=`<dl class="cmp"><dt>Drip-worth</dt><dd><b class="${dwc}">${dwc?dwTxt(dw):'about the same'}</b></dd><dd class="sigw" style="color:var(--muted)">${why}</dd><dt>Replaces</dt><dd>${cur?`${setOf(cur)?`<span class="setdia" title="${esc(setOf(cur).n)} set">◆</span> `:''}<span style="color:${RAR[cur.rarity].c}">${esc(cur.name)}</span>${setOf(cur)?` <span class="setnm">${esc(setOf(cur).n)} set</span>`:''}`:'nothing'}</dd>`+
+      (slot==='weapon'?`<dt>Weapon DPS</dt><dd>${diff(weaponDps(p.weapon,os),weaponDps(it,ns),v=>Math.round(v))}</dd>`:`<dt>Fit</dt><dd>${fitChange(os,ns)}</dd>${sigChange(os,ns)}`)+
       `<dt>Damage</dt><dd>${diff(os.dmg,ns.dmg,v=>'×'+v.toFixed(2))}</dd><dt>Max HP</dt><dd>${diff(os.maxHp,ns.maxHp,v=>v)}</dd></dl>`;
     const xp=5+it.rarity*8+Math.round((it.drip||20)/4);
     const lk=!!it.locked;html+=`<div class="row"><button type="button" class="btn" data-act="equip">Equip</button><button type="button" class="btn ghost" data-act="donate" ${lk?'disabled title="Unlock it first"':''}>Donate for ${donateTxt([it])}</button><button type="button" class="btn ghost" data-act="sell" ${lk?'disabled title="Unlock it first"':''}>Sell for $${sellValue(it)}</button><button type="button" class="btn ghost lockb${lk?' on':''}" data-act="lock" aria-pressed="${lk}">${lk?'🔒 Locked':'🔓 Lock'}</button></div>${lk?'<p class="note" style="margin:0">Locked: it can\'t be sold or donated, and Sell all and Donate all skip it.</p>':''}`;}
