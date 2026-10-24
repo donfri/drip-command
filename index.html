@@ -1037,7 +1037,7 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.
 
 // ---------- version & save safety ----------
 // BUILD format: YYYY.MM.DD.N (the day of the update, then that day's update number). Bump it on every published change.
-const BUILD='2026.10.24.6';
+const BUILD='2026.10.24.7';
 // After "Update now" the page loads as ?dcv=<build> to skip stale caches; tidy that off the address bar.
 try{const u=new URL(location.href);if(u.searchParams.has('dcv')){u.searchParams.delete('dcv');history.replaceState(history.state,'',u.toString());}}catch(e){}
 // SAVE_VER only goes up when the shape of saved data changes. Each step gets a MIGRATIONS entry that upgrades old data in place.
@@ -1123,7 +1123,7 @@ const WEAPONS={
   rail:{name:'Rail Pistol',dmg:34,rate:1.4,speed:980,spread:0,count:1,pierce:2,size:3},
   glitter:{name:'Glitter Launcher',dmg:24,rate:1.2,speed:420,spread:0.05,count:1,pierce:0,size:6,boom:70},
   torch:{name:'Hairspray Torch',dmg:3,rate:13,speed:340,spread:0.2,count:1,pierce:2,size:5,life:0.34,flame:true,note:'short-range flame that burns through 2 enemies'},
-  tape:{name:'Measuring Tape',dmg:25,rate:2.2,speed:0,spread:0,count:1,pierce:0,size:4,tape:{r:130,arc:1.9,dur:0.16},note:'swings in a wide arc in front of you (about 130 px), hitting every enemy it sweeps through once'},
+  tape:{name:'Measuring Tape',dmg:25,rate:2.2,speed:0,spread:0,count:1,pierce:0,size:4,tape:{r:130,arc:1.9,dur:0.16,finale:2},note:'swings in a wide arc in front of you (about 130 px), hitting every enemy it sweeps through once'},
   sewing:{name:'Sewing Machine Gun',dmg:3.5,rate:12,speed:640,spread:0.035,count:1,pierce:0,size:2.6,stitch:0.2,rapid:true,note:'stitches enemies, slowing them by 20%'},
   heel:{name:'Heel Boomerang',dmg:14,rate:1.6,speed:520,spread:0,count:1,pierce:99,size:6,life:3,boomer:true,note:'flies out and comes back, hitting on both passes'},
 };
@@ -2644,7 +2644,8 @@ function refreshStats(){const p=G.p,old=p.s?p.s.maxHp:100,oldSets=p.s?p.s.sets:{
   if(p.s.shieldCd>0&&!p.shieldUp&&p.shieldT<=0)p.shieldT=p.s.shieldCd;if(p.s.shieldCd<=0)p.shieldUp=false;p.peakDrip=Math.max(p.peakDrip,p.s.drip);}
 function fire(ang){const p=G.p,s=p.s,Wd=WEAPONS[p.weapon.kind]||WEAPONS.blaster;const hb=1+p.hype*s.hypePer*(Wd.rapid?0.5:1);const base=Wd.dmg*p.weapon.mult*s.dmg*hb*(p.veilT>0?1.5:1)*(1+0.02*rankIdx(p.rank));
   if(Wd.tape){const T=Wd.tape,crit=Math.random()<s.crit,dir=(p.tapeDir=-(p.tapeDir||1));if(!G.sweeps)G.sweeps=[];
-    G.sweeps.push({a:ang,a0:ang-dir*T.arc/2,a1:ang+dir*T.arc/2,t:0,dur:T.dur,r:T.r*Math.sqrt(s.size),dmg:base*(crit?s.critMult:1),crit,hit:new Set(),c:s.eternal?'#b784ff':s.topStyle?STYLES[s.topStyle].c:'#ffe08a'});
+    const fin=G.boss&&G.boss.big&&G.boss.awake&&!G.boss.dead; // during the finale the tape whips out to double length (Oct 24, 2026)
+    G.sweeps.push({a:ang,a0:ang-dir*T.arc/2,a1:ang+dir*T.arc/2,t:0,dur:T.dur,r:T.r*Math.sqrt(s.size)*(fin?T.finale:1),dmg:base*(crit?s.critMult:1),crit,hit:new Set(),c:s.eternal?'#b784ff':s.topStyle?STYLES[s.topStyle].c:'#ffe08a'});
     p.fireCd=1/(Wd.rate*s.rate*hb*(s.sp.has('strut')&&p.moving?1.3:1));sfx('dash');return;}
   const angs=[];if(Wd.count>1){for(let i=0;i<Wd.count;i++)angs.push(ang+(i/(Wd.count-1)-0.5)*Wd.spread*2+rand(-0.04,0.04));}else angs.push(ang+rand(-Wd.spread,Wd.spread));
   const nMain=angs.length;if(s.spread3&&p.hype>=s.hypeMax-0.01){const extra=[];for(const a of angs){extra.push(a-0.22,a+0.22);}angs.push(...extra);}
@@ -2686,8 +2687,9 @@ function updSweeps(dt){if(!G.sweeps||!G.sweeps.length)return;const p=G.p;
   for(const w of G.sweeps){const prev=Math.min(1,w.t/w.dur);w.t+=dt;const f=Math.min(1,w.t/w.dur),cx=p.x,cy=p.y-8;
     const lo=Math.min(w.a0+(w.a1-w.a0)*0,w.a0+(w.a1-w.a0)*f),hi=Math.max(w.a0,w.a0+(w.a1-w.a0)*f);
     for(const e of G.enemies){if(e.dead||w.hit.has(e))continue;const ex=e.x,ey=e.big?e.y:e.y-e.r*0.5,d=Math.hypot(ex-cx,ey-cy);
-      const reach=w.r+(e.big?e.big.ry:e.r);if(d>reach)continue;let da=Math.atan2(ey-cy,ex-cx)-w.a;while(da>Math.PI)da-=Math.PI*2;while(da<-Math.PI)da+=Math.PI*2;
-      const ang=w.a+da,pad=d>0?Math.asin(Math.min(1,(e.big?e.big.rx*0.5:e.r)/Math.max(d,1))):Math.PI;if(ang+pad<lo||ang-pad>hi)continue;
+      // the Creative Director's reach is measured from the edge of its body on your side (was from its centre plus its height, which left only ~30 px at its sides)
+      const th=Math.atan2(ey-cy,ex-cx),re=e.big?1/Math.hypot(Math.cos(th)/e.big.rx,Math.sin(th)/e.big.ry):e.r;if(d>w.r+re)continue;let da=th-w.a;while(da>Math.PI)da-=Math.PI*2;while(da<-Math.PI)da+=Math.PI*2;
+      const ang=w.a+da,pad=d>0?Math.asin(Math.min(1,(e.big?re*0.6:e.r)/Math.max(d,1))):Math.PI;if(ang+pad<lo||ang-pad>hi)continue;
       const ux=(ex-cx)/(d||1),uy=(ey-cy)/(d||1);onHit({x:ex,y:ey,vx:ux*400,vy:uy*400,dmg:w.dmg,crit:w.crit,hit:w.hit,pierce:99,ric:0,boom:0,c:w.c,kind:'fan'},e);}
     }
   G.sweeps=G.sweeps.filter(w=>w.t<w.dur+0.12);}
