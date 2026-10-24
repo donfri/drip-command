@@ -839,7 +839,7 @@ kbd{font-family:var(--ui);font-size:11px;border:1px solid var(--line);border-bot
         <div class="slots" id="clSlots"></div>
         <div class="detail" id="clDetail"></div>
         <div class="row" style="justify-content:space-between"><p class="note" id="clFound" style="margin:0"></p><button type="button" class="btn ghost" id="bLookbook" style="padding:6px 12px;font-size:12px">View Lookbook</button></div>
-        <div class="secth"><h3>Bag</h3><div class="legend"><span><i class="lg-new">NEW</i>New since you last looked</span><span><svg viewBox="0 0 10 10" width="14" height="14" style="background:#1f5c35;border-radius:50%;padding:2px"><path d="M5 1.5 L8.6 6 H6.2 V8.8 H3.8 V6 H1.4 Z" fill="#7ef0a0"/></svg>Upgrade: more Drip (weapons: more damage)</span></div><div class="row" style="gap:10px"><span class="muted" id="clBagCount" style="font-size:12px"></span><button type="button" class="btn ghost" id="bDonateAll" style="padding:6px 12px;font-size:12px">Donate all</button><span class="dconf" id="donateConfirm" hidden></span></div></div>
+        <div class="secth"><h3>Bag</h3><div class="legend"><span><i class="lg-new">NEW</i>New since you last looked</span><span><svg viewBox="0 0 10 10" width="14" height="14" style="background:#1f5c35;border-radius:50%;padding:2px"><path d="M5 1.5 L8.6 6 H6.2 V8.8 H3.8 V6 H1.4 Z" fill="#7ef0a0"/></svg>Upgrade: more Drip (weapons: more damage)</span></div><div class="row" style="gap:10px"><span class="muted" id="clBagCount" style="font-size:12px"></span><button type="button" class="btn ghost" id="bSellAll" style="padding:6px 12px;font-size:12px">Sell all</button><button type="button" class="btn ghost" id="bDonateAll" style="padding:6px 12px;font-size:12px">Donate all</button><span class="dconf" id="donateConfirm" hidden></span></div></div>
         <div class="row" style="gap:10px" hidden><span class="muted" style="font-size:11px;letter-spacing:.16em;text-transform:uppercase">Auto-sell</span><div class="seg" id="segSell2"></div><span class="row sellto" style="gap:8px"><span class="muted" style="font-size:11px;letter-spacing:.16em;text-transform:uppercase">Into</span><span class="seg" id="segSellTo2"></span></span></div>
         <p class="note" id="sellNote2" style="margin-top:-6px"></p>
         <div class="bag" id="clBag"></div>
@@ -1006,14 +1006,24 @@ const TOUCH = matchMedia('(pointer:coarse)').matches;document.documentElement.cl
 [['apple-mobile-web-app-capable','yes'],['mobile-web-app-capable','yes'],['apple-mobile-web-app-status-bar-style','black-translucent'],['apple-mobile-web-app-title','Drip Command'],['theme-color','#0c0911']].forEach(([n,c])=>{if(!document.querySelector(`meta[name="${n}"]`)){const m=document.createElement('meta');m.name=n;m.content=c;document.head.appendChild(m);}});
 const IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const STANDALONE=matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone===true;
-const FS_API=!!(document.fullscreenEnabled&&document.documentElement.requestFullscreen);
+const FS_EL=()=>document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement||null;
+const FS_REQ=(el,o)=>{const f=el.requestFullscreen||el.webkitRequestFullscreen||el.mozRequestFullScreen;if(!f)return null;try{return f.call(el,o);}catch(e){try{return f.call(el);}catch(e2){return Promise.reject(e2);}}};
+const FS_EXIT=()=>{const f=document.exitFullscreen||document.webkitExitFullscreen||document.mozCancelFullScreen;if(f)try{return f.call(document);}catch(e){}};
+const FS_API=!!((document.fullscreenEnabled||document.webkitFullscreenEnabled||document.mozFullScreenEnabled)&&(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen||document.documentElement.mozRequestFullScreen));
 const A2HS_MSG='On iPhone, Safari can\'t hide its bars. Tap <b>Share</b>, then <b>Add to Home Screen</b>, and open the game from the new icon to play full screen.';
 // Home-screen icon: drawn once at load so "Add to Home Screen" gets a proper Drip Command icon.
 try{const ic=document.createElement('canvas');ic.width=ic.height=180;const g=ic.getContext('2d');g.fillStyle='#0c0911';g.fillRect(0,0,180,180);const gr=g.createLinearGradient(0,40,0,140);gr.addColorStop(0,'#fff6d6');gr.addColorStop(.5,'#ffc94a');gr.addColorStop(1,'#d98b12');g.fillStyle=gr;g.font='900 92px "Arial Black",Impact,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('D',66,92);g.fillStyle='#ff4fa3';g.fillText('C',118,100);const l=document.createElement('link');l.rel='apple-touch-icon';l.href=ic.toDataURL('image/png');document.head.appendChild(l);}catch(e){}
-function autoFullscreen(){if(!TOUCH||STANDALONE||!FS_API||document.fullscreenElement)return;try{const r=document.documentElement.requestFullscreen({navigationUI:'hide'});if(r&&r.catch)r.catch(()=>{});}catch(e){}}
+function autoFullscreen(){if(!TOUCH||STANDALONE||!FS_API||FS_EL())return;try{const r=FS_REQ(document.documentElement,{navigationUI:'hide'});if(r&&r.catch)r.catch(()=>{});}catch(e){}}
 const V=Object.assign({master:0.8,music:0.55,sfx:0.8,shake:1,particles:'high',dmgNums:true,res:'high',cam:'normal',scan:false,fps:false,charfx:true},(()=>{try{return JSON.parse(localStorage.getItem('dripcmd.video'))||{};}catch(e){return {};}})());
-function resize(){DPR=V.res==='low'?1:Math.min(2,window.devicePixelRatio||1);W=window.innerWidth;H=window.innerHeight;cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);ZOOM=Math.max(W<600?(TOUCH&&H>W?0.72:0.8):0.62,Math.min(1.25*Math.max(1,Math.min(W/1920,H/1080)),Math.min(W/960,H/680)))*({close:1.2,normal:1,wide:0.82}[V.cam]||1);}
+function resize(){DPR=V.res==='low'?1:Math.min(2,window.devicePixelRatio||1);const vw=cv.clientWidth||document.documentElement.clientWidth||window.innerWidth,vh=cv.clientHeight||document.documentElement.clientHeight||window.innerHeight;W=vw;H=vh;cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);ZOOM=Math.max(W<600?(TOUCH&&H>W?0.72:0.8):0.62,Math.min(1.25*Math.max(1,Math.min(W/1920,H/1080)),Math.min(W/960,H/680)))*({close:1.2,normal:1,wide:0.82}[V.cam]||1);}
 addEventListener('resize',resize);resize();
+// Firefox on Android (and some other phone browsers) report the new screen size late after a rotation,
+// entering/leaving fullscreen or the address bar sliding away, so re-measure a few times as things settle.
+let settleT=[];function settleResize(){settleT.forEach(clearTimeout);resize();requestAnimationFrame(resize);settleT=[120,350,700,1200].map(ms=>setTimeout(resize,ms));}
+addEventListener('orientationchange',settleResize);
+try{screen.orientation&&screen.orientation.addEventListener&&screen.orientation.addEventListener('change',settleResize);}catch(e){}
+try{window.visualViewport&&visualViewport.addEventListener('resize',settleResize);}catch(e){}
+let sizeCheckT=0;function sizeCheck(dt){sizeCheckT+=dt;if(sizeCheckT<0.25)return;sizeCheckT=0;const w=cv.clientWidth,h=cv.clientHeight;if(w&&h&&(w!==W||h!==H))resize();}
 
 // ---------- utils ----------
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -1027,7 +1037,7 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.
 
 // ---------- version & save safety ----------
 // BUILD format: YYYY.MM.DD.N (the day of the update, then that day's update number). Bump it on every published change.
-const BUILD='2026.10.21.12';
+const BUILD='2026.10.24.3';
 // After "Update now" the page loads as ?dcv=<build> to skip stale caches; tidy that off the address bar.
 try{const u=new URL(location.href);if(u.searchParams.has('dcv')){u.searchParams.delete('dcv');history.replaceState(history.state,'',u.toString());}}catch(e){}
 // SAVE_VER only goes up when the shape of saved data changes. Each step gets a MIGRATIONS entry that upgrades old data in place.
@@ -1122,7 +1132,7 @@ const TREES={
     {id:'lace',name:'Black Lace',max:3,tier:0,desc:'+6% damage per rank.',fx:(s,r,k)=>{s.dmg*=1+0.06*r*k}},
     {id:'coffin',name:'Velvet Coffin',max:2,tier:0,desc:'Shots pierce 1 more enemy per rank.',fx:(s,r)=>{s.pierce+=r}},
     {id:'moon',name:'Blood Moon',max:3,tier:1,desc:'Heal for 2% of damage dealt per rank.',fx:(s,r,k)=>{s.lifesteal+=0.02*r*k}},
-    {id:'veil',name:'Mourning Veil',max:2,tier:1,desc:'Kills release a shadow nova that hits nearby enemies.',fx:(s,r,k)=>{s.nova+=0.35*r*k}},
+    {id:'veil',name:'Mourning Veil',max:2,tier:1,desc:'Kills release a shadow nova that hits nearby enemies (enemies a nova kills don\'t set off another nova).',fx:(s,r,k)=>{s.nova+=0.35*r*k}},
     {id:'night',name:'Eternal Night',max:1,tier:2,desc:'Signature: +20% damage, +1 pierce, bigger shadow bolts.',fx:(s,r,k)=>{s.dmg*=1+0.2*k;s.pierce+=1;s.size*=1.35;s.eternal=true}},
   ],
   hipster:[
@@ -1141,24 +1151,24 @@ const TREES={
   ],
   y2k:[
     {id:'chrome',name:'Chrome Finish',max:3,tier:0,desc:'+8% damage and +10% shot speed per rank.',fx:(s,r,k)=>{s.dmg*=1+0.08*r*k;s.projSpeed*=1+0.1*r}},
-    {id:'dialup',name:'Dial-Up',max:2,tier:0,desc:'Hits arc lightning to 1 more enemy per rank.',fx:(s,r)=>{s.chain+=r}},
+    {id:'dialup',name:'Dial-Up',max:2,tier:0,desc:'Each shot\'s first hit arcs lightning to 1 more enemy per rank.',fx:(s,r)=>{s.chain+=r}},
     {id:'tips',name:'Frosted Tips',max:2,tier:1,desc:'Shots home in on enemies.',fx:(s,r,k)=>{s.homing+=3*r*k}},
     {id:'clips',name:'Butterfly Shield',max:2,tier:1,desc:'A chrome shield blocks one hit, then recharges (faster per rank).',fx:(s,r,k)=>{s.shieldCd=Math.max(3,(11-3*r)/k)}},
     {id:'bug',name:'Millennium Bug',max:1,tier:2,desc:'Signature: +2 lightning arcs, and arcs glitch enemies in place (once per enemy every 1.5s; bosses are slowed instead).',fx:(s)=>{s.chain+=2;s.chainStun=true}},
   ],
   punk:[
     {id:'pins',name:'Safety Pins',max:3,tier:0,desc:'Shots knock enemies back harder per rank.',fx:(s,r)=>{s.knock+=70*r}},
-    {id:'studs',name:'Studded',max:3,tier:0,desc:'Hits explode for 20% splash damage per rank.',fx:(s,r,k)=>{s.explodeR=Math.max(s.explodeR,42);s.explodeDmg+=0.2*r*k}},
+    {id:'studs',name:'Studded',max:3,tier:0,desc:'Each shot\'s first hit explodes for 20% splash damage per rank.',fx:(s,r,k)=>{s.explodeR=Math.max(s.explodeR,42);s.explodeDmg+=0.2*r*k}},
     {id:'mosh',name:'Mosh Pit',max:2,tier:1,desc:'+10% damage per rank, and +30% more per rank while under half HP.',fx:(s,r,k)=>{s.dmg*=1+0.1*r*k;s.lowHp+=0.3*r*k}},
     {id:'anarchy',name:'Anarchy',max:2,tier:1,desc:'Your dash damages enemies and recharges 20% faster per rank.',fx:(s,r,k)=>{s.dashDmg+=1.5*r*k;s.dashCdMult*=1-0.2*r}},
     {id:'dive',name:'Stage Dive',max:1,tier:2,desc:'Signature: explosions are 50% bigger and hit 40% harder.',fx:(s,r,k)=>{s.explodeR=Math.max(s.explodeR,42)*1.5;s.explodeDmg+=0.4*k}},
   ],
   cottage:[
     {id:'wild',name:'Wildflower',max:3,tier:0,desc:'Hits poison for 20% of damage per second, per rank.',fx:(s,r,k)=>{s.poison+=0.2*r*k}},
-    {id:'sour',name:'Sourdough Starter',max:3,tier:0,desc:'Regenerate 0.6 HP per second per rank.',fx:(s,r,k)=>{s.regen+=0.6*r*k}},
-    {id:'grow',name:'Overgrowth',max:2,tier:1,desc:'Hits slow enemies by 20% per rank.',fx:(s,r)=>{s.slow+=0.2*r}},
-    {id:'linen',name:'Linen Layers',max:2,tier:1,desc:'+25 max HP per rank.',fx:(s,r)=>{s.maxHp+=25*r}},
-    {id:'fairy',name:'Fairy Ring',max:1,tier:2,desc:'Signature: stronger poison, and poisoned enemies spread it when they die.',fx:(s)=>{s.poison+=0.2;s.poisonSpread=true}},
+    {id:'seed',name:'Seed Packet',max:3,tier:0,desc:'Kills can plant a sunflower that shoots nearby enemies for 7 seconds (12% chance, +6% per rank; up to 3 at once). Sunflowers hit 20% harder per extra rank.',fx:(s,r,k)=>{s.garden=Math.max(s.garden,r);s.gardenK=Math.max(s.gardenK,k)}},
+    {id:'grow',name:'Overgrowth',max:2,tier:1,desc:'Hits slow enemies by 20% per rank, and slowed enemies take 5% more damage from you per rank.',fx:(s,r)=>{s.slow+=0.2*r;s.slowVuln+=0.05*r}},
+    {id:'linen',name:'Linen Layers',max:2,tier:1,desc:'+25 max HP and regenerate 0.8 HP per second, per rank.',fx:(s,r,k)=>{s.maxHp+=25*r;s.regen+=0.8*r*k}},
+    {id:'fairy',name:'Fairy Ring',max:1,tier:2,desc:'Signature: stronger poison, poisoned enemies spread it when they die, and your garden holds 1 more sunflower.',fx:(s)=>{s.poison+=0.2;s.poisonSpread=true;s.gardenMax+=1}},
   ],
 };
 TREES.emperor=[
@@ -1249,7 +1259,7 @@ function makeLoot(f,bonus=0){return Math.random()<0.2?makeWeapon(f,bonus):makeGe
 
 // ---------- stats ----------
 function computeStats(p){
-  const s={dmg:1,rate:1,pierce:0,lifesteal:0,crit:0.05,critMult:1.6,ricochet:0,firstHit:0,hypePer:0,hypeMax:10,speed:1,chain:0,homing:0,shieldCd:0,knock:0,explodeR:0,explodeDmg:0,lowHp:0,dashDmg:0,dashCdMult:1,poison:0,regen:0,slow:0,maxHp:100+((p.level||1)-1)*8,projSpeed:1,size:1,nova:0,spread3:false,stunCrit:false,chainStun:false,poisonSpread:false,eternal:false,sp:new Set(),scale:{},sd:{},cnt:{},drip:0,fit:1,fitName:'Standard Issue',topStyle:null,rankI:0,rankHold:0,applause:0,empArmor:0,procession:false,dmgTaken:1,newClothes:0,sets:{}};
+  const s={dmg:1,rate:1,pierce:0,lifesteal:0,crit:0.05,critMult:1.6,ricochet:0,firstHit:0,hypePer:0,hypeMax:10,speed:1,chain:0,homing:0,shieldCd:0,knock:0,explodeR:0,explodeDmg:0,lowHp:0,dashDmg:0,dashCdMult:1,poison:0,regen:0,slow:0,maxHp:100+((p.level||1)-1)*8,projSpeed:1,size:1,nova:0,spread3:false,stunCrit:false,chainStun:false,poisonSpread:false,slowVuln:0,garden:0,gardenK:1,gardenMax:3,eternal:false,sp:new Set(),scale:{},sd:{},cnt:{},drip:0,fit:1,fitName:'Standard Issue',topStyle:null,rankI:0,rankHold:0,applause:0,empArmor:0,procession:false,dmgTaken:1,newClothes:0,sets:{}};
   const skill={};let total=0;
   SK.forEach(k=>{s.sd[k]=0;s.cnt[k]=0;});
   const apply=it=>{for(const a of it.aff){switch(a.k){case 'dmg':s.dmg*=1+a.v/100;break;case 'rate':s.rate*=1+a.v/100;break;case 'crit':s.crit+=a.v/100;break;case 'hp':s.maxHp+=a.v;break;case 'speed':s.speed*=1+a.v/100;break;case 'regen':s.regen+=a.v/10;break;case 'skill':skill[a.st]=(skill[a.st]||0)+1;break;}}};
@@ -1407,8 +1417,8 @@ function cbPost(){const gl=CBG.gl;if(!gl||!V.cb||V.cb==='off')return;const el=CB
   catch(e){CBG.gl=null;CBG.failed=true;el.hidden=true;applyCb();}}
 function applyVideo(){resize();$('#scan').hidden=!V.scan;$('#fps').hidden=!V.fps;applyCb();}
 let fpsAcc=0,fpsN=0;function tickFps(dt){if(!V.fps)return;fpsAcc+=dt;fpsN++;if(fpsAcc>=0.5){$('#fps').textContent=Math.round(fpsN/fpsAcc)+' FPS';fpsAcc=0;fpsN=0;}}
-function toggleFullscreen(){if(!FS_API&&IOS&&!STANDALONE){toast(A2HS_MSG,'#ffc94a');return;}try{if(document.fullscreenElement){document.exitFullscreen();}else{const r=document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();if(r&&r.catch)r.catch(()=>toast("Fullscreen isn't available in this window. It works in the downloaded file or a desktop build.",'#ff7a8a'));else if(!r)toast("Fullscreen isn't available in this window.",'#ff7a8a');}}catch(e){toast("Fullscreen isn't available in this window.",'#ff7a8a');}}
-document.addEventListener('fullscreenchange',()=>{$('#bFull').textContent=document.fullscreenElement?'Exit fullscreen':'Enter fullscreen';setTimeout(resize,50);});
+function toggleFullscreen(){if(!FS_API&&IOS&&!STANDALONE){toast(A2HS_MSG,'#ffc94a');return;}const fail=()=>toast("Fullscreen isn't available in this window. Open the game's own page directly (not inside another site), or use your browser's menu to add it to your home screen.",'#ff7a8a');try{if(FS_EL()){FS_EXIT();}else{const r=FS_REQ(document.documentElement,{navigationUI:'hide'});if(r&&r.catch)r.catch(fail);else if(r===null)fail();}}catch(e){fail();}}
+const onFsChange=()=>{$('#bFull').textContent=FS_EL()?'Exit fullscreen':'Enter fullscreen';settleResize();};['fullscreenchange','webkitfullscreenchange','mozfullscreenchange'].forEach(ev=>document.addEventListener(ev,onFsChange));
 
 // ---------- settings screen ----------
 let settingsFrom='menu';
@@ -1421,7 +1431,7 @@ function syncSettingsUi(){
   segSet('segFire2',settings.auto?'auto':'manual');segSet('segDiff2',settings.diff);
   $('#diffNote').textContent=G?`This run is on ${G.diff.name}. A new difficulty applies to your next run.`:DIFF[settings.diff].hint;
   $('#padStatus').innerHTML=pad.on?'<b style="color:#7be0ff">'+(pad.ps?'PlayStation controller':'Controller')+' connected.</b> D-pad or left stick moves between buttons, '+PB('A')+' selects, '+PB('B')+' goes back.':'No controller detected. Plug one in or connect it over Bluetooth, then press any button.';
-  $('#bFull').textContent=document.fullscreenElement?'Exit fullscreen':'Enter fullscreen';updNowPlaying();if(typeof renderSellSegs==='function')renderSellSegs();renderSaveUi();}
+  $('#bFull').textContent=FS_EL()?'Exit fullscreen':'Enter fullscreen';updNowPlaying();if(typeof renderSellSegs==='function')renderSellSegs();renderSaveUi();}
 [['sMaster','master'],['sMusic','music'],['sSfx','sfx'],['sShake','shake']].forEach(([id,k])=>$('#'+id).addEventListener('input',e=>{V[k]=+e.target.value/100;saveV();applyMix();syncSettingsUi();if(k==='sfx')sfx('pick');}));
 const SEGS={segMute:v=>setMute(v==='on'),segRes:v=>{V.res=v;applyVideo();},segCam:v=>{V.cam=v;applyVideo();},segPart:v=>{V.particles=v;},segDmg:v=>{V.dmgNums=v==='on';},segScan:v=>{V.scan=v==='on';applyVideo();},segCfx:v=>{V.charfx=v==='on';},segFps:v=>{V.fps=v==='on';applyVideo();},segHit:v=>{V.hitbox=v==='on';},segCb:v=>{V.cb=v;applyCb();},
   segFire2:v=>{settings.auto=v==='auto';store.set('dripcmd.auto',settings.auto);},segDiff2:v=>{settings.diff=v;store.set('dripcmd.diff',v);}};
@@ -1472,6 +1482,9 @@ $('#menuVer').textContent=VER_TXT;
 // ---------- changelog (click the version number) ----------
 // Newest first. Keep entries short: half-sentence bullets.
 const CHANGELOG=[
+  {v:'2026.10.24.3',d:'Oct 24',items:['Phone fix: the arena now resizes properly after rotating or going fullscreen (Firefox on Android especially)','Fullscreen button works in more browsers and explains why when it can\'t']},
+  {v:'2026.10.24.2',d:'Oct 24',items:['Cottagecore plants a garden: the new Seed Packet talent lets kills plant sunflowers that shoot nearby enemies (Sourdough Starter\'s regen moved into Linen Layers)','Overgrowth: slowed enemies take more damage from you; Picnic now also poisons enemies on the blanket','Lightning arcs and Punk explosions only trigger on a shot\'s first hit, not on every pierce or bounce','Shadow novas and Sequin Burst shards no longer set off chain reactions through a whole room']},
+  {v:'2026.10.24.1',d:'Oct 24',items:['Sell all button in the Closet, next to Donate all: sells every unlocked bag piece for Cash (asks to confirm first)']},
   {v:'2026.10.21.12',d:'Oct 21',items:['Controller aiming is smoother: the sticks no longer snap to straight up, down, left or right, so angles near the diagonals are easy to hit']},
   {v:'2026.10.21.11',d:'Oct 21',items:['PlayStation controllers are recognised: button prompts show \u2715 \u25CB \u25A1 \u25B3, L1, R1, R2 and Options instead of Xbox names']},
   {v:'2026.10.21.10',d:'Oct 21',items:['Millennium Bug arcs stun normal enemies for 0.75s, at most once per enemy every 1.5s (no more freezing the whole room)','Arcs slow bosses, rivals and Floor Managers instead of stunning them','Bosses can be stunned for at most 1.2s in a row, then ignore stuns for 2s']},
@@ -2517,7 +2530,7 @@ function newRun(daily){
 }
 function buildFloor(n){if(G&&G.daily&&!G._seeding){G._seeding=true;const R=Math.random;Math.random=mulberry32((G.daily.seed+n*7919)>>>0);try{buildFloor(n);}finally{Math.random=R;G._seeding=false;}return;}
   if(G&&G.p){G.p.floor=n;if(G.p.emperor&&G.p.s){const hp=G.p.hp;G.p.s=computeStats(G.p);G.p.hp=Math.min(hp,G.p.s.maxHp);}}
-  const m=genFloor(n);Object.assign(G,{floor:n,map:m,enemies:[],sweeps:[],bullets:[],ebullets:[],pickups:[],particles:[],texts:[],rings:[],bolts:[],hazards:[],flowT:0,boss:null,card:null,flashT:0,slowmo:0,floorKills:0,miniT:0,bagWarnT:0,picnics:[],specials:[],spawns:[],trails:[],decoy:null,chal:null,mini:null,miniRoom:null,secondUsed:false,victoryT:0});G.p.mono=G.dress==='mono';G.p.minimal=G.dress==='minimal';G.p.dive=null;G.p.hist=[];refreshStats();
+  const m=genFloor(n);Object.assign(G,{floor:n,map:m,enemies:[],sweeps:[],bullets:[],ebullets:[],pickups:[],particles:[],texts:[],rings:[],bolts:[],hazards:[],flowT:0,boss:null,card:null,flashT:0,slowmo:0,floorKills:0,miniT:0,bagWarnT:0,picnics:[],sprouts:[],specials:[],spawns:[],trails:[],decoy:null,chal:null,mini:null,miniRoom:null,secondUsed:false,victoryT:0});G.p.mono=G.dress==='mono';G.p.minimal=G.dress==='minimal';G.p.dive=null;G.p.hist=[];refreshStats();
   G.zone=ZONES[zoneIdx(n)];freeMap(G.mapCanvas);G.mapCanvas=renderMap(m,G.zone);G.exitLocked=m.boss;
   G.p.x=m.start.x;G.p.y=m.start.y;G.cam.x=G.p.x;G.cam.y=G.p.y;G.p.fireCd=0.5;
   G.flow=new Int16Array(m.w*m.h);populate();updateFlow();
@@ -2562,17 +2575,37 @@ function burst(x,y,c,n,spd){for(let i=0;i<n;i++){if(G.particles.length>PCAP())br
 function toast(html,c){const el=document.createElement('div');el.className='toast';el.style.setProperty('--tc',c||'#ffc94a');el.innerHTML=html;const box=$('#toasts');box.appendChild(el);while(box.children.length>4)box.firstChild.remove();setTimeout(()=>el.remove(),3600);}
 
 // ---------- combat ----------
-function hurtEnemy(e,d,crit,c){if(e.dead)return;if(e.dormant)wake(e);if(e.awkT&&e.awkT>G.time)d*=1.4;if(!G.bigHit||d>G.bigHit.d)G.bigHit={d,name:enemyName(e),floor:G.floor};e.hp-=d;e.aggro=true;e.flash=0.08;if(isBoss(e)||e.type==='manager')bossHitFx(e,crit,c);if(V.dmgNums)addText(e.x,e.y-e.r*2.2,Math.round(d),crit?'#ffc94a':c||'#fff',crit);sfx('hit');if(e.hp<=0)killEnemy(e);}
+function hurtEnemy(e,d,crit,c){if(e.dead)return;if(e.slowT>0&&G.p.s.slowVuln)d*=1+G.p.s.slowVuln;if(e.dormant)wake(e);if(e.awkT&&e.awkT>G.time)d*=1.4;if(!G.bigHit||d>G.bigHit.d)G.bigHit={d,name:enemyName(e),floor:G.floor};e.hp-=d;e.aggro=true;e.flash=0.08;if(isBoss(e)||e.type==='manager')bossHitFx(e,crit,c);if(V.dmgNums)addText(e.x,e.y-e.r*2.2,Math.round(d),crit?'#ffc94a':c||'#fff',crit);sfx('hit');if(e.hp<=0)killEnemy(e);}
 function wake(e){e.dormant=false;e.aggro=true;addText(e.x,e.y-30,'KNOCKOFF!','#ff5a5a',true);}
 function explode(x,y,r,d,exclude,c){G.rings.push({x,y,r,life:0.28,max:0.28,c});sfx('boom');for(const e of G.enemies){if(e.dead||e===exclude)continue;if(e.big?inBody(e,x,y,r):Math.hypot(e.x-x,e.y-y)<r+e.r)hurtEnemy(e,d,false,c);}}
 function chainFrom(from,d,n,stun){let cur=from;const hit=new Set([from]);for(let i=0;i<n;i++){let best=null,bd=175;for(const e of G.enemies){if(e.dead||hit.has(e)||e.dormant)continue;const dd=Math.hypot(e.x-cur.x,e.y-cur.y);if(dd<bd){bd=dd;best=e;}}if(!best)break;G.bolts.push({x1:cur.x,y1:cur.y-cur.r,x2:best.x,y2:best.y-best.r,life:0.16});hit.add(best);hurtEnemy(best,d,false,'#5ff0ff');if(stun)glitch(best);cur=best;}if(n>0)sfx('zap');}
 // Millennium Bug: each enemy can be glitched by arcs once per 1.5s. Bosses, rivals and Floor Managers get a 30% slow instead of a stun.
 function glitch(e){if(e.dead||e.big||(e.glitchT||0)>G.time)return;e.glitchT=G.time+1.5;if(isBoss(e)||e.type==='manager'){e.slowT=Math.max(e.slowT||0,0.6);e.slowAmt=Math.max(e.slowAmt||0,0.3);}else e.stun=Math.max(e.stun,0.75);}
+// Garden (Cottagecore Seed Packet): kills can plant a sunflower that shoots nearby enemies. Its shot damage is a share of your weapon's damage per second,
+// so slow and fast weapons get the same help. Capped at gardenMax sunflowers, so kills by sunflowers can't snowball.
+const GARDEN={life:7,rate:0.55,range:280,share:0.24,chance:[0,0.12,0.18,0.24]};
+function gardenShot(p){const s=p.s,W=WEAPONS[p.weapon.kind]||WEAPONS.blaster,dps=W.dmg*(W.count||1)*W.rate*p.weapon.mult*s.dmg;return dps*GARDEN.share*GARDEN.rate*(1+0.2*(s.garden-1))*s.gardenK;}
+function plantSprout(x,y){if(!G.sprouts)G.sprouts=[];G.sprouts.push({x,y,life:GARDEN.life,cd:0.45,t:0});burst(x,y-6,'#8fd46b',8,90);}
+function updSprouts(dt){if(!G.sprouts||!G.sprouts.length)return;const p=G.p;
+  for(const f of G.sprouts){f.life-=dt;f.t+=dt;f.cd-=dt;if(f.cd>0||f.t<0.35)continue;let best=null,bd=GARDEN.range;
+    for(const e of G.enemies){if(e.dead||e.dormant)continue;const d=Math.hypot(e.x-f.x,e.y-f.y);if(d<bd&&los(f.x,f.y-16,e.x,e.y-e.r*0.5)){bd=d;best=e;}}
+    if(!best){f.cd=0.15;continue;}f.cd=GARDEN.rate;f.aim=Math.atan2(best.y-best.r*0.5-(f.y-20),best.x-f.x);
+    G.bullets.push({x:f.x+Math.cos(f.aim)*8,y:f.y-20+Math.sin(f.aim)*8,vx:Math.cos(f.aim)*560,vy:Math.sin(f.aim)*560,r:3.4,dmg:gardenShot(p),crit:false,pierce:0,ric:0,life:0.9,hit:new Set(),boom:0,c:'#ffd84a',child:true,sprout:true});}
+  G.sprouts=G.sprouts.filter(f=>f.life>0);}
+function drawSprouts(g,t){if(!G.sprouts)return;for(const f of G.sprouts){const gr=Math.min(1,f.t/0.35),fa=Math.min(1,f.life/0.6),h=20*gr;g.save();g.translate(f.x,f.y);g.globalAlpha=fa;
+  g.fillStyle='rgba(0,0,0,.35)';g.beginPath();g.ellipse(0,2,9,3.5,0,0,Math.PI*2);g.fill();
+  g.strokeStyle='#4f9a3a';g.lineWidth=2.4;g.lineCap='round';g.beginPath();g.moveTo(0,0);g.quadraticCurveTo(2*Math.sin(t*2+f.x),-h*0.5,0,-h);g.stroke();
+  g.fillStyle='#6fc152';g.beginPath();g.ellipse(-4,-h*0.45,4*gr,1.8*gr,-0.6,0,Math.PI*2);g.fill();g.beginPath();g.ellipse(4,-h*0.6,4*gr,1.8*gr,0.6,0,Math.PI*2);g.fill();
+  g.translate(0,-h);const pr=6*gr,sp=(f.aim||0)*0.15+t*0.6;g.fillStyle='#ffd84a';for(let i=0;i<9;i++){const a=sp+i*Math.PI*2/9;g.beginPath();g.ellipse(Math.cos(a)*pr,Math.sin(a)*pr,3.6*gr,1.7*gr,a,0,Math.PI*2);g.fill();}
+  g.fillStyle='#6b3f1d';g.beginPath();g.arc(0,0,3.6*gr,0,Math.PI*2);g.fill();g.fillStyle='#8a5a2b';g.beginPath();g.arc(-1,-1,1.4*gr,0,Math.PI*2);g.fill();
+  g.restore();}}
 function killEnemy(e){if(e.dead)return;e.dead=true;if(isBoss(e)||e.type==='manager'){(G.bossLog=G.bossLog||[]).push({name:enemyName(e),floor:G.floor});}if(isBoss(e)||e.type==='manager')bossDeathFx(e);const p=G.p,s=p.s;p.kills++;G.floorKills++;addRank((isBoss(e)?40:e.elite?14:(e.type==='swarm'||e.type==='bat'?3:5))*(1+(s.applause||0)));gainXp(Math.round(e.xp*(1+(rankMult()-1)*0.5)*(G.dress==='glass'?1.5:G.dress==='over'?1.6:1)));sfx('kill');
   if(isBoss(e)){for(let i=0;i<5;i++)dropCash(e.x+rand(-40,40),e.y+rand(-30,30),(6+G.floor*2)*cashMult());}else if(Math.random()<0.35)dropCash(e.x,e.y,(1+G.floor*0.7)*(e.elite?3:1)*cashMult());
   burst(e.x,e.y-e.r,isBoss(e)?(STYLES[e.style]?STYLES[e.style].c:'#ffc94a'):'#e8e2d0',isBoss(e)?60:12,isBoss(e)?260:140);
   if(s.hypePer>0){p.hype=Math.min(s.hypeMax,p.hype+1);p.hypeT=2.6;}
-  if(s.nova>0)explode(e.x,e.y,78,baseDmg(p)*s.nova,e,'#a56bff');
+  // Mourning Veil: enemies killed by a nova don't set off another nova (stops chain reactions through crowds).
+  if(s.nova>0&&!G.inNova){G.inNova=true;try{explode(e.x,e.y,78,baseDmg(p)*s.nova,e,'#a56bff');}finally{G.inNova=false;}}
+  if(s.garden>0&&(G.sprouts?G.sprouts.length:0)<s.gardenMax&&Math.random()<GARDEN.chance[Math.min(3,s.garden)])plantSprout(e.x,e.y);
   if(s.poisonSpread&&e.poisonT>0){for(const o of G.enemies){if(!o.dead&&o!==e&&Math.hypot(o.x-e.x,o.y-e.y)<120){o.poisonT=3;o.poisonDps=Math.max(o.poisonDps,e.poisonDps);}}G.rings.push({x:e.x,y:e.y,r:120,life:0.3,max:0.3,c:'#8fd46b'});}
   let ch=(0.06+(e.type==='brute'?0.14:0)+(e.type==='police'?0.06:0))*rankMult()*(G.dress==='mono'?2:G.dress==='mirror'?1.6:1);
   if(e.type==='mimic')dropItem(e.x,e.y,makeLoot(G.floor,1.5));
@@ -2581,7 +2614,8 @@ function killEnemy(e){if(e.dead)return;e.dead=true;if(isBoss(e)||e.type==='manag
   else if(e.elite){dropItem(e.x,e.y,makeLoot(G.floor,1.5));if(G.dress==='vip')dropItem(e.x+20,e.y,makeLoot(G.floor,1.5));}
   else if(Math.random()<ch)dropItem(e.x,e.y,makeLoot(G.floor));
   if(Math.random()<0.035)G.pickups.push({type:'latte',x:e.x,y:e.y,t:0});
-  if(s.sp.has('sequin')){for(let i=0;i<6;i++){const a=i/6*Math.PI*2+Math.random();G.bullets.push({x:e.x,y:e.y-e.r*0.5,vx:Math.cos(a)*380,vy:Math.sin(a)*380,r:3.5,dmg:baseDmg(p)*0.35,crit:false,pierce:0,ric:0,life:0.45,hit:new Set([e]),boom:0,c:'#ffd34d',child:true});}}
+  // Sequin Burst: enemies killed by a shard (or by anything a shard sets off) don't burst into more shards.
+  if(s.sp.has('sequin')&&!G.fromShard){for(let i=0;i<6;i++){const a=i/6*Math.PI*2+Math.random();G.bullets.push({x:e.x,y:e.y-e.r*0.5,vx:Math.cos(a)*380,vy:Math.sin(a)*380,r:3.5,dmg:baseDmg(p)*0.35,crit:false,pierce:0,ric:0,life:0.45,hit:new Set([e]),boom:0,c:'#ffd34d',child:true,shard:true});}}
   if(s.sp.has('carpet')&&G.dress!=='nolatte')p.hp=Math.min(s.maxHp,p.hp+s.maxHp*0.02);
 }
 function dropItem(x,y,it){G.pickups.push({type:'item',x,y,item:it,t:Math.random()*5});}
@@ -2620,7 +2654,8 @@ function fire(ang){const p=G.p,s=p.s,Wd=WEAPONS[p.weapon.kind]||WEAPONS.blaster;
   if(s.sp.has('chainbelt')){p.shotN=(p.shotN||0)+1;if(p.shotN%8===0){const a=ang;G.bullets.push({x:p.x+Math.cos(a)*16,y:p.y-8+Math.sin(a)*16,vx:Math.cos(a)*Wd.speed*0.8,vy:Math.sin(a)*Wd.speed*0.8,r:Math.max(9,Wd.size*2.6),dmg:base*4,crit:false,pierce:3,ric:0,life:1.4,hit:new Set(),boom:0,c:'#ff4fa3',child:true});}}
   p.fireCd=1/(Wd.rate*s.rate*hb*(s.sp.has('strut')&&p.moving?1.3:1));sfx('shoot');
   if(s.fitName==='Poser'&&Math.random()<POSER_FX.jam*Math.min(1,4/Wd.rate+0.25)){p.fireCd+=POSER_FX.jamT;if((p.jamTxt||0)<G.time){p.jamTxt=G.time+1.2;addText(p.x,p.y-52,'WARDROBE MALFUNCTION','#ff7a8a',false);burst(p.x+Math.cos(p.aim)*18,p.y-8+Math.sin(p.aim)*18,'#bbbbbb',6,70);}}}
-function onHit(b,e){const p=G.p,s=p.s;b.hit.add(e);let d=b.dmg;
+function onHit(b,e){if(b.shard&&!G.fromShard){G.fromShard=true;try{onHit(b,e);}finally{G.fromShard=false;}return;}
+  const p=G.p,s=p.s;b.hit.add(e);let d=b.dmg;
   if(s.sp.has('split')&&!b.child&&b.kind!=='fan'&&!b.boomer){b.child=true;const a0=Math.atan2(b.vy,b.vx),sp0=Math.hypot(b.vx,b.vy);for(const o of [-0.45,0.45])G.bullets.push({x:b.x,y:b.y,vx:Math.cos(a0+o)*sp0,vy:Math.sin(a0+o)*sp0,r:b.r*0.75,dmg:b.dmg*0.5,crit:false,pierce:0,ric:0,life:0.7,hit:new Set([e]),boom:0,c:b.c,child:true});}if(!e.hitOnce){d*=1+s.firstHit;e.hitOnce=true;}if(p.hp<p.s.maxHp*0.5)d*=1+s.lowHp;
   hurtEnemy(e,d,b.crit,b.c);
   if(s.lifesteal>0&&G.dress!=='nolatte')p.hp=Math.min(s.maxHp,p.hp+d*s.lifesteal);
@@ -2631,9 +2666,12 @@ function onHit(b,e){const p=G.p,s=p.s;b.hit.add(e);let d=b.dmg;
   if(b.daze&&!e.big)e.stun=Math.max(e.stun,(isBoss(e)||e.type==='manager')?b.daze*0.4:b.daze);
   if(b.stitch&&!e.big){e.slowT=Math.max(e.slowT||0,1.2);e.slowAmt=Math.max(e.slowAmt||0,b.stitch);}
   if(s.sp.has('mood')&&!b.child&&Math.random()<0.2){switch(ri(0,3)){case 0:e.poisonT=3;e.poisonDps=Math.max(e.poisonDps||0,d*0.3);break;case 1:e.slowT=1.6;e.slowAmt=Math.max(e.slowAmt||0,0.4);break;case 2:if(!e.big)e.stun=Math.max(e.stun,0.5);break;default:chainFrom(e,d*0.5,2,false);}}
-  if(s.explodeR>0)explode(e.x,e.y,s.explodeR,d*s.explodeDmg,e,'#ff2e88');
+  // Punk explosions (Studded, Stage Dive, Basement Show): only a shot's first hit explodes, not every pierce or ricochet. Sequin shards never explode.
+  // The Measuring Tape still explodes on every enemy it sweeps (a swing shares one hit set and is marked kind 'fan').
+  if(s.explodeR>0&&!b.shard&&(b.kind==='fan'||!b.hit.boomed)){b.hit.boomed=true;explode(e.x,e.y,s.explodeR,d*s.explodeDmg,e,'#ff2e88');}
   if(b.boom){explode(b.x,b.y,b.boom,d*0.6,e,b.c);b.boom=0;}
-  if(s.chain>0)chainFrom(e,d*0.5,s.chain,s.chainStun);
+  // Lightning arcs only from a shot's first hit (not every enemy it pierces or ricochets into). A Measuring Tape swing arcs from its first 2 enemies.
+  if(s.chain>0&&!b.shard&&(b.hit.arcs||0)<(b.kind==='fan'?2:1)){b.hit.arcs=(b.hit.arcs||0)+1;chainFrom(e,d*0.5,s.chain,s.chainStun);}
   if(b.pierce>0){b.pierce--;}
   else if(b.ric>0){let best=null,bd=330;for(const o of G.enemies){if(o.dead||o.dormant||b.hit.has(o))continue;const dd=Math.hypot(o.x-b.x,o.y-b.y);if(dd<bd&&los(b.x,b.y,o.x,o.y)){bd=dd;best=o;}}
     if(best){const sp=Math.hypot(b.vx,b.vy),a=Math.atan2(best.y-b.y,best.x-b.x);b.vx=Math.cos(a)*sp;b.vy=Math.sin(a)*sp;b.ric--;b.life=Math.max(b.life,0.6);}else b.dead=true;}
@@ -2678,7 +2716,7 @@ function update(dt){
   else if(dashPressed&&p.dashCd<=0){let dx=mx,dy=my;if(Math.hypot(dx,dy)<0.1){dx=Math.cos(p.aim);dy=Math.sin(p.aim);}const l=Math.hypot(dx,dy)||1;p.dashDir={x:dx/l,y:dy/l};p.dashT=0.18;p.dashCd=1.1*s.dashCdMult;p.invuln=Math.max(p.invuln,0.25);p.dashHit=new Set();sfx('dash');burst(p.x,p.y,'#ffffff',8,80);onDash();}
   dashPressed=false;
   if(sigPressed){sigPressed=false;useSignature();}
-  updateSig(dt);rankTick(dt);
+  updateSig(dt);updSprouts(dt);rankTick(dt);
   const spd=190*s.speed;
   if(p.dashT>0){p.dashT-=dt;move(p,p.dashDir.x*spd*3.4*dt,p.dashDir.y*spd*3.4*dt);
     if(G.particles.length<PCAP())G.particles.push({x:p.x+rand(-6,6),y:p.y-rand(0,24),vx:0,vy:0,g:0,life:0.3,max:0.3,c:s.topStyle?STYLES[s.topStyle].c:'#ffc94a',size:3});
@@ -2718,7 +2756,7 @@ function update(dt){
   const alive=[];let srcE=null,eb0=G.ebullets.length,hz0=G.hazards.length;
   for(const e of G.enemies){tagSrc(srcE,eb0,hz0);srcE=e;eb0=G.ebullets.length;hz0=G.hazards.length;if(e.dead)continue;alive.push(e);
     e.flash-=dt;if(e.pop>0)e.pop=Math.max(0,e.pop-dt*7);
-    if(e.poisonT>0){e.poisonT-=dt;e.hp-=e.poisonDps*dt;e.poisonTick+=dt;if(e.poisonTick>0.5){e.poisonTick=0;if(V.dmgNums)addText(e.x,e.y-e.r*2,Math.round(e.poisonDps*0.5),'#8fd46b',false);}if(e.hp<=0){killEnemy(e);continue;}if(e.poisonT<=0)e.poisonDps=0;}
+    if(e.poisonT>0){e.poisonT-=dt;e.hp-=e.poisonDps*dt*(e.slowT>0&&s.slowVuln?1+s.slowVuln:1);e.poisonTick+=dt;if(e.poisonTick>0.5){e.poisonTick=0;if(V.dmgNums)addText(e.x,e.y-e.r*2,Math.round(e.poisonDps*0.5),'#8fd46b',false);}if(e.hp<=0){killEnemy(e);continue;}if(e.poisonT<=0)e.poisonDps=0;}
     if(e.slowT>0)e.slowT-=dt;
     if(e.kx||e.ky){move(e,e.kx*dt,e.ky*dt);const f=Math.max(0,1-9*dt);e.kx*=f;e.ky*=f;if(Math.abs(e.kx)+Math.abs(e.ky)<2){e.kx=0;e.ky=0;}}
     if(e.stun>0){const tough=isBoss(e)||e.type==='manager';
@@ -3190,7 +3228,7 @@ function renderCloset(){
   $('#clBars').innerHTML=`<p class="fitnext">${fitNext(s)}</p>`+setsHtml(p)+BK.map(k=>`<div class="sbar" style="--c:${STYLES[k].c}" title="${s.cnt[k]} ${STYLES[k].name} piece${s.cnt[k]===1?'':'s'} worn · ${s.sd[k]} ${STYLES[k].name} Drip powers its talents"><span style="color:${STYLES[k].c};font-weight:700">${STYLES[k].name}</span><span class="pips">${'●'.repeat(s.cnt[k])}${'○'.repeat(5-s.cnt[k])}</span><span class="t"><i style="width:${s.sd[k]/maxSd*100}%"></i></span><span class="v">${s.sd[k]}</span></div>`).join('');
   $('#clSlots').innerHTML=[...SLOTS,'weapon'].map(sl=>{const it=sl==='weapon'?p.weapon:p.gear[sl];const on=sel&&sel.from==='slot'&&sel.slot===sl;
     return `<button type="button" class="slot${it&&setOf(it)?' set':''}" data-slot="${sl}" aria-pressed="${on}"><span class="sl">${SLOT_NAME[sl]}</span>${it?`<span class="sn" style="color:${RAR[it.rarity].c}">${it.sp?'<span class="spstar">★</span>':''}${esc(it.name)}</span><span class="sm">${metaLine(it)}</span>${setTag(it)}`:(p.emperor&&sl!=='weapon'?`<span class="sn empty" style="color:#ffd76a">♛ New Clothes</span><span class="sm">Invisible · +${s.newClothes} Drip at rank ${RANKS[s.rankI].l}</span>`:`<span class="sn empty">Standard issue</span><span class="sm">${p.keepOff&&p.keepOff[sl]?'Kept empty · drops go to bag':'Nothing equipped'}</span>`)}</button>`;}).join('');
-  $('#clBagCount').textContent=`${p.bag.length} / ${BAG}`;{const dv=p.bag.filter(it=>!it.locked);$('#bDonateAll').hidden=!dv.length||!$('#donateConfirm').hidden;$('#bDonateAll').textContent=dv.length?`Donate all (${donateTxt(dv)})${dv.length<p.bag.length?' · skips 🔒':''}`:'Donate all';}$('#clFound').textContent=`Lookbook: ${foundCount()} of ${TOTAL_PIECES()} pieces found. Pieces also drop in up to 10 colorways, and tops and bottoms in ${Object.keys(MODS).length} wear effects.`;
+  $('#clBagCount').textContent=`${p.bag.length} / ${BAG}`;{const dv=p.bag.filter(it=>!it.locked);$('#bDonateAll').hidden=!dv.length||!$('#donateConfirm').hidden;$('#bDonateAll').textContent=dv.length?`Donate all (${donateTxt(dv)})${dv.length<p.bag.length?' · skips 🔒':''}`:'Donate all';$('#bSellAll').hidden=$('#bDonateAll').hidden;$('#bSellAll').textContent=dv.length?`Sell all (+$${dv.reduce((a,it)=>a+sellValue(it),0)})${dv.length<p.bag.length?' · skips 🔒':''}`:'Sell all';}$('#clFound').textContent=`Lookbook: ${foundCount()} of ${TOTAL_PIECES()} pieces found. Pieces also drop in up to 10 colorways, and tops and bottoms in ${Object.keys(MODS).length} wear effects.`;
   $('#clBag').innerHTML=p.bag.length?p.bag.map(it=>{const on=sel&&sel.from==='bag'&&sel.id===it.id;const sc=it.slot==='weapon'?'#d8d8e0':(it.cw?it.cw.c:STYLES[it.style].c);
     const up=isUpgrade(it);
     return `<button type="button" class="bi${it.fresh?' fresh':''}${up?' has-upg':''}${it.sp?' stmt':''}${setOf(it)?' set':''}" data-id="${it.id}" aria-pressed="${on}" style="--rc:${RAR[it.rarity].c};--sc:${sc}" title="${up?(it.slot==='weapon'?'Upgrade: more damage per second':'Upgrade: raises your Drip'):''}">${it.fresh?'<span class="newtag">NEW</span>':''}${setTag(it)}${up?'<span class="upg" aria-label="Upgrade"><svg viewBox="0 0 10 10"><path d="M5 1.5 L8.6 6 H6.2 V8.8 H3.8 V6 H1.4 Z" fill="#7ef0a0"/></svg></span>':''}<span class="bn"><span class="bsw"></span>${it.locked?'<span class="lockic" title="Locked">🔒</span>':''}${it.sp?'<span class="spstar">★</span>':''}${esc(it.name)}</span><span class="bm">${it.slot==='weapon'?'Weapon · ×'+it.mult:stN(it.style)+' '+SLOT_NAME[it.slot]+' · '+it.drip+' Drip'}</span></button>`;}).join(''):'<p class="note" style="grid-column:1/-1">Empty. Loot drops from enemies, Wardrobe Crates and Knockoff Mimics.</p>';
@@ -3217,7 +3255,7 @@ function renderDetail(){const p=G.p,el=$('#clDetail');
       (slot==='weapon'?`<dt>Weapon DPS</dt><dd>${diff(weaponDps(p.weapon,os),weaponDps(it,ns),v=>Math.round(v))}</dd>`:`<dt>Drip</dt><dd>${diff(os.drip,ns.drip,v=>v)} ${dripDelta(ns.drip-os.drip)}</dd><dt>Fit</dt><dd>${fitChange(os,ns)}</dd>${sigChange(os,ns)}`)+
       `<dt>Damage</dt><dd>${diff(os.dmg,ns.dmg,v=>'×'+v.toFixed(2))}</dd><dt>Max HP</dt><dd>${diff(os.maxHp,ns.maxHp,v=>v)}</dd></dl>`;
     const xp=5+it.rarity*8+Math.round((it.drip||20)/4);
-    const lk=!!it.locked;html+=`<div class="row"><button type="button" class="btn" data-act="equip">Equip</button><button type="button" class="btn ghost" data-act="donate" ${lk?'disabled title="Unlock it first"':''}>Donate for ${donateTxt([it])}</button><button type="button" class="btn ghost" data-act="sell" ${lk?'disabled title="Unlock it first"':''}>Sell for $${sellValue(it)}</button><button type="button" class="btn ghost lockb${lk?' on':''}" data-act="lock" aria-pressed="${lk}">${lk?'🔒 Locked':'🔓 Lock'}</button></div>${lk?'<p class="note" style="margin:0">Locked: it can\'t be sold or donated, and Donate all skips it.</p>':''}`;}
+    const lk=!!it.locked;html+=`<div class="row"><button type="button" class="btn" data-act="equip">Equip</button><button type="button" class="btn ghost" data-act="donate" ${lk?'disabled title="Unlock it first"':''}>Donate for ${donateTxt([it])}</button><button type="button" class="btn ghost" data-act="sell" ${lk?'disabled title="Unlock it first"':''}>Sell for $${sellValue(it)}</button><button type="button" class="btn ghost lockb${lk?' on':''}" data-act="lock" aria-pressed="${lk}">${lk?'🔒 Locked':'🔓 Lock'}</button></div>${lk?'<p class="note" style="margin:0">Locked: it can\'t be sold or donated, and Sell all and Donate all skip it.</p>':''}`;}
   else if(slot!=='weapon'){html+=`<div class="row"><button type="button" class="btn ghost" data-act="unequip" ${p.bag.length>=BAG?'disabled':''}>Take off</button></div>`;}
   el.innerHTML=`<div class="showcase" style="--rc:${RAR[it.rarity].c}"><div><canvas id="clItemPrev" width="440" height="440" aria-label="Close-up of ${esc(it.name)}"></canvas><div class="cap">${slot==='weapon'?'Weapon close-up':'Item close-up · drag to spin'}</div></div><div class="info">${html}</div></div>`;drawItemPreview();}
 let showItem=null,itemRot=0,itemDrag=null;
@@ -3249,12 +3287,19 @@ addEventListener('pointerup',()=>{itemDrag=null;});addEventListener('pointercanc
 $('#clBag').addEventListener('click',e=>{const b=e.target.closest('.bi');if(!b)return;sel={from:'bag',id:+b.dataset.id};const it=G.p.bag.find(x=>x.id===sel.id);if(it)it.fresh=false;renderCloset();if(TOUCH){const d=$('#clDetail');if(d)d.scrollIntoView({behavior:'smooth',block:'start'});}});
 function donateValue(it){return 5+it.rarity*8+Math.round((it.drip||20)/4);}
 $('#bDonateAll').addEventListener('click',()=>{if(!G)return;const p=G.p;const list=p.bag.filter(it=>!it.locked);if(!list.length)return;const xp=list.reduce((a,it)=>a+donateValue(it),0),ups=list.filter(isUpgrade).length,hi=list.filter(it=>it.rarity>=4||it.sp).length;
-  const el=$('#donateConfirm');el.hidden=false;$('#bDonateAll').hidden=true;
+  const el=$('#donateConfirm');el.hidden=false;$('#bDonateAll').hidden=true;$('#bSellAll').hidden=true;
   const warn=ups||hi?`Includes ${[ups?`${ups} upgrade${ups>1?'s':''}`:'',hi?`${hi} Iconic/Grail/Statement`:''].filter(Boolean).join(' and ')}. Gone for good.`:'Gone for good. Worn and 🔒 locked pieces stay.';
   el.innerHTML=`<span class="dq">Donate <b>${list.length}</b> for <b style="color:var(--xp)">${donateTxt(list)}</b>?</span><button type="button" class="btn" id="bDonateYes" style="padding:6px 12px;font-size:12px">Yes, donate</button><button type="button" class="btn ghost" id="bDonateNo" style="padding:6px 12px;font-size:12px">Cancel</button><span class="dw${ups||hi?' hot':''}">${warn}</span>`;
   $('#bDonateYes').addEventListener('click',()=>{const gone=p.bag.filter(it=>!it.locked),n=gone.length,tot=gone.reduce((a,it)=>a+donateValue(it),0);p.bag=p.bag.filter(it=>it.locked);if(sel&&sel.from==='bag'&&!p.bag.some(x=>x.id===sel.id)){sel=null;showItem=null;}el.hidden=true;const got=donatePay(gone);sfx('pick');toast(`Donated <b>${n}</b> items for <b>+${got} Clout</b>.`,'#7be0ff');renderCloset();if(pad.on)setTimeout(focusFirst,40);});
   $('#bDonateNo').addEventListener('click',()=>{el.hidden=true;renderCloset();if(pad.on)setTimeout(()=>setPadFocus($('#bDonateAll')),20);});
   if(pad.on)setTimeout(()=>setPadFocus($('#bDonateNo')),30);});
+$('#bSellAll').addEventListener('click',()=>{if(!G)return;const p=G.p;const list=p.bag.filter(it=>!it.locked);if(!list.length)return;const cash=list.reduce((a,it)=>a+sellValue(it),0),ups=list.filter(isUpgrade).length,hi=list.filter(it=>it.rarity>=4||it.sp).length;
+  const el=$('#donateConfirm');el.hidden=false;$('#bDonateAll').hidden=true;$('#bSellAll').hidden=true;
+  const warn=ups||hi?`Includes ${[ups?`${ups} upgrade${ups>1?'s':''}`:'',hi?`${hi} Iconic/Grail/Statement`:''].filter(Boolean).join(' and ')}. Gone for good.`:'Gone for good. Worn and 🔒 locked pieces stay.';
+  el.innerHTML=`<span class="dq">Sell <b>${list.length}</b> for <b style="color:#ffd34d">+$${cash}</b>?</span><button type="button" class="btn" id="bSellYes" style="padding:6px 12px;font-size:12px">Yes, sell</button><button type="button" class="btn ghost" id="bSellNo" style="padding:6px 12px;font-size:12px">Cancel</button><span class="dw${ups||hi?' hot':''}">${warn}</span>`;
+  $('#bSellYes').addEventListener('click',()=>{const gone=p.bag.filter(it=>!it.locked),n=gone.length,got=gone.reduce((a,it)=>a+sellValue(it),0);p.bag=p.bag.filter(it=>it.locked);if(sel&&sel.from==='bag'&&!p.bag.some(x=>x.id===sel.id)){sel=null;showItem=null;}el.hidden=true;p.cash+=got;sfx('pick');toast(`Sold <b>${n}</b> items for <b>$${got}</b>.`,'#ffd34d');renderCloset();if(pad.on)setTimeout(focusFirst,40);});
+  $('#bSellNo').addEventListener('click',()=>{el.hidden=true;renderCloset();if(pad.on)setTimeout(()=>setPadFocus($('#bSellAll')),20);});
+  if(pad.on)setTimeout(()=>setPadFocus($('#bSellNo')),30);});
 $('#clDetail').addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b||!G)return;const p=G.p,act=b.dataset.act;
   if(act==='equip'){const i=p.bag.findIndex(x=>x.id===sel.id);if(i<0)return;const it=p.bag[i];p.bag.splice(i,1);
     if(it.slot==='weapon'){p.bag.push(p.weapon);p.weapon=it;}else{if(p.gear[it.slot])p.bag.push(p.gear[it.slot]);p.gear[it.slot]=it;if(p.keepOff)delete p.keepOff[it.slot];}
@@ -3313,7 +3358,7 @@ function render(){
     else if(k.type==='latte'){ctx.fillStyle='rgba(126,240,160,.2)';circ(ctx,0,0,13);if(drawPickupArt(ctx,'latte')){ctx.restore();continue;}ctx.fillStyle='#e9dcc4';ctx.beginPath();ctx.moveTo(-5,-7);ctx.lineTo(5,-7);ctx.lineTo(3.8,7);ctx.lineTo(-3.8,7);ctx.closePath();ctx.fill();ctx.fillStyle='#b9895a';ctx.fillRect(-4.4,-1,8.8,5);ctx.strokeStyle='#7ef0a0';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(1,-7);ctx.lineTo(3,-13);ctx.stroke();}
     else if(k.type==='chest'){ctx.fillStyle='rgba(255,201,74,.18)';circ(ctx,0,0,20);if(drawPickupArt(ctx,'chest')){ctx.restore();continue;}ctx.fillStyle='#6b4a2f';rr(ctx,-14,-10,28,20,3);ctx.fill();ctx.fillStyle='#8a6240';ctx.fillRect(-14,-10,28,6);ctx.strokeStyle='#ffc94a';ctx.lineWidth=1.4;ctx.beginPath();ctx.arc(0,0,2,Math.PI,Math.PI*2.4);ctx.moveTo(0,2);ctx.lineTo(-6,6);ctx.lineTo(6,6);ctx.closePath();ctx.stroke();}
     ctx.restore();}
-  drawPicnics(ctx);drawSpecials(ctx,t);drawHazards(ctx,t);
+  drawPicnics(ctx);drawSprouts(ctx,t);drawSpecials(ctx,t);drawHazards(ctx,t);
   // entities sorted
   const ents=G.enemies.filter(e=>e.big||(e.x>vx0-80&&e.x<vx1+80&&e.y>vy0-80&&e.y<vy1+120));ents.push(p);ents.sort((a,b)=>a.y-b.y);
   for(const e of ents){if(e===p){
@@ -3389,7 +3434,7 @@ function updHUD(){const p=G.p,s=p.s;
 let last=0;
 let lastState='';
 function frame(ts){requestAnimationFrame(frame);const dt=Math.min(0.05,(ts-last)/1000||0);last=ts;
-  pollPad(dt);tickFps(dt);if(state==='menu')drawMenuPreviews(ts/1000);if(AC){M.want=musicWant();if(state!==lastState){lastState=state;applyMix();}musicTick();}
+  pollPad(dt);tickFps(dt);sizeCheck(dt);if(state==='menu')drawMenuPreviews(ts/1000);if(AC){M.want=musicWant();if(state!==lastState){lastState=state;applyMix();}musicTick();}
   if(state==='play'&&G){let d2=dt;if(G.slowmo>0){G.slowmo-=dt;d2=dt*0.3;}update(d2);}
   if(G){render();cbPost();updHUD();if(state==='closet'){G.time+=dt;if(!itemDrag)itemRot+=dt*0.9;drawPreview();drawItemPreview();}}}
 requestAnimationFrame(frame);
@@ -3442,7 +3487,7 @@ const SIGS={
   hype:{name:'Stampede',cd:13,desc:'A wall of sneakerheads charges where you aim, trampling everything in the way for heavy damage.'},
   y2k:{name:'Y2K Bug',cd:15,desc:'An EMP deletes every enemy bullet near you and freezes nearby enemies for 2 seconds.'},
   punk:{name:'Stage Dive',cd:11,desc:'Leap where you aim and land in a huge explosion that throws enemies back. Untouchable mid-air.'},
-  cottage:{name:'Picnic',cd:16,desc:'Lay a picnic blanket for 6 seconds. You heal quickly on it, and enemies on it are slowed.'},
+  cottage:{name:'Picnic',cd:16,desc:'Lay a picnic blanket for 6 seconds. You heal quickly on it, and enemies on it are slowed and poisoned.'},
   emperor:{name:'Nobody Says a Word',cd:15,desc:'Awkward silence. Nearby enemies and their bullets freeze for 2.5 seconds, frozen enemies take 40% more damage, and your Runway rank jumps.'},
 };
 let sigPressed=false;
@@ -3468,7 +3513,7 @@ function updateSig(dt){const p=G.p;if(p.sigCd>0)p.sigCd-=dt;if(p.veilT>0)p.veilT
   if(p.dive){const d=p.dive;d.t+=dt;const f=Math.min(1,d.t/d.dur);p.x=d.x0+(d.x1-d.x0)*f;p.y=d.y0+(d.y1-d.y0)*f;p.invuln=Math.max(p.invuln,0.12);
     if(f>=1){p.dive=null;explode(p.x,p.y,150,baseDmg(p)*6,null,'#ff2e88');for(const e of G.enemies){if(e.dead||isBoss(e))continue;const dd=Math.hypot(e.x-p.x,e.y-p.y)||1;if(dd<170){e.kx+=(e.x-p.x)/dd*420;e.ky+=(e.y-p.y)/dd*420;}}G.shake=Math.max(G.shake,0.5);burst(p.x,p.y,'#ff2e88',30,240);}}
   for(const k of G.picnics){k.life-=dt;if(G.dress!=='nolatte'&&Math.hypot(p.x-k.x,p.y-k.y)<k.r)p.hp=Math.min(p.s.maxHp,p.hp+p.s.maxHp*0.08*dt);
-    for(const e of G.enemies){if(!e.dead&&Math.hypot(e.x-k.x,e.y-k.y)<k.r){e.slowT=Math.max(e.slowT,0.3);e.slowAmt=Math.max(e.slowAmt||0,0.5);}}}
+    for(const e of G.enemies){if(!e.dead&&Math.hypot(e.x-k.x,e.y-k.y)<k.r){e.slowT=Math.max(e.slowT,0.3);e.slowAmt=Math.max(e.slowAmt||0,0.5);e.poisonT=Math.max(e.poisonT||0,0.5);e.poisonDps=Math.max(e.poisonDps||0,baseDmg(p)*0.8);}}}
   G.picnics=G.picnics.filter(k=>k.life>0);}
 function drawPicnics(g){for(const k of G.picnics){const a=Math.min(1,k.life);g.save();g.globalAlpha=0.5*a;g.translate(k.x,k.y);g.beginPath();g.ellipse(0,0,k.r,k.r*0.62,0,0,Math.PI*2);g.clip();
     for(let yy=-k.r;yy<k.r;yy+=16)for(let xx=-k.r;xx<k.r;xx+=16){g.fillStyle=((Math.floor(xx/16)+Math.floor(yy/16))&1)?'#e79ab2':'#f1e4cf';g.fillRect(xx,yy,16,16);}g.restore();
@@ -3614,7 +3659,7 @@ const STMT={
   split:{n:'Split Ends',d:'Your shots split into two smaller shots on their first hit.'},
   chainbelt:{n:'Chain Belt',d:'Every 8th shot is a giant shot that hits 4× as hard and pierces 3 enemies.'},
   mirror:{n:'Mirror Shades',d:'Grazing an enemy bullet fires a shot back at the nearest enemy.'},
-  sequin:{n:'Sequin Burst',d:'Enemies you defeat burst into a ring of 6 sequin shards.'},
+  sequin:{n:'Sequin Burst',d:'Enemies you defeat burst into a ring of 6 sequin shards (enemies the shards finish off don\'t burst again).'},
   trail:{n:'Afterglow',d:'Dashing leaves a blazing trail that burns enemies for 1.6 seconds.'},
   decoy:{n:'Body Double',d:'Dashing leaves a cardboard cutout of you. Enemies chase and shoot at it for 3 seconds.'},
   orbit:{n:'Charm Bracelet',d:'Two charms orbit you. They hurt enemies they touch and block enemy bullets.'},
