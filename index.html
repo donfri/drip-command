@@ -1032,11 +1032,22 @@ const clamp=(v,a,b)=>v<a?a:v>b?b:v;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function rr(g,x,y,w,h,r){g.beginPath();if(g.roundRect)g.roundRect(x,y,w,h,r);else g.rect(x,y,w,h);}
 function circ(g,x,y,r){g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fill();}
+// Hairspray Torch puff: a flickering teardrop lick of flame pointing where it flies, white-hot core cooling to red, ending in a wisp of smoke. Looks only: the hit area is still b.r.
+function flameTear(g,L,w,bend){g.beginPath();g.moveTo(-L,bend);g.quadraticCurveTo(-L*0.45,-w*1.15+bend*0.5,0,-w);g.arc(0,0,w,-Math.PI/2,Math.PI/2);g.quadraticCurveTo(-L*0.45,w*1.15+bend*0.5,-L,bend);g.closePath();g.fill();}
+function drawFlamePuff(g,b){const k=clamp(1-b.life/(b.l0||0.34),0,1),T=performance.now()/1000;if(b.sd==null)b.sd=Math.random()*99;const sd=b.sd;
+  const fl=1+Math.sin(T*31+sd*7)*0.14+Math.sin(T*53+sd*3)*0.08,bend=Math.sin(T*24+sd*5),w=b.r*0.95*fl*(1-k*0.25),L=w*(2.3-k*0.7);
+  g.save();g.translate(b.x,b.y);g.rotate(Math.atan2(b.vy,b.vx)+Math.sin(T*19+sd)*0.18);
+  if(k>0.62){const sk=(k-0.62)/0.38;g.globalAlpha=0.28*(1-sk);g.fillStyle='#5a5262';circ(g,-w*0.6,-w*0.3*sk,w*(0.9+sk*0.8));}
+  g.globalCompositeOperation='lighter';
+  g.globalAlpha=0.42*(1-k);g.fillStyle=k<0.45?'#ff6a1f':'#b8262a';flameTear(g,L*1.2,w*1.15,bend*w*0.5);
+  g.globalAlpha=0.85*(1-k)+0.1;g.fillStyle=k<0.4?'#ffb347':k<0.72?'#ff7a2e':'#e2402e';flameTear(g,L*0.85,w*0.74,bend*w*0.35);
+  if(k<0.6){g.globalAlpha=0.95*(1-k/0.6);g.fillStyle='#fff3c4';flameTear(g,L*0.5,w*0.42,bend*w*0.15);}
+  g.restore();}
 const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
 
 // ---------- version & save safety ----------
 // BUILD format: YYYY.MM.DD.N (the day of the update, then that day's update number). Bump it on every published change.
-const BUILD='2026.10.24.11';
+const BUILD='2026.10.24.12';
 // After "Update now" the page loads as ?dcv=<build> to skip stale caches; tidy that off the address bar.
 try{const u=new URL(location.href);if(u.searchParams.has('dcv')){u.searchParams.delete('dcv');history.replaceState(history.state,'',u.toString());}}catch(e){}
 // SAVE_VER only goes up when the shape of saved data changes. Each step gets a MIGRATIONS entry that upgrades old data in place.
@@ -1488,6 +1499,7 @@ $('#menuVer').textContent=VER_TXT;
 // ---------- changelog (click the version number) ----------
 // Newest first. Keep entries short: half-sentence bullets.
 const CHANGELOG=[
+  {v:'2026.10.24.12',d:'Oct 24',items:['Hairspray Torch: new flame look, flickering licks of fire that point where they fly, cool from white-hot to red and end in a wisp of smoke','Looks only: Torch damage, range and hit area unchanged']},
   {v:'2026.10.24.11',d:'Oct 24',items:['Hype Train: landing hits on bosses, rivals, Floor Managers and the Creative Director keeps Hype from draining and adds 1 stack every 0.75s, up to half your max Hype (kills fill the rest)','Emperor: landing hits on bosses, rivals, Floor Managers and the Creative Director adds 2 Runway rank every 0.5s, so New Clothes keep their Drip in long fights']},
   {v:'2026.10.24.10',d:'Oct 24',items:['One upgrade rule for clothes and guns: ▲ now means the piece is "worth more Drip" than what you have on','Pickups say "▲ worth +40 Drip"; comparisons lead with Drip-worth (like wearing that much more Drip)','Weapon DPS no longer counts a weapon\'s own damage and fire-rate bonuses twice','Closet: Lookbook count line and button removed; the Lookbook is now in the pause menu, next to Achievements','Comparisons show one Drip line: Drip-worth, then where it comes from (Drip 33 → 100 (+67), bonuses +37)']},
   {v:'2026.10.24.9',d:'Oct 24',items:['Release notes filled in for every version (2026.10.21.6–.9 and 2026.10.24.7 were missing)']},
@@ -3403,7 +3415,7 @@ function render(){
   ctx.globalCompositeOperation='lighter';
   drawSweeps(ctx);
   for(const b of G.bullets){if(b.kind==='heel'){ctx.save();ctx.translate(b.x,b.y);ctx.rotate(b.spin||0);ctx.scale(1.45,1.45);ctx.fillStyle='rgba(255,79,163,.22)';circ(ctx,0,0,b.r*2);ctx.fillStyle='#1a1418';ctx.beginPath();ctx.moveTo(-9,2);ctx.quadraticCurveTo(-2,-7,8,-3);ctx.lineTo(9,0);ctx.quadraticCurveTo(0,-2,-6,4);ctx.closePath();ctx.fill();ctx.fillStyle='#ff4fa3';ctx.beginPath();ctx.moveTo(-8,1.4);ctx.quadraticCurveTo(-2,-5.6,7.4,-2.6);ctx.lineTo(7.6,-1.6);ctx.quadraticCurveTo(-1,-3.6,-6.6,2.6);ctx.closePath();ctx.fill();ctx.fillStyle=b.c;ctx.fillRect(6,-2.6,2.2,9);ctx.restore();continue;}
-    if(b.kind==='flame'){const k=clamp(1-b.life/(b.l0||0.34),0,1);ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=0.45*(1-k);ctx.fillStyle=k<0.5?'#ff8a2e':'#c0302a';circ(ctx,b.x,b.y,b.r*1.4);ctx.globalAlpha=0.8*(1-k)+0.1;ctx.fillStyle=k<0.3?'#fff3c4':k<0.65?'#ffb347':'#ff5a3c';circ(ctx,b.x,b.y,b.r*0.8);ctx.restore();continue;}
+    if(b.kind==='flame'){drawFlamePuff(ctx,b);continue;}
     if(b.kind==='fan'){ctx.save();ctx.globalCompositeOperation='source-over';ctx.translate(b.x,b.y);ctx.rotate(Math.atan2(b.vy,b.vx));ctx.fillStyle='rgba(255,69,69,.3)';circ(ctx,0,0,b.r*1.4);ctx.fillStyle='#f4f4f4';rr(ctx,-11,-6,20,11,5);ctx.fill();ctx.fillStyle='#ff4545';ctx.fillRect(-11,3,20,3);ctx.fillRect(-4,-3,8,2);ctx.restore();continue;}const sp=Math.hypot(b.vx,b.vy)||1,ux=b.vx/sp,uy=b.vy/sp,L=Math.min(sp*0.032,28)+b.r*0.5,ln=(k,w,c,al)=>{ctx.strokeStyle=c;ctx.globalAlpha=al;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(b.x-ux*L*k,b.y-uy*L*k);ctx.lineTo(b.x,b.y);ctx.stroke();};ctx.lineCap='round';ln(1,b.r*2.4,b.c,0.28);ln(0.7,b.r*1.35,b.c,1);ln(0.4,b.r*(b.crit?0.9:0.6),'#ffffff',1);ctx.globalAlpha=1;ctx.lineCap='butt';}
   ctx.globalCompositeOperation='source-over';
   for(const b of G.ebullets)drawEB(ctx,b,t);
