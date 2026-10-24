@@ -1037,7 +1037,7 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.
 
 // ---------- version & save safety ----------
 // BUILD format: YYYY.MM.DD.N (the day of the update, then that day's update number). Bump it on every published change.
-const BUILD='2026.10.24.3';
+const BUILD='2026.10.24.6';
 // After "Update now" the page loads as ?dcv=<build> to skip stale caches; tidy that off the address bar.
 try{const u=new URL(location.href);if(u.searchParams.has('dcv')){u.searchParams.delete('dcv');history.replaceState(history.state,'',u.toString());}}catch(e){}
 // SAVE_VER only goes up when the shape of saved data changes. Each step gets a MIGRATIONS entry that upgrades old data in place.
@@ -1165,7 +1165,7 @@ const TREES={
   ],
   cottage:[
     {id:'wild',name:'Wildflower',max:3,tier:0,desc:'Hits poison for 20% of damage per second, per rank.',fx:(s,r,k)=>{s.poison+=0.2*r*k}},
-    {id:'seed',name:'Seed Packet',max:3,tier:0,desc:'Kills can plant a sunflower that shoots nearby enemies for 7 seconds (12% chance, +6% per rank; up to 3 at once). Sunflowers hit 20% harder per extra rank.',fx:(s,r,k)=>{s.garden=Math.max(s.garden,r);s.gardenK=Math.max(s.gardenK,k)}},
+    {id:'seed',name:'Seed Packet',max:3,tier:0,desc:'Kills can plant a sunflower that shoots nearby enemies for 7 seconds (8% chance, +4% per rank; up to 3 at once). Sunflowers hit 20% harder per extra rank.',fx:(s,r,k)=>{s.garden=Math.max(s.garden,r);s.gardenK=Math.max(s.gardenK,k)}},
     {id:'grow',name:'Overgrowth',max:2,tier:1,desc:'Hits slow enemies by 20% per rank, and slowed enemies take 5% more damage from you per rank.',fx:(s,r)=>{s.slow+=0.2*r;s.slowVuln+=0.05*r}},
     {id:'linen',name:'Linen Layers',max:2,tier:1,desc:'+25 max HP and regenerate 0.8 HP per second, per rank.',fx:(s,r,k)=>{s.maxHp+=25*r;s.regen+=0.8*r*k}},
     {id:'fairy',name:'Fairy Ring',max:1,tier:2,desc:'Signature: stronger poison, poisoned enemies spread it when they die, and your garden holds 1 more sunflower.',fx:(s)=>{s.poison+=0.2;s.poisonSpread=true;s.gardenMax+=1}},
@@ -1482,6 +1482,9 @@ $('#menuVer').textContent=VER_TXT;
 // ---------- changelog (click the version number) ----------
 // Newest first. Keep entries short: half-sentence bullets.
 const CHANGELOG=[
+  {v:'2026.10.24.6',d:'Oct 24',items:['Runway rank drain set halfway between the old and v.5 speeds: 3.1s grace after a kill (was 4s)','SSS drains 8.2 per second (was 5.6, originally 10.8)']},
+  {v:'2026.10.24.5',d:'Oct 24',items:['Runway rank holds longer: 4s grace after a kill (was 2.2s)','Rank drains about half as fast, most at the top ranks (SSS 10.8 → 5.6 per second)']},
+  {v:'2026.10.24.4',d:'Oct 24',items:['Sunflowers sprout less often: 8% / 12% / 16% chance per kill (was 12% / 18% / 24%)']},
   {v:'2026.10.24.3',d:'Oct 24',items:['Phone fix: the arena now resizes properly after rotating or going fullscreen (Firefox on Android especially)','Fullscreen button works in more browsers and explains why when it can\'t']},
   {v:'2026.10.24.2',d:'Oct 24',items:['Cottagecore plants a garden: the new Seed Packet talent lets kills plant sunflowers that shoot nearby enemies (Sourdough Starter\'s regen moved into Linen Layers)','Overgrowth: slowed enemies take more damage from you; Picnic now also poisons enemies on the blanket','Lightning arcs and Punk explosions only trigger on a shot\'s first hit, not on every pierce or bounce','Shadow novas and Sequin Burst shards no longer set off chain reactions through a whole room']},
   {v:'2026.10.24.1',d:'Oct 24',items:['Sell all button in the Closet, next to Donate all: sells every unlocked bag piece for Cash (asks to confirm first)']},
@@ -2583,7 +2586,7 @@ function chainFrom(from,d,n,stun){let cur=from;const hit=new Set([from]);for(let
 function glitch(e){if(e.dead||e.big||(e.glitchT||0)>G.time)return;e.glitchT=G.time+1.5;if(isBoss(e)||e.type==='manager'){e.slowT=Math.max(e.slowT||0,0.6);e.slowAmt=Math.max(e.slowAmt||0,0.3);}else e.stun=Math.max(e.stun,0.75);}
 // Garden (Cottagecore Seed Packet): kills can plant a sunflower that shoots nearby enemies. Its shot damage is a share of your weapon's damage per second,
 // so slow and fast weapons get the same help. Capped at gardenMax sunflowers, so kills by sunflowers can't snowball.
-const GARDEN={life:7,rate:0.55,range:280,share:0.24,chance:[0,0.12,0.18,0.24]};
+const GARDEN={life:7,rate:0.55,range:280,share:0.24,chance:[0,0.08,0.12,0.16]};
 function gardenShot(p){const s=p.s,W=WEAPONS[p.weapon.kind]||WEAPONS.blaster,dps=W.dmg*(W.count||1)*W.rate*p.weapon.mult*s.dmg;return dps*GARDEN.share*GARDEN.rate*(1+0.2*(s.garden-1))*s.gardenK;}
 function plantSprout(x,y){if(!G.sprouts)G.sprouts=[];G.sprouts.push({x,y,life:GARDEN.life,cd:0.45,t:0});burst(x,y-6,'#8fd46b',8,90);}
 function updSprouts(dt){if(!G.sprouts||!G.sprouts.length)return;const p=G.p;
@@ -3523,10 +3526,10 @@ function drawPicnics(g){for(const k of G.picnics){const a=Math.min(1,k.life);g.s
 const RANKS=[{l:'D',n:'Dull',at:0,c:'#8a8196',m:1},{l:'C',n:'Cute',at:14,c:'#7be0ff',m:1.1},{l:'B',n:'Bold',at:30,c:'#8fd46b',m:1.2},{l:'A',n:'Fierce',at:48,c:'#ffc94a',m:1.3},{l:'S',n:'Serving',at:66,c:'#ff9a3c',m:1.4},{l:'SS',n:'Slaying',at:82,c:'#ff4fa3',m:1.5},{l:'SSS',n:'Iconic',at:95,c:'#b784ff',m:1.6}];
 function rankIdx(v){let i=0;for(let k=0;k<RANKS.length;k++)if(v>=RANKS[k].at)i=k;return i;}
 const rankMult=()=>G?RANKS[rankIdx(G.p.rank)].m:1;
-function addRank(n){const p=G.p,b=rankIdx(p.rank);p.rank=Math.min(108,p.rank+n*(G.dress==='glass'?2:1));p.rankT=2.2;const a=rankIdx(p.rank);if(a>(G.peakRank||0))G.peakRank=a;
+function addRank(n){const p=G.p,b=rankIdx(p.rank);p.rank=Math.min(108,p.rank+n*(G.dress==='glass'?2:1));p.rankT=3.1;const a=rankIdx(p.rank);if(a>(G.peakRank||0))G.peakRank=a;
   if(a>b&&hasSp('photo')){for(const e of G.enemies){if(!e.dead&&!e.dormant&&!e.big&&Math.hypot(e.x-p.x,e.y-p.y)<260)e.stun=Math.max(e.stun,isBoss(e)?0.5:1.2);}G.rings.push({x:p.x,y:p.y-10,r:260,life:0.35,max:0.35,c:'#ffffff'});burst(p.x,p.y-30,'#ffffff',14,200);}
   if(a>b){const R=RANKS[a];addText(p.x,p.y-64,`RANK ${R.l}!`,R.c,true);if(a>=4)toast(`Runway rank <b style="color:${R.c}">${R.l}</b>: ${R.n}! Loot ×${R.m}`,R.c);sfx('pick');}}
-function rankTick(dt){const p=G.p;if(p.rankT>0)p.rankT-=dt;else p.rank=Math.max(0,p.rank-dt*(3+rankIdx(p.rank)*1.3)*(1-Math.min(0.6,(p.s&&p.s.rankHold)||0)));
+function rankTick(dt){const p=G.p;if(p.rankT>0)p.rankT-=dt;else p.rank=Math.max(0,p.rank-dt*(2.5+rankIdx(p.rank)*0.95)*(1-Math.min(0.6,(p.s&&p.s.rankHold)||0)));
   if(p.emperor){const ri=rankIdx(p.rank);if(ri!==p.empRi){p.empRi=ri;const hp=p.hp;refreshStats();p.hp=Math.min(hp,p.s.maxHp);}}}
 
 // ---------- cash ----------
