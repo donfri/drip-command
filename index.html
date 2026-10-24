@@ -1037,7 +1037,7 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.
 
 // ---------- version & save safety ----------
 // BUILD format: YYYY.MM.DD.N (the day of the update, then that day's update number). Bump it on every published change.
-const BUILD='2026.10.24.7';
+const BUILD='2026.10.24.9';
 // After "Update now" the page loads as ?dcv=<build> to skip stale caches; tidy that off the address bar.
 try{const u=new URL(location.href);if(u.searchParams.has('dcv')){u.searchParams.delete('dcv');history.replaceState(history.state,'',u.toString());}}catch(e){}
 // SAVE_VER only goes up when the shape of saved data changes. Each step gets a MIGRATIONS entry that upgrades old data in place.
@@ -1482,6 +1482,9 @@ $('#menuVer').textContent=VER_TXT;
 // ---------- changelog (click the version number) ----------
 // Newest first. Keep entries short: half-sentence bullets.
 const CHANGELOG=[
+  {v:'2026.10.24.9',d:'Oct 24',items:['Release notes filled in for every version (2026.10.21.6–.9 and 2026.10.24.7 were missing)']},
+  {v:'2026.10.24.8',d:'Oct 24',items:['Between-floors screen now updates your unspent Style Points after you spend them']},
+  {v:'2026.10.24.7',d:'Oct 24',items:['Measuring Tape can hit the Creative Director: reach is measured from the edge of the boss, not its centre','While the Creative Director is awake the tape reaches twice as far (130 → 260 px); other floors unchanged']},
   {v:'2026.10.24.6',d:'Oct 24',items:['Runway rank drain set halfway between the old and v.5 speeds: 3.1s grace after a kill (was 4s)','SSS drains 8.2 per second (was 5.6, originally 10.8)']},
   {v:'2026.10.24.5',d:'Oct 24',items:['Runway rank holds longer: 4s grace after a kill (was 2.2s)','Rank drains about half as fast, most at the top ranks (SSS 10.8 → 5.6 per second)']},
   {v:'2026.10.24.4',d:'Oct 24',items:['Sunflowers sprout less often: 8% / 12% / 16% chance per kill (was 12% / 18% / 24%)']},
@@ -1490,7 +1493,11 @@ const CHANGELOG=[
   {v:'2026.10.24.1',d:'Oct 24',items:['Sell all button in the Closet, next to Donate all: sells every unlocked bag piece for Cash (asks to confirm first)']},
   {v:'2026.10.21.12',d:'Oct 21',items:['Controller aiming is smoother: the sticks no longer snap to straight up, down, left or right, so angles near the diagonals are easy to hit']},
   {v:'2026.10.21.11',d:'Oct 21',items:['PlayStation controllers are recognised: button prompts show \u2715 \u25CB \u25A1 \u25B3, L1, R1, R2 and Options instead of Xbox names']},
-  {v:'2026.10.21.10',d:'Oct 21',items:['Millennium Bug arcs stun normal enemies for 0.75s, at most once per enemy every 1.5s (no more freezing the whole room)','Arcs slow bosses, rivals and Floor Managers instead of stunning them','Bosses can be stunned for at most 1.2s in a row, then ignore stuns for 2s']},
+  {v:'2026.10.21.10',d:'Oct 21',items:['What\'s new notes added for the Millennium Bug builds']},
+  {v:'2026.10.21.9',d:'Oct 21',items:['Y2K test run button removed from the title screen']},
+  {v:'2026.10.21.8',d:'Oct 21',items:['Temporary Y2K test run button on the title screen: floor 3 boss, full Y2K tree, Iconic SMG, nothing saves']},
+  {v:'2026.10.21.7',d:'Oct 21',items:['Millennium Bug arc stun is easier to see: 0.75s (was 0.45s)']},
+  {v:'2026.10.21.6',d:'Oct 21',items:['Millennium Bug arcs stun normal enemies at most once every 1.5s (no more freezing the whole room)','Arcs slow bosses, rivals and Floor Managers by 30% instead of stunning them','Bosses can be stunned for at most 1.2s in a row, then ignore stuns for 2s']},
   {v:'2026.10.21.5',d:'Oct 21',items:['Colorblind filters now work in Firefox (arena recoloured on the GPU, menus and HUD filtered per layer)']},
   {v:'2026.10.21.4',d:'Oct 21',items:['Check for update button at the bottom of Settings','Update now loads the newest version without touching your saves']},
   {v:'2026.10.21.3',d:'Oct 21',items:['Heat is gentler: +6% enemy health and +3% damage per level','Heat 6 and up take more Clout to earn']},
@@ -3073,10 +3080,9 @@ function floorCleared(){const p=G.p;state='between';jingle('clear');
   G.event=null;if(!G.daily&&G.floor>=2&&!isFinaleF(G.floor+1)&&Math.random()<EVENT_CHANCE){G.event=makeEvent();if(G.event)G.offer=null;}genStock();G.rerollCost=Math.round(shopP(G.floor+1)*0.8);
   $('#bwEyebrow').textContent=`Floor ${G.floor} cleared`;
   $('#bwStats').innerHTML=`<div><b>$${p.cash}</b><span>Cash</span></div><div><b>${G.floorKills}</b><span>Crimes stopped</span></div><div><b>${p.s.drip}</b><span>Drip</span></div><div><b>${p.level}</b><span>Clout level</span></div><div><b>${Math.ceil(p.hp)}/${p.s.maxHp}</b><span>HP (healed ${Math.round(healK*100)}%)</span></div>`;
-  const nf=G.floor+1,nz=ZONES[zoneIdx(nf)];
-  $('#bwNext').textContent=`Next: Floor ${nf}, ${nz.name}.${isFinaleF(nf)?' The finale: the Creative Director is waiting.':nf%3===0?' A boss guards the runway on this one.':''}${p.passes?` You have ${p.passes} VIP Pass${p.passes>1?'es':''}.`:''}${p.points>0?` You have ${p.points} unspent Style Point${p.points>1?'s':''}.`:''}`;
+  G.bwMsg='';
   if(G.soldN){const parts=[G.soldCash?`<b style="color:#ffd34d">$${G.soldCash}</b>`:'',G.soldClout?`<b style="color:#7be0ff">${G.soldClout} Clout</b>`:''].filter(Boolean).join(' and ');dressMsg+=` Auto-sold <b>${G.soldN}</b> piece${G.soldN>1?'s':''} for ${parts}.`;G.soldN=0;G.soldCash=0;G.soldClout=0;}
-  dressMsg+=empMsg;if(dressMsg)$('#bwNext').innerHTML=esc($('#bwNext').textContent)+dressMsg;
+  dressMsg+=empMsg;G.bwMsg=dressMsg;renderBwNext();
   renderDressOffer();showOnly('#between');}
 function nextFloor(){G.dress=G.offer&&G.offer.pick?G.offer.pick:null;G.lastDress=G.dress;G.sale=false;G.dressFailed=false;G.dressTimer=G.dress==='late'?170:0;buildFloor(G.floor+1);showOnly(null);state='play';toast(`Floor <b>${G.floor}</b> · ${G.zone.name}`,'#ffc94a');if(G.dress){const d=dressById(G.dress);setTimeout(()=>toast(`Dress code: <b>${d.name}</b>. ${d.rule} Reward: ${d.reward}`,'#ff9a3c'),500);}}
 const HIST_MAX=20;
@@ -3181,7 +3187,9 @@ $('#bLookbook').addEventListener('click',openLookbook);$('#bLookbook2').addEvent
 function openCloset(){if(state!=='play'&&state!=='between')return;prevState=state;state='closet';sel=null;showItem=null;$('#donateConfirm').hidden=true;$('#donateConfirm').innerHTML='';showOnly('#closet');renderCloset();}
 function openTalents(){if(state!=='play'&&state!=='between')return;prevState=state;state='talents';showOnly('#talents');renderTalents();}
 function backFromSheet(){if(prevState==='between'){state='between';showOnly('#between');floorClearedRefresh();}else{state='play';showOnly(null);}}
-function floorClearedRefresh(){const p=G.p;const el=$('#bwStats');if(el){el.children[0].querySelector('b').textContent='$'+p.cash;el.children[2].querySelector('b').textContent=p.s.drip;el.children[4].querySelector('b').textContent=`${Math.ceil(p.hp)}/${p.s.maxHp}`;}}
+// Between-floors "Next:" line. Rebuilt whenever you come back from the Closet or Style Trees so the unspent Style Point count stays current.
+function renderBwNext(){const p=G.p,nf=G.floor+1,nz=ZONES[zoneIdx(nf)];const base=`Next: Floor ${nf}, ${nz.name}.${isFinaleF(nf)?' The finale: the Creative Director is waiting.':nf%3===0?' A boss guards the runway on this one.':''}${p.passes?` You have ${p.passes} VIP Pass${p.passes>1?'es':''}.`:''}${p.points>0?` You have ${p.points} unspent Style Point${p.points>1?'s':''}.`:''}`;$('#bwNext').innerHTML=esc(base)+(G.bwMsg||'');}
+function floorClearedRefresh(){const p=G.p;renderBwNext();const el=$('#bwStats');if(el){el.children[0].querySelector('b').textContent='$'+p.cash;el.children[2].querySelector('b').textContent=p.s.drip;el.children[4].querySelector('b').textContent=`${Math.ceil(p.hp)}/${p.s.maxHp}`;}}
 function openPause(){if(state!=='play')return;state='paused';showOnly('#pause');}
 function toMenu(){state='menu';G=null;$('#hud').hidden=true;showOnly('#menu');drawMenuPreviews();updBest();}
 
