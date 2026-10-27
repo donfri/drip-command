@@ -1047,7 +1047,7 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.
 
 // ---------- version & save safety ----------
 // BUILD format: YYYY.MM.DD.N (the day of the update, then that day's update number). Bump it on every published change.
-const BUILD='2026.10.24.12';
+const BUILD='2026.10.27.1';
 // After "Update now" the page loads as ?dcv=<build> to skip stale caches; tidy that off the address bar.
 try{const u=new URL(location.href);if(u.searchParams.has('dcv')){u.searchParams.delete('dcv');history.replaceState(history.state,'',u.toString());}}catch(e){}
 // SAVE_VER only goes up when the shape of saved data changes. Each step gets a MIGRATIONS entry that upgrades old data in place.
@@ -1266,7 +1266,7 @@ function makeGear(f,bonus=0,style=null,slot=null,rar=null){style=style||pick(SK)
   const look=(mod?MODS[mod]+' ':'')+cw.n;
   const name=rarity>=4?`${base} of ${pick(SUFFIX[style])}`:`${look} ${base}`;
   const it={id:UID++,slot,style,rarity,drip,name,base,cw,mod,seed:Math.floor(Math.random()*1e9),aff:rollAffixes([0,1,1,2,2,3][rarity],f,rarity,style,false)};
-  if(Math.random()<[0,0,0,0.08,0.15,0.3][rarity])it.sp=pickStmt();return it;}
+  if(Math.random()<[0,0,0,0.08,0.15,0.3][rarity])it.sp=pickStmt();return stmtDup(it,f);}
 function makeWeapon(f,bonus=0,kind=null,rar=null){kind=kind||pick(Object.keys(WEAPONS));const rarity=rar==null?((typeof G!=='undefined'&&G&&state==='play'&&G.dress==='casual')?Math.max(1,rollRarity(f,bonus+1.5)):(typeof G!=='undefined'&&G&&state==='play'&&G.dress==='minimal')?Math.max(2,rollRarity(f,bonus)):rollRarity(f,bonus)):rar;
   return {id:UID++,slot:'weapon',kind,rarity,mult:+(1+rarity*0.1).toFixed(2),name:WEAPONS[kind].name,aff:rollAffixes([0,0,1,1,2,2][rarity],f,rarity,null,true)};}
 function makeLoot(f,bonus=0){return Math.random()<0.2?makeWeapon(f,bonus):makeGear(f,bonus);}
@@ -1499,6 +1499,7 @@ $('#menuVer').textContent=VER_TXT;
 // ---------- changelog (click the version number) ----------
 // Newest first. Keep entries short: half-sentence bullets.
 const CHANGELOG=[
+  {v:'2026.10.27.1',d:'Oct 27',items:['Duplicate Statement Pieces now drop as upgrades: if you already own that Statement (worn or in your bag), the new copy has more Drip than your best copy','It steps up in rarity (up to Grail) to beat your copy; if even Grail falls short, it gets 10% more Drip than your copy','Upgraded duplicates say so on their Statement line']},
   {v:'2026.10.24.12',d:'Oct 24',items:['Hairspray Torch: new flame look, flickering licks of fire that point where they fly, cool from white-hot to red and end in a wisp of smoke','Looks only: Torch damage, range and hit area unchanged']},
   {v:'2026.10.24.11',d:'Oct 24',items:['Hype Train: landing hits on bosses, rivals, Floor Managers and the Creative Director keeps Hype from draining and adds 1 stack every 0.75s, up to half your max Hype (kills fill the rest)','Emperor: landing hits on bosses, rivals, Floor Managers and the Creative Director adds 2 Runway rank every 0.5s, so New Clothes keep their Drip in long fights']},
   {v:'2026.10.24.10',d:'Oct 24',items:['One upgrade rule for clothes and guns: ▲ now means the piece is "worth more Drip" than what you have on','Pickups say "▲ worth +40 Drip"; comparisons lead with Drip-worth (like wearing that much more Drip)','Weapon DPS no longer counts a weapon\'s own damage and fire-rate bonuses twice','Closet: Lookbook count line and button removed; the Lookbook is now in the pause menu, next to Achievements','Comparisons show one Drip line: Drip-worth, then where it comes from (Drip 33 → 100 (+67), bonuses +37)']},
@@ -3720,8 +3721,18 @@ const STMT={
   thread:{n:'Invisible Thread',d:'This piece gives 50% more Drip. For the Emperor, its slot also still counts as wearing nothing.'},
 };
 function pickStmt(){const worn=(typeof G!=='undefined'&&G&&G.p&&G.p.s&&G.p.s.sp)||new Set();const ks=Object.keys(STMT),fresh=ks.filter(k=>!worn.has(k));return pick(fresh.length?fresh:ks);}
-function makeStmtGear(f){const it=makeGear(f,2,null,null,Math.max(3,rollRarity(f,2)));it.sp=pickStmt();return it;}
-const stmtHtml=it=>it&&it.sp&&STMT[it.sp]?`<div class="spline"><b>★ Statement: ${esc(STMT[it.sp].n)}.</b> ${esc(STMT[it.sp].d)}</div>`:'';
+function makeStmtGear(f){let it;_stmtDupBusy=true;try{it=makeGear(f,2,null,null,Math.max(3,rollRarity(f,2)));}finally{_stmtDupBusy=false;}delete it.dupUp;it.sp=pickStmt();return stmtDup(it,f);}
+// Duplicate Statement Pieces (Oct 27, 2026): if you already own this Statement (worn or in your bag), the new copy drops with more Drip than your best copy.
+// It steps up rarity (up to Grail); if that still isn't enough, its Drip is set 10% above your best copy.
+let _stmtDupBusy=false;
+function stmtDup(it,f){if(_stmtDupBusy||!it||!it.sp||typeof G==='undefined'||!G||!G.p||typeof state==='undefined'||state!=='play')return it;
+  const p=G.p,own=[...SLOTS.map(sl=>p.gear&&p.gear[sl]),...(p.bag||[])].filter(x=>x&&x.sp===it.sp);if(!own.length)return it;
+  const best=Math.max(...own.map(x=>x.drip||0));if(it.drip>best){it.dupUp=best;return it;}
+  let out=it,r=it.rarity;_stmtDupBusy=true;
+  try{while(out.drip<=best&&r<5){r++;for(let k=0;k<4&&out.drip<=best;k++){const n=makeGear(f,0,it.style,it.slot,r);n.sp=it.sp;if(n.drip>out.drip||n.rarity>out.rarity)out=n;}}}finally{_stmtDupBusy=false;}
+  if(out.drip<=best)out.drip=best+Math.max(1,Math.round(best*0.1));
+  out.dupUp=best;return out;}
+const stmtHtml=it=>it&&it.sp&&STMT[it.sp]?`<div class="spline"><b>★ Statement: ${esc(STMT[it.sp].n)}.</b> ${esc(STMT[it.sp].d)}${it.dupUp?` <i>Upgraded duplicate: more Drip than your old copy (${it.dupUp}).</i>`:''}</div>`:'';
 const hasSp=k=>G&&G.p&&G.p.s&&G.p.s.sp&&G.p.s.sp.has(k);
 function onDash(){const p=G.p;
   if(hasSp('decoy')){G.decoy={x:p.x,y:p.y,life:3,aim:p.aim};}
